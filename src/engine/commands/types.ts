@@ -1,0 +1,32 @@
+import type { SystemState } from "../state/types";
+
+export interface CommandContext {
+  /** 명령어는 이 상태를 마음껏 바꿔도 된다. 이미 복사된 사본이다. (run.ts 참고) */
+  state: SystemState;
+  /** 명령어 이름을 뺀 토큰들 */
+  tokens: string[];
+  /** sudo로 실행했는가 */
+  sudo: boolean;
+  /** 이 명령이 실제로 실행되는 사용자. sudo면 "root" */
+  user: string;
+  /** help 명령이 목록을 만들 때 쓴다 */
+  available: string[];
+}
+
+export interface CommandResult {
+  stdout: string;
+  stderr: string;
+  /** 0 = 성공. 실제 셸과 같은 의미 */
+  exitCode: number;
+}
+
+export interface Command {
+  name: string;
+  /** help에 한 줄로 표시되는 설명 */
+  summary: string;
+  usage: string;
+  run(ctx: CommandContext): CommandResult;
+}
+
+export const ok = (stdout = ""): CommandResult => ({ stdout, stderr: "", exitCode: 0 });
+export const fail = (stderr: string, exitCode = 1): CommandResult => ({ stdout: "", stderr, exitCode });
