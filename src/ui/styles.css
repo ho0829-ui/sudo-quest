@@ -1,0 +1,388 @@
+/* 라이브러리 없이 쓰는 스타일. 색과 간격은 전부 여기 변수로 모아둔다. */
+
+:root {
+  --bg: #0f1116;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e4e7ee;
+  --muted: #9aa3b2;
+  --accent: #5eb3f6;
+  --green: #6bd968;
+  --red: #ff6b6b;
+  --yellow: #f0c674;
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "D2Coding", monospace;
+  --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 8px 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b1017;
+  font-weight: 600;
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* ---------- 시나리오 선택 ---------- */
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.scenario-card {
+  text-align: left;
+  padding: 16px;
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scenario-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.badge.cleared {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.category-title {
+  margin: 28px 0 12px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ---------- 티켓 ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.ticket-body {
+  white-space: pre-wrap;
+  background: var(--panel-2);
+  border-left: 3px solid var(--accent);
+  padding: 16px;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.objectives {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.row.end {
+  justify-content: flex-end;
+}
+
+/* ---------- 조사 화면 ---------- */
+
+.play-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .play-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- 터미널 ---------- */
+
+.terminal {
+  background: #0b0d12;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  height: 70vh;
+  min-height: 420px;
+  overflow-y: auto;
+  padding: 14px;
+  cursor: text;
+}
+
+.terminal pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+}
+
+.terminal .prompt {
+  color: var(--green);
+}
+
+.terminal .stderr {
+  color: var(--red);
+}
+
+.terminal .candidates {
+  color: var(--muted);
+}
+
+.terminal-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  padding: 0;
+}
+
+/* ---------- 사이드바 ---------- */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebar .panel {
+  padding: 14px;
+}
+
+.sidebar h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.hint {
+  background: var(--panel-2);
+  border-left: 3px solid var(--yellow);
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.command-log {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* ---------- 원인 제출 ---------- */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.dialog {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+  padding: 12px 14px;
+  line-height: 1.5;
+}
+
+.choice.wrong {
+  border-color: var(--red);
+  opacity: 0.6;
+}
+
+.feedback {
+  border-left: 3px solid var(--red);
+  background: var(--panel-2);
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* ---------- 결과 리포트 ---------- */
+
+.report-section {
+  margin-bottom: 18px;
+}
+
+.report-section h3 {
+  font-size: 15px;
+  margin: 0 0 6px;
+  color: var(--accent);
+}
+
+.report-section p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.score-item {
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.score-item .value {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+
+.grade {
+  font-size: 46px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--green);
+  line-height: 1;
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 700px) {
+  .compare {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compare ol {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  margin: 0;
+  padding-left: 22px;
+  color: var(--muted);
+}
+
+.compare ol li.matched {
+  color: var(--green);
+}
