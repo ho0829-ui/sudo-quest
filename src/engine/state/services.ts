@@ -60,6 +60,26 @@ function blockingReason(state: SystemState, service: Service): string | null {
   return null;
 }
 
+/**
+ * 서비스가 실제로 열 포트를 정한다.
+ *
+ * bindConfig가 있으면 설정 파일에서 바인드 주소를 읽어 쓴다.
+ * 그래서 설정 파일을 고치고 재시작하면 ss -tlnp 결과가 따라 바뀐다.
+ * (설정만 고치고 재시작을 안 하면 아무것도 바뀌지 않는 것도 실제와 같다)
+ */
+function effectiveListenPorts(state: SystemState, service: Service) {
+  const ports = service.listenPorts ?? [];
+  if (!service.bindConfig) return ports;
+
+  const node = findNode(state.fs, service.bindConfig.path);
+  if (!node || node.kind !== "file") return ports;
+
+  // "host: 0.0.0.0" 또는 "host = 0.0.0.0" 형태를 읽는다
+  const pattern = new RegExp(`^\\s*${service.bindConfig.key}\\s*[:=]\\s*([^\\s#]+)`, "m");
+  const matched = pattern.exec(node.content);
+  return matched ? ports.map((listen) => ({ ...listen, addr: matched[1] })) : ports;
+}
+
 export function startService(state: SystemState, name: string): StartOutcome {
   const service = findService(state, name);
   if (!service) return { ok: false, reason: "unit not found" };
@@ -107,7 +127,7 @@ export function startService(state: SystemState, name: string): StartOutcome {
     cpu: service.cpu,
     memKB: service.memKB,
     command: service.execStart,
-    listenPorts: service.listenPorts,
+    listenPorts: effectiveListenPorts(state, service),
     service: service.name,
   });
   addLog(state, {

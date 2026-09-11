@@ -6,7 +6,7 @@
  */
 import { writeFile } from "./fs";
 import { addLog } from "./log";
-import { findService } from "./services";
+import { findService, startService, stopService } from "./services";
 import type { LogPriority, SystemState } from "./types";
 
 /** 장애는 상태를 직접 바꾸는 함수다. (시나리오 시작 시 한 번만 실행된다) */
@@ -59,6 +59,23 @@ export function logLine(
       priority: options.priority,
       pid: options.pid,
     });
+    state.clock = saved;
+  };
+}
+
+/**
+ * 과거 시점에 서비스를 재시작한 것으로 만든다.
+ *
+ * 설정 파일을 바꾸는 fault와 짝을 이룬다.
+ * 설정만 고쳐 두면 "파일은 바뀌었는데 돌고 있는 프로세스는 예전 그대로"인
+ * 모순된 상태가 된다. 실제로 재시작을 거쳐야 상태가 앞뒤가 맞는다.
+ */
+export function restartedAt(name: string, agoMs: number): Fault {
+  return (state) => {
+    const saved = state.clock;
+    state.clock = saved - agoMs;
+    stopService(state, name);
+    startService(state, name);
     state.clock = saved;
   };
 }

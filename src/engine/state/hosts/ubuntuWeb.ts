@@ -42,6 +42,23 @@ export function ubuntuWeb(): SystemState {
     content: NGINX_CONF,
     mtime: BASE_CLOCK - 86400_000 * 20,
   });
+  writeFile(root, "/opt/app/config.yml", {
+    content: APP_CONFIG,
+    owner: "ubuntu",
+    group: "ubuntu",
+    mtime: BASE_CLOCK - 86400_000 * 14,
+  });
+  writeFile(root, "/etc/letsencrypt/live/shop.example.com/fullchain.pem", {
+    content: [
+      "-----BEGIN CERTIFICATE-----",
+      "MIIFazCCA1OgAwIBAgIUXm9kQ2hlY2tUaGVFeHBpcnlEYXRlMA0GCSqGSIb3DQEB",
+      "CwUAMEUxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQwwCgYD",
+      "-----END CERTIFICATE-----",
+      "",
+    ].join("\n"),
+    mode: 0o644,
+    mtime: BASE_CLOCK - 86400_000 * 80,
+  });
   writeFile(root, "/var/www/html/index.html", {
     content: "<!doctype html>\n<html><body><h1>Shop Service</h1></body></html>\n",
     owner: "www-data",
@@ -122,7 +139,9 @@ export function ubuntuWeb(): SystemState {
         execStart: "/usr/bin/node /opt/app/server.js",
         mainPid: 1340,
         since: BASE_CLOCK - 86400_000 * 6,
-        listenPorts: [{ addr: "127.0.0.1", port: 3000 }],
+        listenPorts: [{ addr: "0.0.0.0", port: 3000 }],
+        // 바인드 주소는 설정 파일이 정한다. 설정을 고치고 재시작하면 실제로 바뀐다.
+        bindConfig: { path: "/opt/app/config.yml", key: "host" },
         requiresFreeKB: 10 * 1024,
         memKB: 210 * 1024,
         cpu: 1.4,
@@ -149,7 +168,7 @@ export function ubuntuWeb(): SystemState {
         cpu: 1.4,
         memKB: 210 * 1024,
         command: "/usr/bin/node /opt/app/server.js",
-        listenPorts: [{ addr: "127.0.0.1", port: 3000 }],
+        listenPorts: [{ addr: "0.0.0.0", port: 3000 }],
         service: "shop-api",
       },
     ],
@@ -181,12 +200,34 @@ export function ubuntuWeb(): SystemState {
         },
       ],
     },
+    certificates: [
+      {
+        path: "/etc/letsencrypt/live/shop.example.com/fullchain.pem",
+        domain: "shop.example.com",
+        issuer: "C=US, O=Let's Encrypt, CN=R11",
+        notBefore: BASE_CLOCK - 86400_000 * 80,
+        notAfter: BASE_CLOCK + 86400_000 * 10, // 평소에는 10일 남아 있다
+      },
+    ],
     journal: [
       { time: BASE_CLOCK - 4500_000, tag: "systemd", priority: "info", message: "Started Daily apt download activities." },
       { time: BASE_CLOCK - 3600_000, tag: "CRON", pid: 2104, priority: "info", message: "(root) CMD (cd / && run-parts --report /etc/cron.hourly)" },
     ],
   };
 }
+
+/** shop-api 애플리케이션 설정. host 값이 바인드 주소가 된다. */
+const APP_CONFIG = `server:
+  host: 0.0.0.0
+  port: 3000
+
+database:
+  url: postgres://10.0.3.20:5432/shop
+  pool: 20
+
+logging:
+  level: info
+`;
 
 /** 문법이 올바른 기본 nginx 설정. 시나리오는 여기서 한 글자만 망가뜨린다. */
 const NGINX_CONF = `user www-data;

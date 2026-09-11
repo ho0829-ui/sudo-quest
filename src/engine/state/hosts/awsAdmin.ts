@@ -79,6 +79,7 @@ export function awsAdmin(): SystemState {
       records: {},
       world: [],
     },
+    certificates: [],
     journal: [
       {
         time: AWS_CLOCK - 1800_000,
@@ -114,8 +115,41 @@ export function awsAdmin(): SystemState {
           securityGroupIds: ["sg-00112233445566778"],
           subnetId: "subnet-0aa11bb22cc33dd44",
           keyName: "ops-keypair",
+          iamRole: "shop-web-role",
         },
       ],
+      loadBalancers: [
+        {
+          arn: "arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:loadbalancer/app/shop-alb/50dc6c495c0c9188",
+          name: "shop-alb",
+          dnsName: "shop-alb-1234567890.ap-northeast-2.elb.amazonaws.com",
+          targetGroupArn:
+            "arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/shop-tg/73e2d6bc24d8a067",
+        },
+      ],
+      targetGroups: [
+        {
+          arn: "arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/shop-tg/73e2d6bc24d8a067",
+          name: "shop-tg",
+          port: 80,
+          protocol: "HTTP",
+          healthCheckPath: "/health",
+          healthCheckPort: "traffic-port",
+          targetIds: ["i-09f8e7d6c5b4a3210"],
+        },
+      ],
+      roles: [
+        {
+          name: "shop-web-role",
+          arn: "arn:aws:iam::123456789012:role/shop-web-role",
+          attachedPolicies: ["CloudWatchAgentServerPolicy", "AmazonSSMManagedInstanceCore"],
+        },
+      ],
+      // 각 인스턴스가 실제로 응답하는 경로. 헬스체크 통과 여부를 여기서 계산한다.
+      servedPaths: {
+        "i-09f8e7d6c5b4a3210": ["/", "/health", "/api/orders"],
+        "i-0a1b2c3d4e5f60718": ["/", "/health", "/api/orders"],
+      },
       securityGroups: [
         {
           groupId: "sg-0f1e2d3c4b5a69788",

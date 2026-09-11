@@ -7,12 +7,30 @@ import { linuxDiskFull } from "./linux-disk-full";
 import { networkFirewall } from "./network-firewall";
 import { webNginxConfig } from "./web-nginx-config";
 import { awsSecurityGroup } from "./aws-security-group";
+import { linuxPermission } from "./linux-permission";
+import { networkDns } from "./network-dns";
+import { linuxPortConflict } from "./linux-port-conflict";
+import { linuxOom } from "./linux-oom";
+import { networkBindLocalhost } from "./network-bind-localhost";
+import { webSslExpired } from "./web-ssl-expired";
+import { awsAlbHealthcheck } from "./aws-alb-healthcheck";
+import { awsIamS3 } from "./aws-iam-s3";
+import { dbMaxConnections } from "./db-max-connections";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
+  linuxPermission,
+  linuxPortConflict,
+  linuxOom,
   networkFirewall,
+  networkDns,
+  networkBindLocalhost,
   webNginxConfig,
+  webSslExpired,
+  dbMaxConnections,
   awsSecurityGroup,
+  awsAlbHealthcheck,
+  awsIamS3,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

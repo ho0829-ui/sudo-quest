@@ -9,7 +9,7 @@
  * "어느 단계에서 막혔는가"를 플레이어가 출력만 보고 좁혀 들어갈 수 있다.
  */
 import { listeningSockets } from "./derived";
-import { findNode } from "./fs";
+import { canRead, findNode } from "./fs";
 import type { FirewallRule, SystemState } from "./types";
 
 export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "tls";
@@ -110,7 +110,14 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
         message: `Failed to connect to ${target.host} port ${target.port}: Connection refused`,
       };
     }
-    return { ok: true, ip, status: 200, body: localBody(state) };
+    // 우리 서버의 인증서도 만료를 검사한다. 원격이든 로컬이든 규칙은 같다.
+    if (target.tls) {
+      const cert = certificateFor(state, target.host);
+      if (cert && cert.notAfter < state.clock) {
+        return { ok: false, ip, stage: "tls", message: "SSL certificate problem: certificate has expired" };
+      }
+    }
+    return { ok: true, ip, ...serveLocal(state) };
   }
 
   // 3) 바깥으로 나가는 요청
@@ -147,8 +154,31 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
   return { ok: true, ip, status: service.status ?? 200, body: service.body ?? "" };
 }
 
-/** 우리 서버의 웹 루트 내용을 응답 본문으로 쓴다. */
-function localBody(state: SystemState): string {
-  const node = findNode(state.fs, "/var/www/html/index.html");
-  return node?.kind === "file" ? node.content : "";
+/** 이 도메인을 담당하는 인증서를 찾는다. */
+export function certificateFor(state: SystemState, domain: string) {
+  return state.certificates.find((cert) => cert.domain === domain);
+}
+
+/** nginx가 파일을 읽을 때 쓰는 계정. 이 계정이 읽을 수 없으면 403이 난다. */
+export const WEB_USER = "www-data";
+export const WEB_ROOT = "/var/www/html/index.html";
+
+/**
+ * 우리 서버의 웹 응답을 만든다.
+ *
+ * 웹 루트 파일의 퍼미션을 실제로 검사한다.
+ * 그래서 chmod 한 번으로 403 ↔ 200 이 오간다. 시나리오가 응답 코드를 정하지 않는다.
+ */
+export function serveLocal(state: SystemState): { status: number; body: string } {
+  const node = findNode(state.fs, WEB_ROOT);
+  if (!node || node.kind !== "file") {
+    return { status: 404, body: "<html>\n<head><title>404 Not Found</title></head>\n</html>\n" };
+  }
+  if (!canRead(node, WEB_USER)) {
+    return {
+      status: 403,
+      body: "<html>\n<head><title>403 Forbidden</title></head>\n<body>\n<center><h1>403 Forbidden</h1></center>\n<hr><center>nginx/1.24.0</center>\n</body>\n</html>\n",
+    };
+  }
+  return { status: 200, body: node.content };
 }

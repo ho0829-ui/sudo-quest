@@ -85,7 +85,8 @@ export function hasFlag(tokens: string[], short: string, long?: string): boolean
   return tokens.some((t) => {
     if (!isFlag(t)) return false;
     if (t.startsWith("--")) return long !== undefined && t.slice(2).split("=")[0] === long;
-    return t.slice(1).includes(short);
+    // short가 비어 있으면(긴 이름만 있는 옵션) 짧은 플래그와는 절대 매칭되면 안 된다
+    return short !== "" && t.slice(1).includes(short);
   });
 }
 
@@ -102,6 +103,7 @@ export function flagValue(tokens: string[], short: string, long?: string): strin
       if (long !== undefined && key === long) return value ?? tokens[i + 1];
       continue;
     }
+    if (short === "") continue; // 긴 이름만 있는 옵션은 짧은 플래그로 찾지 않는다
     const idx = t.indexOf(short, 1);
     if (idx === -1) continue;
     const rest = t.slice(idx + 1);

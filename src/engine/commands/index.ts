@@ -5,18 +5,22 @@
  * 시나리오는 이 중에서 쓸 수 있는 것만 골라 화이트리스트로 지정한다.
  */
 import { aws } from "./aws";
+import { dig, dmesg, free, kill, ping, ps } from "./diag";
 import { cat, cd, ls, pwd, rm, tail } from "./files";
+import { chmod, chown } from "./perms";
 import { curl, ss, ufw } from "./network";
+import { mysql } from "./mysql";
 import { nginx } from "./nginx";
 import { df, du, journalctl, makeHelp, systemctl } from "./system";
 import { sed } from "./text";
+import { certbot, openssl } from "./tls";
 import type { Command } from "./types";
 
 const list: Command[] = [
-  ls, cat, cd, pwd, tail, rm, sed,
-  df, du, systemctl, journalctl,
-  curl, ss, ufw, nginx,
-  aws,
+  ls, cat, cd, pwd, tail, rm, sed, chmod, chown,
+  df, du, systemctl, journalctl, free, ps, dmesg, kill,
+  curl, ss, ufw, nginx, ping, dig, openssl, certbot,
+  aws, mysql,
 ];
 
 const registry = new Map<string, Command>(list.map((c) => [c.name, c]));

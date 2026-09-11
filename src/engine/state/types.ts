@@ -69,6 +69,12 @@ export interface Service {
   listenPorts?: { addr: string; port: number }[];
   /** 시작에 필요한 최소 여유 디스크. 부족하면 시작이 실패한다. */
   requiresFreeKB?: number;
+  /**
+   * 바인드 주소를 설정 파일에서 읽어온다.
+   * 이게 있으면 listenPorts의 주소 대신 설정 파일의 값을 쓴다.
+   * "설정을 고치고 재시작하면 바인딩이 바뀐다"가 여기서 재현된다.
+   */
+  bindConfig?: { path: string; key: string };
   /** 문법을 검사할 설정 파일 경로 */
   configPath?: string;
   /** 그 파일을 어떤 검증기로 볼지. configValidators의 키. */
@@ -164,6 +170,31 @@ export interface Network {
   world: RemoteHost[];
 }
 
+// ---------- 데이터베이스 ----------
+
+/**
+ * DB는 통째로 흉내 내지 않는다.
+ * 트러블슈팅에 실제로 필요한 것 — 설정값과 현재 연결 수 — 만 모델링한다.
+ */
+export interface Database {
+  kind: "mysql";
+  version: string;
+  variables: Record<string, string>;
+  status: Record<string, string>;
+}
+
+// ---------- TLS 인증서 ----------
+
+export interface Certificate {
+  /** 인증서 파일 경로 */
+  path: string;
+  /** 이 인증서가 보증하는 도메인 */
+  domain: string;
+  issuer: string;
+  notBefore: number;
+  notAfter: number;
+}
+
 // ---------- AWS ----------
 
 export interface SecurityGroupRule {
@@ -197,12 +228,47 @@ export interface Ec2Instance {
   iamRole?: string;
 }
 
+export interface TargetGroup {
+  arn: string;
+  name: string;
+  port: number;
+  protocol: string;
+  /** 헬스체크가 때릴 경로. 이 경로가 타깃에 없으면 unhealthy가 된다. */
+  healthCheckPath: string;
+  healthCheckPort: string;
+  /** 이 타깃 그룹에 등록된 인스턴스 id */
+  targetIds: string[];
+}
+
+export interface LoadBalancer {
+  arn: string;
+  name: string;
+  dnsName: string;
+  /** 리스너가 트래픽을 넘기는 타깃 그룹 */
+  targetGroupArn: string;
+}
+
+export interface IamRole {
+  name: string;
+  arn: string;
+  /** 이 역할에 붙어 있는 관리형 정책 이름들 */
+  attachedPolicies: string[];
+}
+
 export interface AwsState {
   region: string;
   accountId: string;
   callerArn: string;
   instances: Ec2Instance[];
   securityGroups: SecurityGroup[];
+  loadBalancers?: LoadBalancer[];
+  targetGroups?: TargetGroup[];
+  roles?: IamRole[];
+  /**
+   * 인스턴스가 실제로 응답하는 경로들.
+   * 헬스체크 통과 여부를 "정해두는" 대신 여기서 계산한다.
+   */
+  servedPaths?: Record<string, string[]>;
 }
 
 // ---------- 전체 상태 ----------
@@ -226,6 +292,10 @@ export interface SystemState {
     reservedKB: number;
   };
   network: Network;
+  /** 이 서버가 가진 TLS 인증서들 */
+  certificates: Certificate[];
+  /** DB 시나리오에서만 쓴다 */
+  database?: Database;
   /** AWS 시나리오에서만 쓴다 */
   aws?: AwsState;
 }
