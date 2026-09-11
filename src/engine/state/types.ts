@@ -69,6 +69,10 @@ export interface Service {
   listenPorts?: { addr: string; port: number }[];
   /** 시작에 필요한 최소 여유 디스크. 부족하면 시작이 실패한다. */
   requiresFreeKB?: number;
+  /** 문법을 검사할 설정 파일 경로 */
+  configPath?: string;
+  /** 그 파일을 어떤 검증기로 볼지. configValidators의 키. */
+  configValidator?: "nginx";
   /** 실패했을 때의 종료 코드/사유 (systemctl status에 표시) */
   lastExitReason?: string;
   memKB: number;
@@ -108,6 +112,99 @@ export interface LogEntry {
   message: string;
 }
 
+// ---------- 네트워크 ----------
+
+export interface NetworkInterface {
+  name: string; // "lo", "eth0"
+  addr: string;
+}
+
+export interface FirewallRule {
+  port: number;
+  proto: "tcp" | "udp";
+  action: "allow" | "deny";
+  /** 어디서 오는 요청에 적용할지. 생략하면 "Anywhere" */
+  from?: string;
+  comment?: string;
+}
+
+export interface Firewall {
+  enabled: boolean;
+  defaultIncoming: "allow" | "deny";
+  defaultOutgoing: "allow" | "deny";
+  rules: FirewallRule[];
+}
+
+/** 서버 바깥에 있는 호스트가 열어둔 서비스 */
+export interface RemoteService {
+  port: number;
+  status?: number; // HTTP 응답 코드
+  body?: string;
+  /** TLS 인증서 만료 시각. 지나면 curl이 인증서 오류를 낸다. */
+  tlsExpiresAt?: number;
+}
+
+export interface RemoteHost {
+  ip: string;
+  hostnames: string[];
+  services: RemoteService[];
+}
+
+export interface Network {
+  interfaces: NetworkInterface[];
+  firewall: Firewall;
+  /**
+   * 실제로 응답하는 DNS 서버 목록.
+   * /etc/resolv.conf 에 적힌 주소가 여기 없으면 이름 해석이 실패한다.
+   * (설정 파일은 파일시스템에 있고, "그 설정이 맞는지"는 이 목록이 정한다)
+   */
+  dnsServers: string[];
+  /** 가상 인터넷의 DNS 레코드: 도메인 → IP */
+  records: Record<string, string>;
+  world: RemoteHost[];
+}
+
+// ---------- AWS ----------
+
+export interface SecurityGroupRule {
+  /** "tcp", "udp", 또는 모든 프로토콜을 뜻하는 "-1" */
+  protocol: string;
+  fromPort: number;
+  toPort: number;
+  cidr: string;
+  description?: string;
+}
+
+export interface SecurityGroup {
+  groupId: string; // "sg-0a1b2c3d"
+  groupName: string;
+  description: string;
+  ingress: SecurityGroupRule[];
+  egress: SecurityGroupRule[];
+}
+
+export interface Ec2Instance {
+  instanceId: string;
+  name: string;
+  instanceType: string;
+  state: "running" | "stopped" | "pending";
+  privateIp: string;
+  publicIp?: string;
+  securityGroupIds: string[];
+  subnetId: string;
+  keyName: string;
+  /** 붙어 있는 IAM 인스턴스 프로파일 (권한 시나리오에서 쓴다) */
+  iamRole?: string;
+}
+
+export interface AwsState {
+  region: string;
+  accountId: string;
+  callerArn: string;
+  instances: Ec2Instance[];
+  securityGroups: SecurityGroup[];
+}
+
 // ---------- 전체 상태 ----------
 
 export interface SystemState {
@@ -128,4 +225,7 @@ export interface SystemState {
     /** 커널/버퍼 등 프로세스로 표현하지 않은 기본 사용량 */
     reservedKB: number;
   };
+  network: Network;
+  /** AWS 시나리오에서만 쓴다 */
+  aws?: AwsState;
 }

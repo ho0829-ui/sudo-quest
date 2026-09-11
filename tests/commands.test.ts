@@ -5,7 +5,7 @@
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { runCommand } from "../src/engine/run";
-import { ubuntuWeb } from "../src/engine/state/hosts/ubuntuWeb";
+import { ubuntuWeb } from "../src/engine/state/hosts";
 import { diskUsage } from "../src/engine/state/derived";
 import type { SystemState } from "../src/engine/state/types";
 

@@ -8,8 +8,10 @@
  * 시나리오 파일에서 직접 (state) => boolean 을 써도 되므로,
  * 엔진을 고치지 않고도 특수한 판정을 만들 수 있다.
  */
+import { validateNginxConf } from "../state/config/nginx";
 import { diskUsage, memoryUsage, portOwner } from "../state/derived";
 import { findNode, normalizePath } from "../state/fs";
+import { inboundAllowed, request } from "../state/network";
 import { findService } from "../state/services";
 import type { SystemState } from "../state/types";
 
@@ -66,5 +68,39 @@ export function fileContains(path: string, text: string): Check {
   return (state) => {
     const node = findNode(state.fs, normalizePath("/", path));
     return node?.kind === "file" && node.content.includes(text);
+  };
+}
+
+// ---------- 네트워크 ----------
+
+/** 외부에서 이 포트로 들어오는 접속을 방화벽이 허용하는가 */
+export function firewallAllows(port: number): Check {
+  return (state) => inboundAllowed(state, port);
+}
+
+/** 이 주소로 HTTP 요청을 보내면 정상 응답이 오는가 */
+export function httpResponds(host: string, port = 80, tls = false): Check {
+  return (state) => request(state, { host, port, tls }).ok;
+}
+
+// ---------- 설정 파일 ----------
+
+export function nginxConfigIsValid(path = "/etc/nginx/nginx.conf"): Check {
+  return (state) => {
+    const node = findNode(state.fs, normalizePath("/", path));
+    return node?.kind === "file" && validateNginxConf(node.content).ok;
+  };
+}
+
+// ---------- AWS ----------
+
+/** 보안그룹 인바운드에 이 포트를 여는 규칙이 있는가 */
+export function securityGroupAllows(groupId: string, port: number): Check {
+  return (state) => {
+    const group = state.aws?.securityGroups.find((g) => g.groupId === groupId);
+    if (!group) return false;
+    return group.ingress.some(
+      (rule) => rule.protocol === "-1" || (rule.fromPort <= port && port <= rule.toPort),
+    );
   };
 }

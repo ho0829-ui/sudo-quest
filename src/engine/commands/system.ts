@@ -200,15 +200,18 @@ export function makeHelp(lookupCommand: (name: string) => Command | undefined): 
     summary: "이 서버에서 쓸 수 있는 명령어 목록을 본다",
     usage: "help",
     run({ available }: CommandContext) {
-      const rows = available
+      // 표(두 열)로 만들면 설명이 길 때 줄바꿈되면서 정렬이 깨진다.
+      // 사용법과 설명을 위아래 두 줄로 두면 터미널 폭이 좁아도 읽을 수 있다.
+      const entries = available
         .map((n) => lookupCommand(n))
         .filter((c): c is Command => Boolean(c))
-        .map((c) => [`  ${c.usage}`, c.summary]);
+        .map((c) => `  ${c.usage}\n      ${c.summary}`);
+
       return ok(
         [
           "이 시나리오에서 사용할 수 있는 명령어:",
           "",
-          table(rows, ["left", "left"]),
+          entries.join("\n\n"),
           "",
           "힌트: sudo를 앞에 붙이면 root 권한으로 실행됩니다.",
         ].join("\n"),

@@ -1,4 +1,4 @@
-import { hostPresets } from "../state/hosts/ubuntuWeb";
+import { hostPresets } from "../state/hosts";
 import type { SystemState } from "../state/types";
 import type { Scenario } from "./types";
 

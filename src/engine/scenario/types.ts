@@ -6,7 +6,7 @@
  */
 import type { Check } from "../judge";
 import type { Fault } from "../state/faults";
-import type { HostPreset } from "../state/hosts/ubuntuWeb";
+import type { HostPreset } from "../state/hosts";
 
 export type Category = "linux" | "network" | "web-db" | "aws";
 export type Difficulty = 1 | 2 | 3;

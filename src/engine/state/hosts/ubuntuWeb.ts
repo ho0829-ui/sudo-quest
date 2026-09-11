@@ -38,6 +38,10 @@ export function ubuntuWeb(): SystemState {
     content: "nameserver 10.0.0.2\nsearch ap-northeast-2.compute.internal\n",
     mtime: BASE_CLOCK - 86400_000 * 30,
   });
+  writeFile(root, "/etc/nginx/nginx.conf", {
+    content: NGINX_CONF,
+    mtime: BASE_CLOCK - 86400_000 * 20,
+  });
   writeFile(root, "/var/www/html/index.html", {
     content: "<!doctype html>\n<html><body><h1>Shop Service</h1></body></html>\n",
     owner: "www-data",
@@ -104,6 +108,8 @@ export function ubuntuWeb(): SystemState {
         ],
         // nginx는 로그를 쓰지 못하면 시작에 실패한다. 여유 공간이 이만큼은 있어야 한다.
         requiresFreeKB: 20 * 1024,
+        configPath: "/etc/nginx/nginx.conf",
+        configValidator: "nginx",
         memKB: 42 * 1024,
         cpu: 0.3,
       },
@@ -147,6 +153,34 @@ export function ubuntuWeb(): SystemState {
         service: "shop-api",
       },
     ],
+    network: {
+      interfaces: [
+        { name: "lo", addr: "127.0.0.1" },
+        { name: "eth0", addr: "10.0.1.10" },
+      ],
+      firewall: {
+        enabled: true,
+        defaultIncoming: "deny", // 우분투 ufw의 기본값. 필요한 포트만 열어 쓴다.
+        defaultOutgoing: "allow",
+        rules: [
+          { port: 22, proto: "tcp", action: "allow", comment: "SSH" },
+          { port: 80, proto: "tcp", action: "allow", comment: "HTTP" },
+          { port: 443, proto: "tcp", action: "allow", comment: "HTTPS" },
+        ],
+      },
+      dnsServers: ["10.0.0.2"], // VPC 기본 리졸버
+      records: {
+        "api.payments.example.com": "203.0.113.40",
+        "shop.example.com": "10.0.1.10",
+      },
+      world: [
+        {
+          ip: "203.0.113.40",
+          hostnames: ["api.payments.example.com"],
+          services: [{ port: 443, status: 200, body: '{"status":"ok"}', tlsExpiresAt: BASE_CLOCK + 86400_000 * 60 }],
+        },
+      ],
+    },
     journal: [
       { time: BASE_CLOCK - 4500_000, tag: "systemd", priority: "info", message: "Started Daily apt download activities." },
       { time: BASE_CLOCK - 3600_000, tag: "CRON", pid: 2104, priority: "info", message: "(root) CMD (cd / && run-parts --report /etc/cron.hourly)" },
@@ -154,8 +188,33 @@ export function ubuntuWeb(): SystemState {
   };
 }
 
-export const hostPresets = {
-  "ubuntu-web": ubuntuWeb,
-};
+/** 문법이 올바른 기본 nginx 설정. 시나리오는 여기서 한 글자만 망가뜨린다. */
+const NGINX_CONF = `user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
 
-export type HostPreset = keyof typeof hostPresets;
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    keepalive_timeout 65;
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    server {
+        listen 80 default_server;
+        server_name shop.example.com;
+        root /var/www/html;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+
+        location /api/ {
+            proxy_pass http://127.0.0.1:3000/;
+        }
+    }
+}
+`;

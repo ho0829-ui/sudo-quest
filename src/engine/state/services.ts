@@ -8,9 +8,13 @@
  * 현재 검사하는 규칙:
  *   1) 디스크 여유 공간 부족  → No space left on device
  *   2) 포트 점유             → Address already in use
- * Phase 3에서 추가 예정: 설정 파일 문법 오류, 실행 파일 권한 오류
+ *   3) 설정 파일 문법 오류    → syntax error
+ *
+ * 시나리오는 원인만 심어두면 되고, "그래서 서비스가 뜨지 못한다"는 판단은 엔진이 한다.
  */
+import { configValidators } from "./config/nginx";
 import { diskUsage, nextPid, portOwner } from "./derived";
+import { findNode } from "./fs";
 import { addLog } from "./log";
 import type { Service, SystemState } from "./types";
 
@@ -31,6 +35,18 @@ function blockingReason(state: SystemState, service: Service): string | null {
   if (service.requiresFreeKB) {
     const { availKB } = diskUsage(state, "/");
     if (availKB < service.requiresFreeKB) return "No space left on device";
+  }
+
+  // 설정 파일 문법 검사. nginx -t 와 똑같은 함수를 쓰므로 결과가 어긋나지 않는다.
+  if (service.configPath && service.configValidator) {
+    const node = findNode(state.fs, service.configPath);
+    if (!node || node.kind !== "file") {
+      return `open() "${service.configPath}" failed (2: No such file or directory)`;
+    }
+    const check = configValidators[service.configValidator](node.content);
+    if (!check.ok && check.error) {
+      return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
+    }
   }
 
   for (const listen of service.listenPorts ?? []) {
