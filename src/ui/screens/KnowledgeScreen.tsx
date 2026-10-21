@@ -69,7 +69,7 @@ export function KnowledgeScreen() {
   return <section className="knowledge">
     <header>
       <h2>공식 문서로 배우는 장애 지식</h2>
-      <p className="muted">10개 주제 파일럿 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 환경의 복구 판정을 대신하지 않습니다.</p>
+      <p className="muted">curl·Linux·AWS ALB 오류 {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 환경의 복구 판정을 대신하지 않습니다.</p>
     </header>
     {error && <p role="alert">{error} <button onClick={() => void load()}>다시 불러오기</button></p>}
     {!ready && !error && <p role="status">지식 색인이 준비되지 않았습니다. 데이터 준비 후 <button onClick={() => void load()}>다시 확인</button>해주세요.</p>}
