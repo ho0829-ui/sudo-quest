@@ -9,6 +9,7 @@ import { request } from "../src/engine/state/network";
 import { hasHealthyTarget } from "../src/engine/state/aws";
 import { buildInitialState } from "../src/engine/scenario/build";
 import { dbMaxConnections } from "../src/scenarios/db-max-connections";
+import { awsAlbHealthcheck } from "../src/scenarios/aws-alb-healthcheck";
 import type { SystemState } from "../src/engine/state/types";
 
 const ALL = [
@@ -132,6 +133,34 @@ describe("AWS ALB / IAM", () => {
     state.aws!.targetGroups![0].healthCheckPath = "/nope";
     run(`aws elbv2 modify-target-group --target-group-arn ${TG} --health-check-path /health`);
     expect(hasHealthyTarget(state, TG)).toBe(true);
+  });
+
+  it("중지된 타깃은 unused이며 사유는 Target.InvalidState다 (AWS 타깃 상태 표)", () => {
+    state.aws!.instances.find((i) => i.instanceId === "i-09f8e7d6c5b4a3210")!.state = "stopped";
+    const result = run(`aws elbv2 describe-target-health --target-group-arn ${TG}`);
+    expect(result.stdout).toContain("unused");
+    expect(result.stdout).toContain("Target.InvalidState");
+    expect(result.stdout).not.toContain("Target.NotInUse");
+  });
+
+  it("bastion에서 인스턴스로 직접 HTTP 요청하면 헬스체크와 같은 기준으로 응답한다", () => {
+    // shop-web-01: 보안그룹이 80을 0.0.0.0/0에 열어 두었고 /health 를 서빙한다.
+    expect(run("curl -i http://10.0.2.10/health").stdout).toContain("200");
+    expect(run("curl -I http://10.0.2.10/healthz").stdout).toContain("HTTP/1.1 404 Not Found");
+    // shop-web-02: 보안그룹 인바운드가 비어 있어 패킷이 버려진다 → timeout(28).
+    expect(run("curl http://10.0.2.31/health").stderr).toContain("curl: (28)");
+    // 인스턴스가 중지되면 응답이 없다.
+    state.aws!.instances.find((i) => i.instanceId === "i-09f8e7d6c5b4a3210")!.state = "stopped";
+    expect(run("curl http://10.0.2.10/health").stderr).toContain("curl: (28)");
+  });
+
+  it("ALB 실습은 공식 fail-open 동작과 맞게 503이 아닌 '알람만 울림'을 증상으로 쓴다", () => {
+    expect(awsAlbHealthcheck.ticket).not.toContain("503");
+    expect(awsAlbHealthcheck.ticket).toContain("HealthyHostCount = 0");
+    expect(awsAlbHealthcheck.postmortem.whatHappened).toContain("fail-open");
+    const logs = JSON.stringify(buildInitialState(awsAlbHealthcheck));
+    expect(logs).toContain("HealthyHostCount = 0");
+    expect(logs).not.toContain("HTTPCode_ELB_503");
   });
 
   it("헬스체크 경로는 / 로 시작해야 한다", () => {

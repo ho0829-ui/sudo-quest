@@ -84,6 +84,13 @@ describe("curl / ss / ufw", () => {
     expect(run("curl https://api.payments.example.com").stderr).toContain("curl: (6)");
   });
 
+  it("curl은 값을 받는 옵션의 값을 URL로 읽지 않는다", () => {
+    const plain = run("curl -I http://localhost");
+    expect(run("curl -i --max-time 5 -I http://localhost").stdout).toBe(plain.stdout);
+    expect(run("curl -m 5 --connect-timeout 3 -H 'Host: shop' -I http://localhost").stdout).toBe(plain.stdout);
+    expect(run("curl --max-time 5 http://localhost").stderr).not.toContain("resolve host: 5");
+  });
+
   it("ss는 프로세스를 죽이면 그 포트도 함께 사라진다", () => {
     expect(run("ss -tlnp").stdout).toContain("0.0.0.0:80");
     run("sudo systemctl stop nginx");

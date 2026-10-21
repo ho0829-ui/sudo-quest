@@ -58,7 +58,7 @@ Set-Location backend
 .venv/Scripts/python.exe -X utf8 -m unittest discover -s tests
 ```
 
-2026-10-21 기준 결과: Vitest 193개, 백엔드 37개 통과. 상세 결과표는 [검증 결과](docs/submission/검증결과.md)에 있습니다.
+2026-10-21 기준 결과: Vitest 197개, 백엔드 37개 통과. 상세 결과표는 [검증 결과](docs/submission/검증결과.md)에 있습니다.
 
 ### 데이터 출처와 이용 조건
 
@@ -72,7 +72,7 @@ Set-Location backend
 
 ### 알려진 한계
 
-- 실습 "로드밸런서가 503만 돌려줘요"는 "모든 타깃 unhealthy → 503"을 전제로 합니다. AWS 문서는 이 경우 fail-open을 설명하므로, 코치 답변과 실습 설명이 어긋날 수 있습니다(수정 전).
+- 실습의 원인 보기는 정답이 항상 첫 번째에 오는 등 화면에 정답 데이터가 들어 있습니다. 코치(서버)로는 전달되지 않지만, 브라우저 코드를 읽으면 정답을 볼 수 있습니다.
 - 한국어 항목 주석 100건은 LLM 보조로 작성했고 사람 검수 전입니다.
 - 첫 질문 응답은 약 20~40초입니다(생성 3회 직렬). 같은 질문은 캐시로 즉시 응답합니다.
 - 로컬 시연 기준입니다. GitHub Pages 배포본에서는 게임만 동작하고 RAG 서버는 동작하지 않습니다.
@@ -142,7 +142,7 @@ Filesystem Size Used Avail Use% Mounted on
 | `web-ssl-expired` | 웹/DB | 중급 | 브라우저 보안 경고 | 자동화를 믿지 말고 자동화를 감시하라 |
 | `db-max-connections` | 웹/DB | 고급 | 특정 시간대만 500 | 스케일 아웃은 공짜가 아니다 |
 | `aws-security-group` | AWS | 초급 | 새 EC2 접속 불가 | timeout과 refused의 차이 |
-| `aws-alb-healthcheck` | AWS | 중급 | ALB가 503 반환 | 503은 "보낼 곳이 없다"는 뜻 |
+| `aws-alb-healthcheck` | AWS | 중급 | 헬스 알람이 울리는데 사이트는 열림 | 모든 타깃이 unhealthy면 ALB는 fail-open한다 (AWS 문서 기준) |
 | `aws-iam-s3` | AWS | 중급 | S3 업로드 실패 | AccessDenied 메시지를 끝까지 읽어라 |
 
 각 시나리오는 **장애 티켓 → 조사 → 원인 제출 → 복구 조치 → 포스트모템** 순서로 진행되고,
@@ -267,7 +267,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**193개 테스트**(2026-10-21 기준, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
+**197개 테스트**(2026-10-21 기준, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가

@@ -27,12 +27,26 @@ function parseUrl(raw: string): ParsedUrl | null {
   };
 }
 
+/** 응답 줄의 이유 문구. 실제 서버처럼 "404 Not Found"로 보여준다. */
+const REASON_PHRASES: Record<number, string> = {
+  200: "OK", 301: "Moved Permanently", 302: "Found", 400: "Bad Request", 401: "Unauthorized",
+  403: "Forbidden", 404: "Not Found", 500: "Internal Server Error", 502: "Bad Gateway",
+  503: "Service Unavailable", 504: "Gateway Timeout",
+};
+
+const CURL_VALUE_OPTIONS = [
+  "m", "max-time", "connect-timeout", "o", "output", "H", "header", "X", "request",
+  "A", "user-agent", "d", "data", "u", "user", "w", "write-out", "resolve", "cacert",
+];
+
 export const curl: Command = {
   name: "curl",
-  summary: "HTTP 요청을 보낸다 (-I 헤더만, -v 자세히)",
-  usage: "curl [-I] [-v] <URL>",
+  summary: "HTTP 요청을 보낸다 (-I 헤더만, -i 헤더+본문, -v 자세히)",
+  usage: "curl [-I] [-i] [-v] <URL>",
   run({ state, tokens }: CommandContext) {
-    const target = positionals(tokens)[0];
+    // 값을 받는 옵션("--max-time 5")의 값을 URL로 읽지 않도록 건너뛴다.
+    // 시간 제한·헤더 같은 옵션은 가상 요청 결과에 영향을 주지 않지만, 실제 curl처럼 받아들여야 한다.
+    const target = positionals(tokens, CURL_VALUE_OPTIONS)[0];
     if (!target) return fail("curl: try 'curl --help' for more information", 2);
 
     const url = parseUrl(target);
@@ -40,7 +54,8 @@ export const curl: Command = {
 
     const headOnly = hasFlag(tokens, "I", "head");
     const verbose = hasFlag(tokens, "v", "verbose");
-    const outcome = request(state, { host: url.host, port: url.port, tls: url.tls });
+    const include = hasFlag(tokens, "i", "include");
+    const outcome = request(state, { host: url.host, port: url.port, tls: url.tls, path: url.path });
 
     if (!outcome.ok) {
       // curl의 실제 에러 코드를 그대로 쓴다. 이 숫자 자체가 단서가 된다.
@@ -62,14 +77,14 @@ export const curl: Command = {
     }
 
     const header = [
-      `HTTP/1.1 ${outcome.status} ${outcome.status === 200 ? "OK" : ""}`.trim(),
+      `HTTP/1.1 ${outcome.status} ${REASON_PHRASES[outcome.status ?? 200] ?? ""}`.trim(),
       "Server: nginx/1.24.0",
       `Content-Length: ${(outcome.body ?? "").length}`,
       "Content-Type: text/html",
     ].join("\n");
 
     if (headOnly) return ok([...lines, header].join("\n"));
-    return ok([...lines, verbose ? header : "", outcome.body ?? ""].filter(Boolean).join("\n").trimEnd());
+    return ok([...lines, verbose || include ? header : "", outcome.body ?? ""].filter(Boolean).join("\n").trimEnd());
   },
 };
 

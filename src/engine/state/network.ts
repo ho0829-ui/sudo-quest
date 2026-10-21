@@ -8,6 +8,7 @@
  * 각 단계가 실패할 때 실제 명령이 내는 에러를 그대로 돌려주면,
  * "어느 단계에서 막혔는가"를 플레이어가 출력만 보고 좁혀 들어갈 수 있다.
  */
+import { requestInstance } from "./aws";
 import { listeningSockets } from "./derived";
 import { canRead, findNode } from "./fs";
 import type { FirewallRule, SystemState } from "./types";
@@ -87,6 +88,8 @@ export interface RequestTarget {
   port: number;
   /** https인가 (인증서 만료를 검사한다) */
   tls?: boolean;
+  /** 요청 경로. 경로별로 응답이 다른 대상(EC2 인스턴스)에서 쓴다 */
+  path?: string;
 }
 
 export function request(state: SystemState, target: RequestTarget): RequestOutcome {
@@ -124,6 +127,15 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
   const { firewall } = state.network;
   if (firewall.enabled && firewall.defaultOutgoing === "deny" && !matchRule(firewall.rules, target.port)) {
     return { ok: false, ip, stage: "firewall", message: "Connection timed out" };
+  }
+
+  // VPC 안의 EC2 인스턴스는 보안그룹과 서빙 경로로 응답을 계산한다(state/aws.ts).
+  const sourceIp = state.network.interfaces.find((i) => i.name !== "lo")?.addr ?? "127.0.0.1";
+  const instance = requestInstance(state, ip, target.port, target.path ?? "/", sourceIp);
+  if (instance) {
+    return instance.reachable
+      ? { ok: true, ip, status: instance.status, body: instance.body }
+      : { ok: false, ip, stage: "unreachable", message: "Connection timed out" };
   }
 
   const remote = state.network.world.find((h) => h.ip === ip);
