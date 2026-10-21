@@ -74,6 +74,23 @@ describe("df / du — 상태에서 계산된다", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toMatch(/\d+(\.\d+)?[KMG]\s+\/var\/log/);
   });
+
+  it("du -d 1 은 바로 아래 디렉터리까지만 보여 준다 (-xhd1, --max-depth=1도 같다)", () => {
+    const deep = run("du -h /").stdout.split("\n").filter(Boolean);
+    const shallow = run("du -h -d 1 /").stdout.split("\n").filter(Boolean);
+    expect(shallow.length).toBeLessThan(deep.length);
+    // 깊이 1이면 "/var"는 나오고 "/var/log"는 나오지 않는다.
+    expect(shallow.some(line => /\s\/var$/.test(line))).toBe(true);
+    expect(shallow.some(line => /\s\/var\/log$/.test(line))).toBe(false);
+    expect(run("du -xhd1 /").stdout).toBe(run("du -h -d 1 /").stdout);
+    expect(run("du -h --max-depth=1 /").stdout).toBe(run("du -h -d 1 /").stdout);
+  });
+
+  it("du 깊이 값이 숫자가 아니거나 -s와 겹치면 실제 du처럼 거부한다", () => {
+    expect(run("du -d x /").stderr).toContain("invalid maximum depth 'x'");
+    expect(run("du -s -d 1 /").stderr).toContain("summarizing conflicts with --max-depth=1");
+    expect(run("du -h -d 0 /var/log").stdout.trim().split("\n")).toHaveLength(1);
+  });
 });
 
 describe("권한", () => {

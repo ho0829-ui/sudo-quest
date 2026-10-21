@@ -33,6 +33,34 @@ export function getCommand(name: string): Command | undefined {
   return registry.get(name);
 }
 
+/** 사용 가능한 명령 중 하위 명령 목록이 있는 것만 모은다. 예: { aws: ["elbv2 describe-target-groups", ...] } */
+export function commandOperations(available: string[]): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  for (const name of available) {
+    const operations = registry.get(name)?.operations;
+    if (operations) result[name] = [...operations];
+  }
+  return result;
+}
+
+/**
+ * 한 줄 명령을 이 실습에서 실행할 수 있는지(명령 이름과 하위 명령까지) 본다. 실행하지는 않는다.
+ * 하위 명령은 옵션(-로 시작)을 건너뛴 앞쪽 단어로 비교한다. 옵션이 하위 명령보다 앞에 오면 보수적으로 false가 된다.
+ */
+export function supportsInvocation(line: string, available: string[]): boolean {
+  const words = line.trim().split(/\s+/);
+  if (words[0] === "sudo") words.shift();
+  const name = words[0];
+  if (!name || !available.includes(name)) return false;
+  const operations = registry.get(name)?.operations;
+  if (!operations) return true;
+  const positional = words.slice(1).filter((word) => !word.startsWith("-"));
+  return operations.some((op) => {
+    const parts = op.split(" ");
+    return parts.every((part, index) => positional[index] === part);
+  });
+}
+
 /** 시나리오가 commands를 지정하지 않으면 쓰이는 기본 명령어 묶음 (리눅스 기본) */
 export const DEFAULT_COMMANDS = [
   "help", "ls", "cat", "cd", "pwd", "tail", "df", "du", "rm", "systemctl", "journalctl",

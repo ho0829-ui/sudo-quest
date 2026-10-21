@@ -17,10 +17,11 @@ from app.graphs import build_graph
 from app.providers import embed
 from app.rag import citation_numbers, json_call
 
-PROMPT_VERSION = "coach-1"
+PROMPT_VERSION = "coach-3"
 AUTO_ITEMS = 3
 OBSERVATION = re.compile(r"\[실습 기록\s*([\d,\s]+)\]")
-COMMAND_IN_TEXT = re.compile(r"`([a-z][a-z0-9_-]*)[^`]*`")
+COMMAND_IN_TEXT = re.compile(r"`([^`\n]+)`")
+COMMAND_NAME = re.compile(r"[a-z][a-z0-9_-]*")
 
 
 def observation_numbers(text):
@@ -44,13 +45,32 @@ def validate_coach_answer(answer, evidence, observations):
     return sorted(docs), sorted(seen)
 
 
-def unsupported_commands(answer, available):
-    """제안에 가상 터미널에서 실행할 수 없는 명령이 있는데 '실제 환경 참고' 표시가 없으면 알린다."""
-    names = set()
+def unsupported_commands(answer, available, operations=None):
+    """제안에 가상 터미널에서 실행할 수 없는 명령이 있는데 '실제 환경 참고' 표시가 없으면 알린다.
+
+    aws처럼 하위 명령 목록(operations)이 있는 명령은 하위 명령까지 본다. 예: aws cloudwatch는 지원하지 않음.
+    하위 명령은 옵션(-로 시작)을 건너뛴 앞쪽 단어로 비교한다(프론트 supportsInvocation과 같은 규칙).
+    """
+    operations = operations or {}
+    found = set()
     for check in answer.suggested_checks:
-        if "실제 환경 참고" not in check:
-            names |= {name for name in COMMAND_IN_TEXT.findall(check) if name != "sudo" and name not in available}
-    return sorted(names)
+        if "실제 환경 참고" in check:
+            continue
+        for command in COMMAND_IN_TEXT.findall(check):
+            words = command.split()
+            if words and words[0] == "sudo":
+                words = words[1:]
+            if not words or not COMMAND_NAME.fullmatch(words[0]):
+                continue  # `/var/log` 같은 경로나 문구는 명령이 아니다.
+            name = words[0]
+            if name not in available:
+                found.add(name)
+                continue
+            if name in operations:
+                positional = [w for w in words[1:] if not w.startswith("-")]
+                if not any(positional[:len(op.split())] == op.split() for op in operations[name]):
+                    found.add(" ".join([name, *positional[:2]]))
+    return sorted(found)
 
 
 def coach(settings, collections, request, progress=lambda stage: None):
@@ -60,7 +80,8 @@ def coach(settings, collections, request, progress=lambda stage: None):
     observations = numbered_observations(request)
     public = {"ticket": request.ticket, "revealed_hints": request.revealed_hints,
               "observations": observations, "omitted_observations": request.omitted_observations,
-              "available_commands": request.available_commands, "question": request.question,
+              "available_commands": request.available_commands, "command_operations": request.command_operations,
+              "question": request.question,
               "history": [m.model_dump() for m in request.history],
               "selected_item": ITEM_BY_ID[request.item_id].model_dump() if request.item_id else None}
     key = digest(json.dumps({"public": public, "corpus": manifest["corpus_hash"], "model": settings.llm_model,
@@ -119,7 +140,7 @@ def coach(settings, collections, request, progress=lambda stage: None):
         if answer is None:
             raise ValueError("citation_validation_failed")
         docs, seen = validate_coach_answer(answer, evidence, observations)
-        extra = unsupported_commands(answer, request.available_commands)
+        extra = unsupported_commands(answer, request.available_commands, request.command_operations)
         if extra:
             warnings.append("가상 터미널에서 지원하지 않는 명령이 포함되어 있습니다: " + ", ".join(extra))
         return {"result": {

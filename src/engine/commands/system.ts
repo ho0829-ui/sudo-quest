@@ -33,13 +33,25 @@ export const df: Command = {
 
 export const du: Command = {
   name: "du",
-  summary: "경로별 용량을 본다 (-s 합계만, -h 읽기 쉬운 단위)",
-  usage: "du [-sh] [경로...]",
+  summary: "경로별 용량을 본다 (-s 합계만, -h 읽기 쉬운 단위, -d N 깊이 제한)",
+  usage: "du [-sh] [-d N] [경로...]",
   run({ state, tokens }: CommandContext) {
-    const summarize = hasFlag(tokens, "s");
+    let summarize = hasFlag(tokens, "s");
     const human = hasFlag(tokens, "h");
-    const paths = positionals(tokens);
+    const paths = positionals(tokens, ["d", "max-depth"]);
     if (paths.length === 0) paths.push(".");
+
+    // -d N / -dN / -xhd1 / --max-depth=N. 실제 du처럼 숫자가 아니면 거부하고, -s와 함께 쓰면 경고한다.
+    const depthText = flagValue(tokens, "d", "max-depth");
+    let maxDepth: number | undefined;
+    if (depthText !== undefined) {
+      if (!/^\d+$/.test(depthText)) return fail(`du: invalid maximum depth '${depthText}'\nTry 'du --help' for more information.`);
+      maxDepth = Number(depthText);
+      if (summarize && maxDepth !== 0) {
+        return fail(`du: warning: summarizing conflicts with --max-depth=${maxDepth}\nTry 'du --help' for more information.`);
+      }
+      if (maxDepth === 0) summarize = true;
+    }
 
     const rows: string[][] = [];
     const errors: string[] = [];
@@ -58,7 +70,9 @@ export const du: Command = {
       }
       // -s가 없으면 하위 디렉터리를 각각 보여주고 마지막에 합계를 낸다 (실제 du와 같은 순서)
       for (const [childPath, child] of walk(node, abs)) {
-        if (child.kind === "dir" && childPath !== abs) rows.push([size(duKB(state, childPath)), childPath]);
+        if (child.kind !== "dir" || childPath === abs) continue;
+        const depth = childPath.slice(abs.length).split("/").filter(Boolean).length;
+        if (maxDepth === undefined || depth <= maxDepth) rows.push([size(duKB(state, childPath)), childPath]);
       }
       rows.push([size(duKB(state, abs)), path]);
     }

@@ -25,6 +25,11 @@ export interface Command {
   /** help에 한 줄로 표시되는 설명 */
   summary: string;
   usage: string;
+  /**
+   * 하위 명령을 가진 명령이 지원하는 경로. 예: aws의 "elbv2 describe-target-groups".
+   * 코치가 지원하지 않는 하위 명령을 제안하지 않게 할 때 쓴다. 없으면 하위 명령을 따지지 않는다.
+   */
+  operations?: readonly string[];
   run(ctx: CommandContext): CommandResult;
 }
 

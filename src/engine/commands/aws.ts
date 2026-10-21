@@ -9,6 +9,26 @@ import { targetHealth } from "../state/aws";
 import type { SecurityGroup, SecurityGroupRule, SystemState } from "../state/types";
 import { fail, ok, type Command, type CommandContext, type CommandResult } from "./types";
 
+/**
+ * 이 가상 aws가 지원하는 서비스와 하위 명령. 오류 안내와 코치 제안 검사가 같은 표를 쓴다.
+ * 새 하위 명령을 구현하면 여기에도 추가해야 한다(tests/commands.test.ts가 표와 구현이 맞는지 본다).
+ */
+export const AWS_OPERATIONS = {
+  ec2: ["describe-instances", "describe-security-groups", "authorize-security-group-ingress"],
+  elbv2: ["describe-load-balancers", "describe-target-groups", "describe-target-health", "modify-target-group"],
+  iam: ["list-roles", "list-attached-role-policies", "attach-role-policy"],
+  sts: ["get-caller-identity"],
+} as const;
+type AwsService = keyof typeof AWS_OPERATIONS;
+
+function unknownSubcommand(service: AwsService, operation: string | undefined): CommandResult {
+  return fail(
+    `usage: aws ${service} <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
+      `지원: ${AWS_OPERATIONS[service].join(", ")}`,
+    252,
+  );
+}
+
 /** "--group-id sg-123 --port 22" 같은 긴 옵션들을 뽑아낸다. */
 function options(tokens: string[]): Record<string, string> {
   const result: Record<string, string> = {};
@@ -142,11 +162,7 @@ function elbv2(state: SystemState, operation: string | undefined, opts: Record<s
     return ok(json({ TargetGroups: [{ TargetGroupArn: group.arn, HealthCheckPath: group.healthCheckPath }] }));
   }
 
-  return fail(
-    `usage: aws elbv2 <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-      "지원: describe-load-balancers, describe-target-groups, describe-target-health, modify-target-group",
-    252,
-  );
+  return unknownSubcommand("elbv2", operation);
 }
 
 /** aws iam — 역할과 정책 */
@@ -192,17 +208,14 @@ function iam(state: SystemState, operation: string | undefined, opts: Record<str
     return ok("");
   }
 
-  return fail(
-    `usage: aws iam <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-      "지원: list-roles, list-attached-role-policies, attach-role-policy",
-    252,
-  );
+  return unknownSubcommand("iam", operation);
 }
 
 export const aws: Command = {
   name: "aws",
   summary: "AWS 리소스를 조회하고 수정한다 (ec2 / elbv2 / iam / sts)",
   usage: "aws <ec2|elbv2|iam|sts> <하위명령> [--옵션 값]",
+  operations: Object.entries(AWS_OPERATIONS).flatMap(([service, ops]) => ops.map((op) => `${service} ${op}`)),
   run({ state, tokens }: CommandContext) {
     // 값을 받는 긴 옵션들. 이 목록에 없으면 옵션의 값이 하위명령으로 잘못 읽힌다.
     const VALUE_OPTIONS = [
@@ -226,6 +239,7 @@ export const aws: Command = {
       );
     }
 
+    if (service === "sts") return unknownSubcommand("sts", operation);
     if (service === "elbv2") return elbv2(state, operation, opts);
     if (service === "iam") return iam(state, operation, opts);
 
@@ -310,10 +324,6 @@ export const aws: Command = {
       return ok(json({ Return: true }));
     }
 
-    return fail(
-      `usage: aws ec2 <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-        "지원: describe-instances, describe-security-groups, authorize-security-group-ingress",
-      252,
-    );
+    return unknownSubcommand("ec2", operation);
   },
 };

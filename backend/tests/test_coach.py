@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
 from app.coach import numbered_observations, unsupported_commands, validate_coach_answer
 from app.config import Settings
@@ -43,6 +44,22 @@ class CoachTests(unittest.TestCase):
         answer = CoachAnswer(answer="x", cited_evidence_ids=[], suggested_checks=[
             "`du -sh /var/log` 로 확인", "`lsof +L1` 확인", "`strace -p 1` (실제 환경 참고)"])
         self.assertEqual(unsupported_commands(answer, ["du", "df"]), ["lsof"])
+
+    def test_unsupported_subcommand_detected(self):
+        operations = {"aws": ["elbv2 describe-target-health", "sts get-caller-identity"]}
+        answer = CoachAnswer(answer="x", cited_evidence_ids=[], suggested_checks=[
+            "`aws elbv2 describe-target-health --target-group-arn arn:x`로 상태 확인",
+            "`sudo aws sts get-caller-identity` 확인, `/var/log` 경로는 명령이 아님",
+            "`aws cloudwatch describe-alarms --alarm-name-prefix shop`로 알람 확인",
+            "`aws --output json elbv2 describe-target-health`"])  # 옵션이 앞에 오면 보수적으로 경고
+        self.assertEqual(unsupported_commands(answer, ["aws"], operations),
+                         ["aws cloudwatch describe-alarms", "aws json elbv2"])
+
+    def test_command_operations_contract(self):
+        CoachRequest(**BASE, command_operations={"aws": ["elbv2 describe-target-groups"]})
+        for bad in ({"AWS": ["x"]}, {"aws": ["<script>"]}, {"aws": ["x"] * 61}):
+            with self.assertRaises(ValidationError):
+                CoachRequest(**BASE, command_operations=bad)
 
 
 class CoachPipelineTests(unittest.TestCase):

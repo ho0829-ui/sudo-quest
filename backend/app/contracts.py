@@ -1,6 +1,9 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
+
+CommandName = Annotated[str, StringConstraints(min_length=1, max_length=30, pattern=r"^[a-z][a-z0-9_-]*$")]
+Operation = Annotated[str, StringConstraints(min_length=1, max_length=80, pattern=r"^[a-z0-9][a-z0-9 _-]*$")]
 
 
 class StrictModel(BaseModel):
@@ -66,8 +69,17 @@ class CoachRequest(StrictModel):
     observations: list[Observation] = Field(default_factory=list, max_length=30)
     omitted_observations: int = Field(default=0, ge=0)
     available_commands: list[str] = Field(default_factory=list, max_length=80)
+    # 하위 명령이 있는 명령의 지원 목록(예: {"aws": ["elbv2 describe-target-groups"]}). 엔진 공통 정보다.
+    command_operations: dict[CommandName, list[Operation]] = Field(default_factory=dict, max_length=10)
     item_id: str | None = Field(default=None, max_length=100)
     history: list[Message] = Field(default_factory=list, max_length=6)
+
+    @field_validator("command_operations")
+    @classmethod
+    def limit_operations(cls, value):
+        if any(len(ops) > 60 for ops in value.values()):
+            raise ValueError("too_many_operations")
+        return value
 
 
 class CoachAnswer(StrictModel):

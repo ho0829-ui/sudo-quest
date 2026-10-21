@@ -5,7 +5,7 @@ import { scenarios } from "../src/scenarios";
 
 const T0 = 1_000_000_000_000;
 const ALLOWED_KEYS = [
-  "available_commands", "history", "item_id", "observations", "omitted_observations",
+  "available_commands", "command_operations", "history", "item_id", "observations", "omitted_observations",
   "question", "revealed_hints", "session_id", "ticket",
 ].sort();
 
