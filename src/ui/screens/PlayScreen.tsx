@@ -23,6 +23,8 @@ export function PlayScreen({
   const [causeOpen, setCauseOpen] = useState(false);
   // 모달을 다시 열거나 오답을 고르더라도 한 판 안에서는 순서를 유지한다.
   const [choices] = useState(() => shuffleChoices(session.scenario.rootCause.choices));
+  // 코치가 제안한 명령을 터미널 입력줄에 넣는다. 같은 명령을 다시 눌러도 반영되도록 번호를 붙인다.
+  const [draft, setDraft] = useState({ text: "", nonce: 0 });
 
   return (
     <div className="play-layout">
@@ -30,6 +32,7 @@ export function PlayScreen({
         state={session.state}
         lines={session.lines}
         available={session.scenario.commands}
+        draft={draft}
         onSubmit={onCommand}
       />
 
@@ -38,6 +41,7 @@ export function PlayScreen({
         onRevealHint={onRevealHint}
         onOpenCause={() => setCauseOpen(true)}
         onGiveUp={onGiveUp}
+        onUseCommand={text => setDraft(current => ({ text, nonce: current.nonce + 1 }))}
       />
 
       {causeOpen && (

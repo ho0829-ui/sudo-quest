@@ -1,0 +1,9 @@
+/* 코치·지식 답변 공통 서식. 크기는 em이라 놓이는 화면의 글자 크기를 따른다. */
+.rich-answer { overflow-wrap: anywhere; line-height: 1.7; }
+.rich-answer p { margin: 0 0 .4em; }
+.rich-answer h5 { margin: 1em 0 .4em; font-size: .92em; font-weight: 650; color: #b9e3ee; letter-spacing: .2px; }
+.rich-answer h5:first-child { margin-top: 0; }
+.rich-bullet { position: relative; padding-left: 1.1em; }
+.rich-bullet::before { content: ''; position: absolute; left: .2em; top: .75em; width: 4px; height: 4px; border-radius: 50%; background: #5f929f; }
+.rich-answer code, .rich-line code { font-family: var(--mono); font-size: .9em; color: #d8eff5; background: #131b23; border: 1px solid #1d2935; border-radius: 4px; padding: 0 .3em; }
+.cite-chip { display: inline-block; margin: 0 2px; padding: 0 5px; border-radius: 4px; font-family: var(--mono); font-size: .75em; color: #8fbdc9; background: #7dcee312; border: 1px solid #7dcee32a; vertical-align: 1px; white-space: nowrap; }
