@@ -3,6 +3,7 @@ import { Terminal } from "../components/Terminal";
 import { Sidebar } from "../components/Sidebar";
 import { CauseDialog } from "../components/CauseDialog";
 import type { Session } from "../../engine/session/session";
+import { shuffleChoices } from "../shuffleChoices";
 
 interface PlayScreenProps {
   session: Session;
@@ -20,6 +21,8 @@ export function PlayScreen({
   onGiveUp,
 }: PlayScreenProps) {
   const [causeOpen, setCauseOpen] = useState(false);
+  // 모달을 다시 열거나 오답을 고르더라도 한 판 안에서는 순서를 유지한다.
+  const [choices] = useState(() => shuffleChoices(session.scenario.rootCause.choices));
 
   return (
     <div className="play-layout">
@@ -40,6 +43,7 @@ export function PlayScreen({
       {causeOpen && (
         <CauseDialog
           scenario={session.scenario}
+          choices={choices}
           wrongAnswers={session.wrongAnswers}
           onSubmit={onSubmitCause}
           onClose={() => setCauseOpen(false)}

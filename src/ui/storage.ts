@@ -21,8 +21,18 @@ export function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && parsed !== null ? (parsed as Progress) : {};
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return {};
+    // 이전 버전이나 손상된 저장값 하나가 전체 학습 화면을 망가뜨리지 않게 한다.
+    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => {
+      if (typeof value !== "object" || value === null) return false;
+      const record = value as Partial<ScenarioProgress>;
+      return record.cleared === true
+        && typeof record.bestScore === "number" && Number.isFinite(record.bestScore)
+        && record.bestScore >= 0 && record.bestScore <= 1000
+        && typeof record.clearedAt === "number" && Number.isFinite(record.clearedAt)
+        && record.clearedAt >= 0;
+    }));
   } catch {
     return {};
   }

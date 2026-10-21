@@ -25,8 +25,8 @@ export function BackendStatus() {
 
   return (
     <aside className="backend-status" aria-live="polite">
-      <strong>InfraCoach 코치 준비 상태</strong>{" · "}
-      {error ? "코치 서버에 연결할 수 없습니다. 가상 실습은 계속 이용할 수 있습니다."
+      <strong>AI COACH</strong>{" · "}
+      {error ? "코치 오프라인 · 가상 실습은 바로 이용할 수 있어요."
         : !health ? "서버 확인 중…"
         : `서버 연결됨 · 생성 ${health.providers.generation.configured ? "설정됨" : "설정 필요"}`
           + ` · 임베딩 ${health.providers.embedding.configured ? "설정됨" : "설정 필요"}`
@@ -38,8 +38,8 @@ export function BackendStatus() {
         키 값은 화면에 표시하지 않습니다. 이미 저장된 답변만 볼 수 있습니다.
       </p>}
       {health && health.rag_status !== "pilot_ready" && <p role="alert" className="small">
-        지식 색인이 비어 있거나 설정과 맞지 않습니다. <code>backend</code> 폴더에서{" "}
-        <code>.venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus</code>를 실행한 뒤 다시 확인하세요.
+        지식 색인이 비어 있거나 설정과 맞지 않습니다. Python 가상환경을 활성화한 뒤 <code>backend</code> 폴더에서{" "}
+        <code>python -m scripts.prepare_corpus</code>를 실행한 뒤 다시 확인하세요.
       </p>}
     </aside>
   );
