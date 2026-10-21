@@ -1,5 +1,6 @@
 import { calculateScore, formatDuration } from "../../engine/session/score";
 import type { Session } from "../../engine/session/session";
+import { InvestigationReview } from "../components/InvestigationReview";
 
 interface ReportScreenProps {
   session: Session;
@@ -32,6 +33,8 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
         </div>
       </div>
 
+      <InvestigationReview key={session.scenario.id} session={session} />
+
       <div className="panel" style={{ marginBottom: 16 }}>
         <h2 style={{ marginTop: 0, fontSize: 18 }}>포스트모템</h2>
 
@@ -57,6 +60,13 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
             <p>{postmortem.realWorldNote}</p>
           </div>
         )}
+        {/* 학습 목표는 풀이 방법을 담고 있어 브리핑에서는 숨기고, 클리어 뒤 회고에서 보여 준다. */}
+        <div className="report-section">
+          <h3>이번 실습에서 익힌 것</h3>
+          <ul className="objectives small">
+            {session.scenario.learningObjectives.map((objective, index) => <li key={index}>{objective}</li>)}
+          </ul>
+        </div>
       </div>
 
       <div className="panel" style={{ marginBottom: 16 }}>

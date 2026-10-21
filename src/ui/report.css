@@ -1,0 +1,21 @@
+.investigation-review, .reflection-panel { margin-bottom: 16px; }
+.review-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.review-heading h2 { font-size: 18px; margin: 6px 0 0; }
+.review-heading > svg { color: var(--accent); }
+.investigation-timeline { list-style: none; margin: 22px 0 0; padding: 0; }
+.investigation-timeline li { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 14px; }
+.timeline-number { flex-shrink: 0; padding-top: 9px; color: #8ab3bd; font: 11px var(--mono); }
+.investigation-timeline details { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; background: #0a0e13; }
+.investigation-timeline summary { cursor: pointer; font-size: 12px; overflow-wrap: anywhere; }
+.investigation-timeline summary code { font-family: var(--mono); }
+.exit-code { display: inline-block; margin-left: 12px; padding: 1px 5px; border-radius: 4px; color: #99c8d4; background: #7dcee311; font: 10px var(--mono); white-space: nowrap; }
+.exit-code.nonzero { color: var(--yellow); background: #e6b47714; }
+.investigation-timeline pre { overflow-wrap: anywhere; white-space: pre-wrap; max-height: 320px; overflow-y: auto; font: 11px/1.7 var(--mono); }
+.investigation-timeline .stderr { color: var(--yellow); }
+.reflection-field { display: block; margin-top: 20px; }
+.reflection-field > span { font-size: 13px; }
+.reflection-field textarea { display: block; resize: vertical; width: 100%; min-height: 90px; border: 1px solid var(--border); border-radius: 7px; background: #0a0e13; color: var(--text); font: 13px/1.8 var(--sans); padding: 12px; margin-top: 8px; }
+.reflection-field small { display: block; text-align: right; color: var(--muted); font: 10px var(--mono); margin-top: 5px; }
+.report-export { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-top: 20px; border-top: 1px solid var(--border); margin-top: 22px; }
+.report-export strong { font-size: 14px; }.report-export p { margin: 6px 0 0; }.report-export button { flex-shrink: 0; font-size: 12px; }
+@media (max-width: 600px) { .report-export { flex-direction: column; align-items: stretch; }.timeline-number { font-size: 9px; }.investigation-timeline li { gap: 8px; } }
