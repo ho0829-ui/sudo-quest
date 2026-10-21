@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Terminal } from "../components/Terminal";
 import { Sidebar } from "../components/Sidebar";
 import { CauseDialog } from "../components/CauseDialog";
 import type { Session } from "../../engine/session/session";
 import { shuffleChoices } from "../shuffleChoices";
+import { MissionHud } from "../components/MissionHud";
+import { THEMES } from "../campus/themes";
+import { scenarios } from "../../scenarios";
 
 interface PlayScreenProps {
   session: Session;
@@ -27,7 +30,11 @@ export function PlayScreen({
   const [draft, setDraft] = useState({ text: "", nonce: 0 });
 
   return (
-    <div className="play-layout">
+    <>
+    <MissionHud session={session} missionNo={scenarios.indexOf(session.scenario) + 1} />
+    <div className="play-layout" style={{ "--room": THEMES[session.scenario.category].accent } as CSSProperties}>
+      <div className="terminal-window">
+      <div className="terminal-toolbar"><span className="window-dots"><i /><i /><i /></span><span>{session.state.user}@{session.state.hostname} — bash</span><span className="terminal-live"><i /> LIVE · SIMULATED</span></div>
       <Terminal
         state={session.state}
         lines={session.lines}
@@ -35,6 +42,8 @@ export function PlayScreen({
         draft={draft}
         onSubmit={onCommand}
       />
+      <div className="terminal-help">↑ ↓ 명령 기록 · Tab 자동완성 · Shift+Tab 포커스 이동 · help 명령어 안내</div>
+      </div>
 
       <Sidebar
         session={session}
@@ -54,5 +63,6 @@ export function PlayScreen({
         />
       )}
     </div>
+    </>
   );
 }

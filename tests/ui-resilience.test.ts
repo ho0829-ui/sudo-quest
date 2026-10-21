@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadProgress, saveClear } from '../src/ui/storage';
 import { isHealth, getHealth } from '../src/api/health';
 import { shuffleChoices } from '../src/ui/shuffleChoices';
+import { operatorRank, rankThresholds } from '../src/ui/rank';
 
 const record = { cleared: true, bestScore: 800, clearedAt: 1000 };
 afterEach(() => vi.unstubAllGlobals());
@@ -56,3 +57,20 @@ describe('원인 보기 순서', () => {
   });
 });
 
+describe('운영자 등급', () => {
+  it('해결 0건은 수습, 전부 해결하면 최고 등급', () => {
+    expect(operatorRank(0, 13)).toMatchObject({ level: 1, english: 'TRAINEE', progress: 0 });
+    expect(operatorRank(13, 13)).toMatchObject({ level: 6, english: 'LEGEND', remaining: 0, progress: 1 });
+  });
+  it('문턱은 늘 증가하고 다음 등급까지 남은 수를 알려 준다', () => {
+    const t = rankThresholds(13);
+    for (let i = 1; i < t.length; i++) expect(t[i]).toBeGreaterThan(t[i - 1]);
+    const rank = operatorRank(t[2], 13);
+    expect(rank.level).toBe(3);
+    expect(rank.remaining).toBe(t[3] - t[2]);
+  });
+  it('실습이 적어도 등급이 겹치지 않는다', () => {
+    const t = rankThresholds(3);
+    expect(new Set(t).size).toBe(t.length);
+  });
+});
