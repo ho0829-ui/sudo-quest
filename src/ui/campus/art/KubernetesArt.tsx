@@ -53,7 +53,7 @@ function Lighthouse({ x, y }: { x: number; y: number }) {
 function Walls() {
   return <g>
     <OnWall wall="right" at={[6.4, 0, 3.9]}>
-      <path d="M0,2 L66,0 L68,38 L2,40 Z" fill="#e9d6a8" stroke="#a88a52" strokeWidth={1} />
+      <path d="M0,2 L72,0 L74,38 L2,40 Z" fill="#e9d6a8" stroke="#a88a52" strokeWidth={1} />
       <text className="iso-board-title" x={5} y={9} fill="#7a3b1d">CLUSTER MAP</text>
       <path d="M12,30 Q24,14 36,26 T60,18" stroke="#c43c3c" strokeWidth={1} strokeDasharray="2 2" fill="none" />
       <ellipse cx={14} cy={30} rx={7} ry={4} fill="#9cc58a" /><path d="M10,26 l2,-3 l2,2 l2,-2 l2,3z" fill="#d9a92e" />
@@ -77,9 +77,9 @@ function Walls() {
   </g>;
 }
 
-/** 갈매기 두 마리. 구름처럼 천천히 떠다닌다. */
+/** 갈매기 두 마리. 배 앞 바다 위 낮게 떠다닌다(벽 위에 두면 이름 간판 글자와 겹쳐 오타처럼 보인다). */
 function Gulls() {
-  return <g>{([[3.6, 2.6, 6.4, 0], [6.8, 8.4, 5.4, -4]] as const).map(([x, y, z, delay]) => {
+  return <g>{([[8.4, 9.0, 1.6, 0], [4.0, 9.5, 1.4, -4]] as const).map(([x, y, z, delay]) => {
     const [gx, gy] = project([x, y, z]);
     return <g key={x} transform={`translate(${gx},${gy})`}>
       <path className="iso-cloud" d="M-6,0 q3,-4 6,0 q3,-4 6,0" stroke="#f4f6fb" strokeWidth={1.4} fill="none" style={{ animationDelay: `${delay}s` }} />

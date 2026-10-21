@@ -15,11 +15,12 @@ function StatScreen({ x, y, stat }: { x: number; y: number; stat: WallStat }) {
   const ratio = stat.total ? stat.cleared / stat.total : 0;
   const done = stat.total > 0 && stat.cleared === stat.total;
   return <g transform={`translate(${x},${y})`}>
-    <rect width={34} height={22} rx={2} fill="#050a14" stroke={BLUE} strokeOpacity={0.7} />
-    <text className="iso-screen-label" x={3} y={8}>{stat.label}</text>
+    {/* 가장 긴 "NETWORK"가 들어가는 폭. 두 칸(40+2+40)이 문(4~6) 오른쪽 벽 끝까지 들어간다. */}
+    <rect width={40} height={22} rx={2} fill="#050a14" stroke={BLUE} strokeOpacity={0.7} />
+    <text className="iso-screen-label" x={2.5} y={8}>{stat.label}</text>
     <text className="iso-screen-value" x={3} y={16} fill={done ? "#2cff8f" : PLATINUM}>{stat.cleared}/{stat.total}</text>
-    <rect x={3} y={18.5} width={28} height={1.6} fill="#16233d" />
-    <rect x={3} y={18.5} width={28 * ratio} height={1.6} fill={done ? "#2cff8f" : "#00d4ff"} />
+    <rect x={3} y={18.5} width={34} height={1.6} fill="#16233d" />
+    <rect x={3} y={18.5} width={34 * ratio} height={1.6} fill={done ? "#2cff8f" : "#00d4ff"} />
   </g>;
 }
 
@@ -63,11 +64,12 @@ export function ControlArt({ stats, total, clock, rooms }: { stats: WallStat[]; 
     {/* 오른쪽 벽: 분류별 해결 수(2열) + 시계. 문(4~6) 오른쪽에 둔다. 분류가 4개를 넘으면 두 줄 높이에 맞게 줄인다. */}
     <OnWall wall="right" at={[6.1, 0, 3.8]}>
       <g transform={`scale(${Math.min(1, 2 / Math.ceil(stats.length / 2))})`}>
-        {stats.map((stat, i) => <StatScreen key={stat.label} x={(i % 2) * 37} y={Math.floor(i / 2) * 25} stat={stat} />)}
+        {stats.map((stat, i) => <StatScreen key={stat.label} x={(i % 2) * 42} y={Math.floor(i / 2) * 25} stat={stat} />)}
       </g>
     </OnWall>
     <OnWall wall="right" at={[0.5, 0, 2.55]}>
-      <rect width={52} height={16} rx={2} fill="#050a14" stroke={PLATINUM} strokeOpacity={0.6} />
+      {/* "SHIFT 00:00"이 다 들어가는 폭. 오른쪽 벽 문(4~6) 바로 앞까지 쓴다. */}
+      <rect width={76} height={16} rx={2} fill="#050a14" stroke={PLATINUM} strokeOpacity={0.6} />
       <text className="iso-clock" x={5} y={12}>{clock}</text>
     </OnWall>
     {/* 왼쪽 벽: 전체 진행 대형 화면과 캠퍼스 미니맵. 문(4~6)을 피해 둔다. */}

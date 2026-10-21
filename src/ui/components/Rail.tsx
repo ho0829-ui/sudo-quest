@@ -49,7 +49,8 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
         <div className="op-xp" role="progressbar" aria-label="다음 등급까지 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(rank.progress * 100)}>
           <i style={{ width: `${rank.progress * 100}%` }} />
         </div>
-        <span>{rank.remaining ? `다음 등급까지 ${rank.remaining}건 · ` : "최고 등급 · "}XP {xp.toLocaleString()}</span>
+        <span>{rank.remaining ? `다음 등급까지 ${rank.remaining}건` : "최고 등급"}</span>
+        <span>XP {xp.toLocaleString()}</span>
       </div>
     </section>
 

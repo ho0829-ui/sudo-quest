@@ -122,8 +122,8 @@ export function CorkBoard({ at }: { at: Point3 }) {
   ];
   return <OnWall wall="left" at={at}>
     <rect width={72} height={48} rx={2} fill="#5b3a22" />
-    <rect x={3} y={8} width={66} height={37} fill="#c48a52" />
-    <text className="iso-board-title" x={5} y={6} fill={PEACH}>커뮤니티 게시판</text>
+    <rect x={3} y={9} width={66} height={36} fill="#c48a52" />
+    <text className="iso-board-title" x={5} y={7.2} fill={PEACH}>커뮤니티 게시판</text>
     <path d="M14,14 Q30,24 34,15 T55,16" stroke="#c43c3c" strokeWidth={0.7} fill="none" strokeDasharray="1.6 1.2" />
     {notes.map(([x, y, w, h, color, rot, label]) => <g key={`${x}-${y}`} transform={`rotate(${rot} ${x + w / 2} ${y + h / 2})`}>
       <rect x={x} y={y} width={w} height={h} fill={color} />

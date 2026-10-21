@@ -7,7 +7,7 @@
 .iso-room-enter { animation: iso-drop .8s cubic-bezier(.2, .9, .25, 1.15) backwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
 .iso-room-body { transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s, filter .35s; }
 .iso-room-shadow { fill: #020812; opacity: 0; transition: opacity .35s; }
-.iso-room-outline { fill: none; stroke-width: 2.5; opacity: 0; transition: opacity .3s; }
+.iso-room-outline { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .3s; }
 .iso-room:hover .iso-room-body, .iso-room.is-active .iso-room-body { transform: translateY(-12px); filter: brightness(1.12); }
 .iso-room:hover .iso-room-shadow, .iso-room.is-active .iso-room-shadow { opacity: .55; }
 .iso-room:hover .iso-room-outline, .iso-room.is-active .iso-room-outline { opacity: 1; }
@@ -113,6 +113,7 @@
 .iso-bubble-text { font: 700 6px var(--mono); fill: #4a2219; }
 .iso-note-text { font-size: 4.6px; font-weight: 700; fill: #3a2a1c; }
 .iso-chalk { font: 600 4.4px var(--mono); fill: #f4f1ea; opacity: .9; }
+.iso-stage-label { font: 700 5px var(--mono); }
 .iso-bob { animation: iso-bob 2.6s ease-in-out infinite; }
 .iso-tail { transform-box: fill-box; transform-origin: 100% 100%; animation: iso-tail 1.4s ease-in-out infinite alternate; }
 .iso-spout { transform-box: fill-box; transform-origin: 50% 100%; animation: iso-spout 3.4s ease-out infinite; }

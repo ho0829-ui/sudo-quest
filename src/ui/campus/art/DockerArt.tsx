@@ -47,11 +47,11 @@ function LeftWall() {
       </g>)}
     </OnWall>
     <OnWall wall="left" at={[0, 9.5, 3.95]}>
-      <rect width={64} height={44} rx={2} fill="#06161b" stroke={TEAL} strokeOpacity={0.5} />
+      <rect width={72} height={44} rx={2} fill="#06161b" stroke={TEAL} strokeOpacity={0.5} />
       <text className="iso-board-title" x={4} y={9} fill={TEAL}>IMAGE LAYERS</text>
       {([["CMD", "#26e5c6"], ["COPY", "#5eaaff"], ["RUN", "#ffb39a"], ["FROM", "#ffe38a"]] as const).map(([label, color], i) =>
         <g key={label} transform={`translate(5,${13 + i * 7.2})`}>
-          <rect width={54 - i * 3} height={5.6} rx={1} fill={color} opacity={0.85} />
+          <rect width={62 - i * 3} height={5.6} rx={1} fill={color} opacity={0.85} />
           <text className="iso-screen-label" x={2} y={4.4} fill="#06161b">{label}</text>
         </g>)}
     </OnWall>
@@ -66,7 +66,7 @@ function LeftWall() {
 function PortPanel() {
   return <g>
     <OnWall wall="right" at={[0.6, 0, 1.85]}>
-      <rect width={34} height={18} rx={2} fill="#04141a" stroke={TEAL} strokeOpacity={0.7} />
+      <rect width={40} height={18} rx={2} fill="#04141a" stroke={TEAL} strokeOpacity={0.7} />
       <text className="iso-screen-label" x={3} y={7} fill={TEAL}>PORTS</text>
       <text className="iso-screen-label" x={3} y={14} fill="#e6fffa">8080→80</text>
     </OnWall>
@@ -90,7 +90,7 @@ export function DockerArt() {
     <ShippingContainer at={[7.8, 0.25, 0.95]} size={[1.85, 1.25, 0.95]} tone={CONTAINER_TONES.teal} />
     <GantryCrane x0={5.6} x1={9.68} y0={0.05} y1={1.75} top={3.7} />
     <OnWall wall="right" at={[6.1, 1.92, 3.7]}>
-      <rect width={42} height={10} rx={1.5} fill={TEAL} />
+      <rect width={52} height={10} rx={1.5} fill={TEAL} />
       <text className="iso-board-title" x={4} y={7.5} fill="#06161b">REGISTRY</text>
     </OnWall>
 

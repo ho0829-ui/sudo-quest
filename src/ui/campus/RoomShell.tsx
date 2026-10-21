@@ -63,7 +63,9 @@ export function RoomShell({ info, status, theme, doors, index, active, onHover, 
         {children}
         {/* 바닥 앞 가장자리 네온: 방의 경계를 선으로 띄운다. */}
         <Neon path={[[ROOM_SIZE, 0, 0.02], [ROOM_SIZE, ROOM_SIZE, 0.02], [0, ROOM_SIZE, 0.02]]} color={theme.accent} width={1.1} />
-        <polygon className="iso-room-outline" points={plane(0, 0, ROOM_SIZE, ROOM_SIZE)} stroke={theme.accent} />
+        {/* 호버 강조선은 바깥 앞 두 변에만 긋는다. 뒷벽 밑변까지 그으면 방 안 그림보다 나중에 그려지므로
+            벽에 붙은 서가·랙·컨테이너를 가로지르며 앞으로 튀어나와 보인다. */}
+        <polyline className="iso-room-outline" points={points([ROOM_SIZE, 0, 0.02], [ROOM_SIZE, ROOM_SIZE, 0.02], [0, ROOM_SIZE, 0.02])} stroke={theme.accent} />
         {beacon && <g className={`iso-beacon${status.alarm ? " alarm" : ""}`}>
           <polyline points={points([0, 0, WALL_HEIGHT], [0, 0, WALL_HEIGHT + 0.75])} stroke="#3a4554" strokeWidth={2} />
           <Cylinder at={[0, 0, WALL_HEIGHT + 0.75]} r={0.28} h={0.2} tone={["#2b3a5c", "#1a2744", "#111c33"]} />

@@ -25,12 +25,13 @@ function Database({ x, y, delay }: { x: number; y: number; delay: number }) {
 
 /** 배포 파이프라인 보드. 단계 사이를 빛 점이 지나간다(장식이며 실제 배포 상태가 아니다). */
 function PipelineBoard() {
+  // 단계 칸은 가장 긴 "DEPLOY"가 들어가는 폭(21). 보드는 문(4~6) 오른쪽 벽 끝까지(6.4~9.85) 쓴다.
   return <OnWall wall="right" at={[6.4, 0, 3.7]}>
-    <rect width={70} height={34} rx={3} fill="#12070e" stroke={MAGENTA} strokeOpacity={0.7} />
+    <rect width={76} height={34} rx={3} fill="#12070e" stroke={MAGENTA} strokeOpacity={0.7} />
     <text className="iso-board-title" x={5} y={9} fill={MAGENTA}>CI / CD</text>
-    {["BUILD", "TEST", "DEPLOY"].map((stage, i) => <g key={stage} transform={`translate(${5 + i * 22},14)`}>
-      <rect width={17} height={12} rx={2} fill="#1f0d18" stroke={i === 2 ? "#00ff88" : MAGENTA} />
-      <text className="iso-screen-label" x={2} y={8} fill="#ffd6ea">{stage}</text>
+    {["BUILD", "TEST", "DEPLOY"].map((stage, i) => <g key={stage} transform={`translate(${4 + i * 23.5},14)`}>
+      <rect width={21} height={12} rx={2} fill="#1f0d18" stroke={i === 2 ? "#00ff88" : MAGENTA} />
+      <text className="iso-stage-label" x={10.5} y={7.8} textAnchor="middle" fill="#ffd6ea">{stage}</text>
     </g>)}
     <circle className="iso-pipeline-dot" cx={5} cy={30} r={1.6} fill="#00ff88" />
   </OnWall>;
