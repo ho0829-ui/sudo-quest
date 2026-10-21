@@ -9,9 +9,15 @@ from app.indexing import open_store
 from app.providers import embed
 
 
-def identity(settings):
+def embedding_identity(settings):
+    """벡터 값은 공급자·모델·정규화와 본문에만 달려 있다. 벡터 캐시 폴더는 이것으로 나눈다."""
     return {"provider_url": settings.embedding_base_url.rstrip("/"), "model": settings.embedding_model,
-            "normalization": "none", "chunk_size": settings.chunk_size, "chunk_overlap": settings.chunk_overlap}
+            "normalization": "none"}
+
+
+def identity(settings):
+    """색인 전체의 정체성. 청크 설정이 바뀌면 청크 구성이 달라지므로 새 색인 경로가 필요하다."""
+    return {**embedding_identity(settings), "chunk_size": settings.chunk_size, "chunk_overlap": settings.chunk_overlap}
 
 
 def load_manifest(settings):
@@ -57,9 +63,13 @@ def build_records(settings, documents):
     return records
 
 
+def vector_cache_dir(settings):
+    return settings.chroma_path.parent / "corpus" / "vectors" / digest(json.dumps(embedding_identity(settings), sort_keys=True))
+
+
 def cached_vectors(settings, texts, embedder, dimensions):
     """본문 해시별 벡터 캐시. 없는 텍스트만 임베딩하고 (벡터들, API 호출 수, 차원)을 돌려준다."""
-    vector_dir = settings.chroma_path.parent / "corpus" / "vectors" / digest(json.dumps(identity(settings), sort_keys=True))
+    vector_dir = vector_cache_dir(settings)
     missing = {digest(text): text for text in texts if not (vector_dir / (digest(text) + ".json")).exists()}
     calls = 0
     if missing:

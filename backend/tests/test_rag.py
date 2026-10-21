@@ -128,3 +128,21 @@ class RagTests(unittest.TestCase):
                     self.assertEqual(mock.call_count, calls)
             finally:
                 store.close()
+
+
+class VectorCacheTests(unittest.TestCase):
+    def test_vectors_reused_across_chunk_settings_but_not_models(self):
+        from app.corpus import cached_vectors
+        with tempfile.TemporaryDirectory() as folder:
+            calls = []
+            def embedder(settings, texts):
+                calls.append(len(texts))
+                return [[1., 0., 0.] for _ in texts]
+            base = Settings(chroma_path=Path(folder) / "chroma", embedding_model="m1")
+            cached_vectors(base, ["same text"], embedder, None)
+            # 청크 설정만 다르면 같은 본문의 벡터를 다시 만들지 않는다.
+            cached_vectors(base.model_copy(update={"chunk_size": 700}), ["same text"], embedder, None)
+            self.assertEqual(len(calls), 1)
+            # 임베딩 모델이 바뀌면 다시 만든다.
+            cached_vectors(base.model_copy(update={"embedding_model": "m2"}), ["same text"], embedder, None)
+            self.assertEqual(len(calls), 2)
