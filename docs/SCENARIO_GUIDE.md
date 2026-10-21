@@ -214,6 +214,7 @@ const breakSomething: Fault = (state) => {
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
+| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/events/nodes, 이름·별칭·wide), `describe pod/deploy`, `set image`, `rollout status` |
 
 ### 호스트 프리셋
 
@@ -306,7 +307,7 @@ npx vitest run tests/_play.test.ts
 
 ### 이미 방이 지어진 분류: Docker·Kubernetes
 
-`docker`(컨테이너 운영실)와 `kubernetes`(쿠버네티스 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다.
+`docker`(컨테이너 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다. `kubernetes`는 이미지 풀 실패 실습으로 운영을 시작했습니다.
 `category: "docker"` 시나리오를 처음 넣을 때 `src/ui/categories.ts` 에서 그 분류의 `comingSoon: true` 를 지우면
 목록 탭·레일·관제실 화면·경보등이 함께 열립니다. 둘 중 하나만 하면 `tests/campus.test.ts` 가 실패해 알려 줍니다.
 
@@ -323,6 +324,14 @@ npx vitest run tests/_play.test.ts
 5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙·준비 중 표시를 검사한다.
 
 새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
+
+### Kubernetes 프리셋
+
+`host: "kubernetes-admin"`과 `withCommands("kubectl")`을 사용합니다. 상태 타입은 `src/engine/state/kubernetes/types.ts`, 계산은 `reconcile.ts`입니다. Deployment 템플릿을 바꾸는 fault는 revision을 올리고 `reconcileKubernetes(cluster, state.clock)`을 호출합니다. 서비스 엔드포인트는 selector와 Ready 파드에서 계산합니다.
+
+현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 지연·RollingUpdate·인증·logs·undo·resources·delete는 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
+
+새 시나리오는 `tests/scenario-exploration.cases.ts`에도 조회·무관한 조치·대체 풀이를 추가해야 합니다. `solutionPath`를 복사해 채우지 말고 실제 사용자가 시도할 다른 경로를 작성하세요.
 
 ---
 

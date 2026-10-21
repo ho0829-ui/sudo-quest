@@ -1,8 +1,35 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: 구현·검증·제출 문서 완료. 셀프 체크리스트·상호 점검·제출은 사용자 몫
+갱신: 2026-10-22 · 단계: Kubernetes 첫 실습·14개 시나리오 탐색 점검 완료, SQLite 게시판 다음 Phase
 
-## 최신 상태 — 호버 외곽선·글자 넘침 수정 (2026-10-22, Mac)
+## 최신 상태 — Kubernetes 실습과 정답 경로 밖 탐색 검증 (2026-10-22, Mac)
+
+- 사용자 "진행해줘"로 첫 Phase·게시판 FastAPI+SQLite 선택 승인. 진행 중 "정답 명령만 아닌 비슷한 명령을 입력하며 시나리오 점검" 요청을 우선 반영. 시나리오 **14개**, Docker·게시판은 아직 준비 중.
+- K8s: `state/kubernetes/{types,reconcile}.ts`·`hosts/kubernetesAdmin.ts`로 가상 클러스터/이미지/파드/이벤트/엔드포인트 계산. `commands/kubectl.ts`·`kubectl/{queries,mutations,resources}.ts`로 get/describe/set image/rollout status. `scenarios/kubernetes-image-pull.ts` 추가, 레지스트리 등록·UI comingSoon 해제. default/Recreate/즉시 계산만 지원. logs/undo/resources/delete/실시간 watch는 미구현.
+- 탐색 검사: `tests/scenario-exploration.cases.ts`·`scenario-exploration.test.ts`에서 14개 전부 조회 반복·역순·오조치·대체 풀이 실행. 첫 점검 60개 중 18개 실패를 재현하고 수정, 변형 보강 후 이 검사와 `exploration-regressions.test.ts` 합계 74개 통과.
+- 고친 결함: kill -0·잘못된 시그널 처리, certbot/AWS dry-run의 실제 변경, UDP 규칙의 TCP 오복구, AWS 출발지 CIDR 판정, 잘못된 포트/CIDR/ARN/정책/숫자/옵션 허용, mysql 긴 옵션 값의 '=' 잘림, journalctl -n 0/잘못된 숫자, 불완전한 따옴표·미지원 셸 연산자의 부분 실행. 주요 변경은 commands/{aws,awsOptions,booleanOptions,diag,files,mysql,network,perms,system,text,tls}, parser/{parse,syntax}, run, judge, state/{aws,network,types,hosts/awsAdmin}.
+- 추가 안정화: `ui/report.ts`의 다운로드 Markdown에 참고 자료가 빠지던 문제 수정. `tests/report.test.ts`와 K8s 완료·세션 재생·리포트 생성 검사 보강. 숨은 정답/근거 유출 테스트는 새 실습에도 자동 적용.
+- **이번 Mac 실제 검증:** typecheck 통과, Vitest **480개/20파일** 통과, build 통과(JS 527.52KB/gzip 171.48KB, 기존 500KB 경고), backend unittest **40개** OK, diff --check 통과. npm audit·실제 RAG/유료 제공자 호출·재색인은 하지 않음. `.env` 값 읽기/변경 없음.
+- 브라우저: K8s 캠퍼스 입장→조사→복구→원인 모달, 375×812 가로 넘침 없음. 메모리 실습 kill -0 전후 동일 프로세스, 잘못된 신호 오류; 방화벽 UDP 허용 후 미복구/TCP 허용 후 복구를 직접 입력해 확인. 증빙 `evidence/kubernetes/`·`evidence/exploration/`.
+- **미검증 구분:** 기존 학습 기록(해결 1건/1000점) 보존을 위해 정답 제출/리포트 화면 완주는 하지 않음. 완료·복원·리포트 생성은 자동 테스트로 검증. 테스트 탭 닫아 임시 탭 세션 정리. 별도 localhost 주소 접근은 브라우저 자동 승인 검토가 거절하여 우회하지 않음.
+- 실행 중: 이 프로젝트 Vite `127.0.0.1:5173`(PID 61243, `npm run dev -- --host 127.0.0.1`). API 8000·다른 프로젝트 8080/3307은 재시작하지 않음. 백엔드 오프라인에서도 게임 정상.
+- 자세한 범위·재현 명령·남은 제한: `14_시나리오_탐색_점검.md`. 기존 bash/조회 명령 전체 옵션·sed 정규식·복합 리다이렉션·실제 클러스터 동작까지 완전 호환한 것은 아니다. 이번 수정 범위의 테스트 실패는 없음.
+- 다음 시작 작업: 승인된 SQLite 게시판을 별도 router/storage로 구현. `backend/data/community.sqlite3`, 표준 sqlite3, 글 목록/상세/작성·댓글·분류·페이지네이션·작성 속도 제한·관리자 삭제 검증. `#/community` 및 캠퍼스 카페 연결, 서버 오프라인 안내. 외부 런타임 라이브러리/키 추가 없이 구현하는 계획. 저장 방식 재질문 불필요. 단계별 완료 후 멈추는 규칙 때문에 이번 Phase에는 미착수.
+- 사용자 미결정 사항: 기존 LLM_MODEL 원복/최종 제출/마스터 병합은 여전히 사용자 결정. 게시판 저장 방식은 더 이상 미결정이 아님. push/마스터 병합 없음.
+- 커밋: `feature/sudo-quest`의 `f2a3c0d`에 제품 코드·테스트 저장. 이 인수인계·점검 보고서·브라우저 증빙은 별도 docs 커밋으로 저장. 커밋 해시는 `git log`로 확인할 것.
+
+## 이전 상태 — GPT 재개 점검·로컬 서버 정리 (2026-10-22, Mac)
+
+- 첨부 `12_GPT_인수인계_프롬프트.md`와 현재 코드 기준으로 재개. 브랜치 `feature/sudo-quest`, 시작 HEAD `06d716b`, master보다 18커밋 앞섬, 시작 작업 트리 깨끗함.
+- 사용자 최신 지시로 기존 로컬 개발 서버 종료: 이 프로젝트 uvicorn PID 53603(8000), M-Check 프로젝트의 `server-api-1`(8080)·`server-db-1`(3307). SIGTERM / docker stop으로 정상 종료, 컨테이너·볼륨 삭제 없음. 5173은 원래 꺼져 있었음. 관련 4개 포트 리스너가 없음을 확인.
+- Raycast·macOS 시스템 서비스·OrbStack 자체는 유지. 다음 구현 때 SUDO QUEST 서버만 다시 시작.
+- 이번 환경에서 재검증: typecheck 통과, Vitest 358개(16파일) 통과, build 통과(JS 507.29KB 경고 유지), backend에서 unittest 40개 OK. 브라우저·제공자 실제 호출·재색인·카탈로그 외부 링크 검증은 이번 단계 미실행. `.env` 값은 읽거나 변경하지 않음.
+- 첫 Phase 계획: `13_재개_및_첫_Phase_계획.md` — K8s 상태/명령 기반 + 이미지 풀 실패 실습 1개(13→14). 다음 CrashLoop/OOM → Docker → Linux/Web. 파일 목록·타입 초안·검사 기준 포함.
+- 첨부문 지시대로 구현 승인 대기. 게시판 저장 방식도 미정(FastAPI+SQLite 추천). 이전 대화의 Q&A 제안은 사용자 선택으로 간주하지 않음.
+- 변경: 이 문서·TASKS·13 계획 문서만. 제품 코드 변경 없음, 이 단계 커밋/푸시 없음.
+- 다음 작업: 첫 Phase 범위와 게시판 저장 방식 답변을 받고 구현. 승인 전 제품 코드를 수정하지 말 것.
+
+## 이전 상태 — 호버 외곽선·글자 넘침 수정 (2026-10-22, Mac)
 
 - 사용자 지적 3가지와 조치:
   1. 방에 마우스를 올리면 바닥 외곽선이 방 안까지 두껍게 그려져 그림 앞으로 튀어나옴 → 원인: 강조선이 바닥 네 변 polygon이고 방 그림보다 나중에 그려져 뒷벽 밑변 선이 서가·랙·컨테이너를 가로지름. 바깥 앞 두 변 polyline으로 바꿈(`RoomShell`).

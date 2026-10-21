@@ -101,7 +101,7 @@ Set-Location backend
 브라우저 안의 가상 터미널에서 명령어를 입력하며, 일부러 망가뜨린 가상 서버의 **장애 원인을 찾고 복구하는 학습 게임**입니다.
 
 정답을 알려주는 게임이 아니라 **사고 과정을 훈련하는 게임**입니다.
-증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 13개 시나리오로 반복해서 익힙니다.
+증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 14개 시나리오로 반복해서 익힙니다.
 
 > **▶️ 플레이하기:** https://\<GitHub-사용자명\>.github.io/\<저장소명\>/
 > *(저장소를 push하고 Settings → Pages → Source를 "GitHub Actions"로 바꾸면 자동 배포됩니다)*
@@ -144,7 +144,7 @@ Filesystem Size Used Avail Use% Mounted on
 
 ---
 
-## 시나리오 13개
+## 시나리오 14개
 
 | ID | 카테고리 | 난이도 | 증상 | 핵심 학습 |
 |---|---|---|---|---|
@@ -161,6 +161,7 @@ Filesystem Size Used Avail Use% Mounted on
 | `aws-security-group` | AWS | 초급 | 새 EC2 접속 불가 | timeout과 refused의 차이 |
 | `aws-alb-healthcheck` | AWS | 중급 | 헬스 알람이 울리는데 사이트는 열림 | 모든 타깃이 unhealthy면 ALB는 fail-open한다 (AWS 문서 기준) |
 | `aws-iam-s3` | AWS | 중급 | S3 업로드 실패 | AccessDenied 메시지를 끝까지 읽어라 |
+| `kubernetes-image-pull` | Kubernetes | 중급 | 배포 후 쇼핑몰 미복구 | 이미지 설정 성공과 파드 Ready·엔드포인트 복구를 구분한다 |
 
 각 시나리오는 **장애 티켓 → 조사 → 원인 제출 → 복구 조치 → 포스트모템** 순서로 진행되고,
 3단계 힌트(방향 질문 → 볼 곳 제시 → 거의 정답)와 점수(시간·명령어 수·힌트·오답)를 제공합니다.
@@ -284,7 +285,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**197개 테스트**(2026-10-21 기준, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
+**480개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 14개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가
@@ -296,6 +297,8 @@ npm test
 - `httpResponds`가 403 응답을 "정상"으로 판정하던 문제
 - `portIsListening("0.0.0.0", …)`이 `127.0.0.1` 바인딩을 통과시키던 문제
 - 프리셋 설정이 조용히 누락되어 시나리오를 풀 수 없게 된 문제
+
+정답 경로 밖의 입력도 검사합니다. `tests/scenario-exploration.*`는 모든 실습에서 조회 반복·역순 조사·무관한 조치·대체 풀이를 실행합니다. `tests/exploration-regressions.test.ts`는 dry-run의 상태 변경, UDP 규칙의 TCP 오복구, 잘못된 CIDR·ARN·숫자·옵션·셸 문법을 검사합니다. 범위와 한계는 [탐색 점검 기록](docs/infra-coach/14_시나리오_탐색_점검.md)을 참고하세요.
 
 ---
 
