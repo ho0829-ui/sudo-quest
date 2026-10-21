@@ -2021,9 +2021,7 @@
     "title_original": "A registered target is not in service",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "target-not-inservice"
-    ],
+    "error_codes": [],
     "symptoms": [
       "타깃이 InService 상태가 되지 않음",
       "헬스 체크 실패"
@@ -2048,9 +2046,7 @@
     "title_original": "Clients cannot connect to an internet-facing load balancer",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "client-cannot-connect"
-    ],
+    "error_codes": [],
     "symptoms": [
       "로드 밸런서가 요청에 응답하지 않음"
     ],
@@ -2072,9 +2068,7 @@
     "title_original": "Requests sent to a custom domain aren't received by the load balancer",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "custom-domain-request"
-    ],
+    "error_codes": [],
     "symptoms": [
       "사용자 지정 도메인으로 보낸 요청을 로드 밸런서가 받지 못함"
     ],
@@ -2096,9 +2090,7 @@
     "title_original": "HTTPS requests sent to the load balancer return \"NET::ERR_CERT_COMMON_NAME_INVALID\"",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "https-cert-invalid"
-    ],
+    "error_codes": [],
     "symptoms": [
       "NET::ERR_CERT_COMMON_NAME_INVALID"
     ],
@@ -2120,9 +2112,7 @@
     "title_original": "Load balancer shows elevated processing times",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "elevated-processing-time"
-    ],
+    "error_codes": [],
     "symptoms": [
       "액세스 로그의 처리 시간 증가"
     ],
@@ -2145,7 +2135,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-400-issues"
+      "400"
     ],
     "symptoms": [
       "HTTP 400 Bad request"
@@ -2169,7 +2159,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-401-issues"
+      "401"
     ],
     "symptoms": [
       "HTTP 401 Unauthorized"
@@ -2193,7 +2183,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-403-issues"
+      "403"
     ],
     "symptoms": [
       "HTTP 403 Forbidden"
@@ -2217,7 +2207,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-405-issues"
+      "405"
     ],
     "symptoms": [
       "HTTP 405 Method not allowed"
@@ -2241,7 +2231,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-408-issues"
+      "408"
     ],
     "symptoms": [
       "HTTP 408 Request timeout"
@@ -2265,7 +2255,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-413-issues"
+      "413"
     ],
     "symptoms": [
       "HTTP 413 Payload too large"
@@ -2289,7 +2279,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-414-issues"
+      "414"
     ],
     "symptoms": [
       "HTTP 414 URI too long"
@@ -2313,7 +2303,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-460-issues"
+      "460"
     ],
     "symptoms": [
       "HTTP 460"
@@ -2337,7 +2327,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-464-issues"
+      "464"
     ],
     "symptoms": [
       "HTTP 464"
@@ -2361,7 +2351,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-500-issues"
+      "500"
     ],
     "symptoms": [
       "HTTP 500 Internal server error"
@@ -2385,7 +2375,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-502-issues"
+      "502"
     ],
     "symptoms": [
       "HTTP 502 Bad gateway"
@@ -2411,7 +2401,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-503-issues"
+      "503"
     ],
     "symptoms": [
       "HTTP 503 Service unavailable"
@@ -2437,7 +2427,7 @@
     "category": "aws",
     "product": "AWS ALB",
     "error_codes": [
-      "http-504-issues"
+      "504"
     ],
     "symptoms": [
       "HTTP 504 Gateway timeout"
@@ -2462,9 +2452,7 @@
     "title_original": "A target generates an HTTP error",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "target-http-errors"
-    ],
+    "error_codes": [],
     "symptoms": [
       "HTTPCode_Target_4XX_Count·5XX_Count 증가"
     ],
@@ -2486,9 +2474,7 @@
     "title_original": "An AWS Certificate Manager certificate is not available for use",
     "category": "aws",
     "product": "AWS ALB",
-    "error_codes": [
-      "acm-cert-unavailable"
-    ],
+    "error_codes": [],
     "symptoms": [
       "인증서가 Pending Validation 상태"
     ],

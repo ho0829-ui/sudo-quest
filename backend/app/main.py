@@ -8,9 +8,10 @@ from fastapi.responses import JSONResponse
 from app.config import Settings, load_settings
 from app.indexing import open_store
 from app.catalog import ITEMS, ITEM_BY_ID
-from app.contracts import ChatRequest
+from app.contracts import ChatRequest, ExploreRequest
 from app.corpus import check_manifest
 from app.jobs import Jobs
+from app.explore import search
 from app.rag import respond
 
 
@@ -62,6 +63,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(404, "unknown_item")
         try:
             key = app.state.jobs.submit(lambda progress: respond(settings, app.state.collections, request, progress))
+        except ValueError:
+            raise HTTPException(429, "busy") from None
+        return {"job_id": key}
+
+    @app.post("/api/items/search", status_code=202)
+    def search_items(request: ExploreRequest):
+        try:
+            key = app.state.jobs.submit(lambda progress: search(settings, app.state.collections, request.query, progress))
         except ValueError:
             raise HTTPException(429, "busy") from None
         return {"job_id": key}

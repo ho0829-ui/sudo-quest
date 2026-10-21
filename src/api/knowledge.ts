@@ -23,10 +23,19 @@ export interface Answer {
   warnings: string[];
   cache_hit: boolean;
 }
-export interface Job {
+export interface ExploreCard { item_id: string; title_ko: string; product: string; category: string; reason: string }
+export interface ExploreResult {
+  cards: ExploreCard[];
+  applied_filters: { products: string[]; codes: string[] };
+  candidate_count: number;
+  unverifiable_conditions: string[];
+  notes: string[];
+  cache_hit: boolean;
+}
+export interface Job<T = Answer> {
   status: "running" | "complete" | "failed";
   stage: string;
-  result?: Answer;
+  result?: T;
   message?: string;
 }
 
@@ -38,9 +47,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const getItems = () => request<{ items: Item[]; index_ready: boolean }>("/api/items");
-export const getJob = (id: string) => request<Job>(`/api/jobs/${encodeURIComponent(id)}`);
+export const getJob = <T = Answer>(id: string) => request<Job<T>>(`/api/jobs/${encodeURIComponent(id)}`);
 export const startChat = (item: string, question: string, history: Message[]) =>
   request<{ job_id: string }>("/api/chat", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ item_id: item, question, history }),
+  });
+export const startSearch = (query: string) =>
+  request<{ job_id: string }>("/api/items/search", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
   });

@@ -406,3 +406,8 @@ button[aria-pressed="true"] { border-color: var(--accent); background: #20384c; 
 .knowledge a { color: var(--accent); }
 .knowledge summary { cursor: pointer; }
 @media (max-width: 760px) { .knowledge-layout { grid-template-columns: 1fr; } }
+.condition-search { margin: 16px 0 24px; }
+.condition-search form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.condition-search input { flex: 1; min-width: 220px; margin: 0; }
+.condition-results { display: grid; gap: 8px; margin-top: 12px; }
+.condition-card { text-align: left; }

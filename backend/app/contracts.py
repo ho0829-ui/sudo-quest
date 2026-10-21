@@ -32,3 +32,17 @@ class Answer(StrictModel):
     cited_evidence_ids: list[int] = Field(max_length=20)
     suggested_checks: list[str] = Field(default_factory=list, max_length=5)
     warnings: list[str] = Field(default_factory=list, max_length=5)
+
+
+class ExploreRequest(StrictModel):
+    query: str = Field(min_length=1, max_length=500)
+
+
+class ExploreMatch(StrictModel):
+    item_id: str
+    reason: str = Field(min_length=1, max_length=500)
+
+
+class ExploreJudgement(StrictModel):
+    matches: list[ExploreMatch] = Field(max_length=30)
+    unverifiable_conditions: list[str] = Field(default_factory=list, max_length=5)

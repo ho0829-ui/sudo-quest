@@ -32,6 +32,14 @@ def define(sources, doc_id, source, section, title):
             "usage_terms_url": meta["usage_terms_url"], "source_name": source}
 
 
+def error_codes(entry):
+    # ALB 후보의 code 값은 절 이름(http-503-issues)이다. 실제 HTTP 상태 코드만 오류 코드로 쓴다.
+    if entry["source"] == "aws-alb":
+        status = re.fullmatch(r"http-(\d{3})-issues", entry["code"])
+        return [status.group(1)] if status else []
+    return [entry["code"]] if entry["code"] else []
+
+
 def libcurl_anchors(html):
     # 'CURLE_COULDNT_CONNECT (7)' 형태의 제목에서 번호 → 앵커 이름을 만든다.
     found = re.findall(r'<a name="(CURLE\w+)"></a><span class="nroffip">(CURLE_\w+) \((\d+)\)', html)
@@ -101,7 +109,7 @@ def main() -> int:
             "item_id": item_id, "title_ko": annotation["title_ko"], "title_original": entry["title_original"],
             "category": annotation.get("category", DEFAULT_CATEGORY[entry["source"]]),
             "product": sources[PRIMARY_SOURCE[entry["source"]]]["product"],
-            "error_codes": [entry["code"]] if entry["code"] else [],
+            "error_codes": error_codes(entry),
             "symptoms": annotation["symptoms"], "summary": annotation["summary"],
             "source_excerpt": primary_text[:600],
             "primary_doc_id": primary["doc_id"], "document_ids": [primary["doc_id"]] + [d["doc_id"] for d in kept],

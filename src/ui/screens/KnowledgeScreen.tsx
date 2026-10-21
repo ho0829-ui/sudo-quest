@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getItems, getJob, startChat, type Item, type Answer, type Message } from "../../api/knowledge";
+import { ConditionSearch } from "../components/ConditionSearch";
 
 type Turn = { question: string; result?: Answer; error?: string };
 const stages: Record<string, string> = {
@@ -74,6 +75,7 @@ export function KnowledgeScreen() {
     </header>
     {error && <p role="alert">{error} <button onClick={() => void load()}>다시 불러오기</button></p>}
     {!ready && !error && <p role="status">지식 색인이 준비되지 않았습니다. 데이터 준비 후 <button onClick={() => void load()}>다시 확인</button>해주세요.</p>}
+    <ConditionSearch ready={ready} onSelect={id => { setSelected(id); setQuestion(""); }} />
     <div className="knowledge-layout">
       <aside>
         <label>항목 이름·제품 검색<input value={filter} onChange={e => setFilter(e.target.value)} placeholder="예: ALB, 인증서" /></label>
