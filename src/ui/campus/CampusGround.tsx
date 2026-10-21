@@ -2,30 +2,19 @@ import type { CSSProperties } from "react";
 import { plane, points, project, type Point3 } from "./iso";
 import { Neon } from "./parts";
 import { Person } from "./art/people";
-
-/** 복도. axis는 사람이 지나가는 방향, rank는 이 복도가 이어 주는 앞쪽 방 묶음의 직전 층이다. */
-export interface CorridorSpec { x: number; y: number; axis: "x" | "y"; rank: number; walker?: { shirt: string; hair: string }; robot?: boolean }
-
-// 방은 뒤에서 앞으로 0(자료실) → 1(리눅스·네트워크) → 2(관제실) → 3(웹·DB·AWS) 층으로 그린다.
-export const CORRIDORS: CorridorSpec[] = [
-  { x: 4, y: 10, axis: "y", rank: 0 },
-  { x: 10, y: 4, axis: "x", rank: 0, walker: { shirt: "#ffcf8a", hair: "#2a1d18" } },
-  { x: 10, y: 16, axis: "x", rank: 1, walker: { shirt: "#00ff66", hair: "#121212" } },
-  { x: 16, y: 10, axis: "y", rank: 1, robot: true },
-  { x: 16, y: 22, axis: "y", rank: 2, walker: { shirt: "#ff2d95", hair: "#6b4a2f" } },
-  { x: 22, y: 16, axis: "x", rank: 2 },
-];
+import { GROUND_EXTENT, type CorridorSpec } from "./layout";
 
 /** 바닥 전체에 깔린 트론 격자. 방이 어둠 속 플랫폼 위에 떠 있는 느낌을 준다. */
 export function Ground() {
+  const { from, to } = GROUND_EXTENT;
   const lines = [];
-  for (let v = -6; v <= 40; v += 2) {
-    lines.push(<polyline key={`a${v}`} points={points([v, -6, 0], [v, 40, 0])} />);
-    lines.push(<polyline key={`b${v}`} points={points([-6, v, 0], [40, v, 0])} />);
+  for (let v = from; v <= to; v += 2) {
+    lines.push(<polyline key={`a${v}`} points={points([v, from, 0], [v, to, 0])} />);
+    lines.push(<polyline key={`b${v}`} points={points([from, v, 0], [to, v, 0])} />);
   }
   return <g className="iso-ground">
     <g stroke="#00d4ff" strokeOpacity={0.07} strokeWidth={0.8}>{lines}</g>
-    <Neon path={[[-6, 40, 0], [40, 40, 0], [40, -6, 0]]} color="#00d4ff" width={0.6} />
+    <Neon path={[[from, to, 0], [to, to, 0], [to, from, 0]]} color="#00d4ff" width={0.6} />
   </g>;
 }
 

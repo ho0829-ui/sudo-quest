@@ -21,7 +21,7 @@ function Cloud({ at, scale, delay }: { at: [number, number, number]; scale: numb
 }
 
 /**
- * AWS 클라우드룸(하늘색 유리 방). 가용 영역(AZ) 두 곳에 인스턴스가 나뉘어 있고,
+ * 클라우드 운영실(하늘색 유리 방). 가용 영역(AZ) 두 곳에 인스턴스가 나뉘어 있고,
  * 로드 밸런서가 요청을 나눠 준다. 보안 그룹(주황 점선)이 인스턴스를 감싼다.
  */
 export function CloudArt() {

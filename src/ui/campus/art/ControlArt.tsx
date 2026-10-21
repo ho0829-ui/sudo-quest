@@ -1,6 +1,7 @@
 import { Box, Neon, OnWall, type Tone } from "../parts";
 import { GUNMETAL, Monitor } from "./fixtures";
 import { Chair, Person } from "./people";
+import { miniMapLayout } from "../layout";
 
 export interface WallStat { label: string; cleared: number; total: number }
 export interface MapRoom { accent: string; alarm: boolean | null }
@@ -22,11 +23,15 @@ function StatScreen({ x, y, stat }: { x: number; y: number; stat: WallStat }) {
   </g>;
 }
 
-/** 캠퍼스 미니맵: 방 6개를 마름모로, 경보등 상태를 점으로. 실제 진행 상태를 그대로 보여 준다. */
+const MAP = miniMapLayout();
+// 벽에 걸 수 있는 크기(방 6개일 때 크기). 방이 늘어 화면이 커지면 이 안에 들어가게 줄인다.
+const MAP_FIT = Math.min(1, 62 / MAP.width, 46 / MAP.height);
+
+/** 캠퍼스 미니맵: 방마다 마름모 하나, 경보등 상태를 점으로. 실제 진행 상태를 그대로 보여 준다. rooms는 ROOMS 순서다. */
 function MiniMap({ rooms }: { rooms: MapRoom[] }) {
-  const cells: [number, number][] = [[30, 10], [16, 18], [44, 18], [30, 26], [16, 34], [44, 34]];
-  return <g>
-    <rect width={62} height={46} rx={3} fill="#050a14" stroke={PLATINUM} strokeOpacity={0.5} />
+  const { cells, width, height } = MAP;
+  return <g transform={`scale(${MAP_FIT})`}>
+    <rect width={width} height={height} rx={3} fill="#050a14" stroke={PLATINUM} strokeOpacity={0.5} />
     <text className="iso-screen-label" x={4} y={8}>CAMPUS MAP</text>
     {rooms.map((room, i) => {
       const [cx, cy] = cells[i];
@@ -55,9 +60,11 @@ function DeskRow({ y, people }: { y: number; people: { shirt: string; hair: stri
 /** 관제실(전기 파랑 + 플래티넘 화이트): 비디오 월, 시계, 미니맵, 운영자 두 줄, 감독자. */
 export function ControlArt({ stats, total, clock, rooms }: { stats: WallStat[]; total: WallStat; clock: string; rooms: MapRoom[] }) {
   return <g>
-    {/* 오른쪽 벽: 분류별 해결 수 4칸 + 시계. 문(4~6) 오른쪽에 둔다. */}
+    {/* 오른쪽 벽: 분류별 해결 수(2열) + 시계. 문(4~6) 오른쪽에 둔다. 분류가 4개를 넘으면 두 줄 높이에 맞게 줄인다. */}
     <OnWall wall="right" at={[6.1, 0, 3.8]}>
-      {stats.map((stat, i) => <StatScreen key={stat.label} x={(i % 2) * 37} y={Math.floor(i / 2) * 25} stat={stat} />)}
+      <g transform={`scale(${Math.min(1, 2 / Math.ceil(stats.length / 2))})`}>
+        {stats.map((stat, i) => <StatScreen key={stat.label} x={(i % 2) * 37} y={Math.floor(i / 2) * 25} stat={stat} />)}
+      </g>
     </OnWall>
     <OnWall wall="right" at={[0.5, 0, 2.55]}>
       <rect width={52} height={16} rx={2} fill="#050a14" stroke={PLATINUM} strokeOpacity={0.6} />

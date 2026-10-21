@@ -1,7 +1,8 @@
 import { useId, useRef, useState, type CSSProperties } from 'react';
 import type { Scenario, Category } from '../../engine/scenario/types';
 import type { Progress } from '../storage';
-import { Icon, type IconName } from '../components/Icon';
+import { Icon } from '../components/Icon';
+import { CATEGORIES, CATEGORY_LIST } from '../categories';
 import { IsoCampus } from '../campus/IsoCampus';
 
 interface ScenarioListProps {
@@ -13,12 +14,6 @@ interface ScenarioListProps {
   onExplore: () => void;
   onOpenRecords: () => void;
 }
-const CATEGORIES: Record<Category, { label: string; icon: IconName; tag: string }> = {
-  linux: { label: 'Linux', icon: 'terminal', tag: 'SYSTEM' },
-  network: { label: '네트워크', icon: 'network', tag: 'NETWORK' },
-  'web-db': { label: '웹 / DB', icon: 'server', tag: 'APPLICATION' },
-  aws: { label: 'AWS', icon: 'cloud', tag: 'CLOUD' },
-};
 const LEVELS = ['', '입문', '중급', '고급'];
 
 export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords }: ScenarioListProps) {
@@ -58,7 +53,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
       </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} />
     </section>}
     <section className="lab-stats" aria-label="내 학습 현황">
-      <div className="lab-stat"><span className="stat-icon"><Icon name="server" /></span><div><span>실습 시나리오</span><strong>{String(scenarios.length).padStart(2, '0')} <small>개</small></strong></div><span className="stat-note">4개 인프라 영역</span></div>
+      <div className="lab-stat"><span className="stat-icon"><Icon name="server" /></span><div><span>실습 시나리오</span><strong>{String(scenarios.length).padStart(2, '0')} <small>개</small></strong></div><span className="stat-note">{CATEGORY_LIST.length}개 인프라 영역</span></div>
       <div className="lab-stat"><span className="stat-icon green"><Icon name="check" /></span><div><span>해결한 장애</span><strong>{String(cleared.length).padStart(2, '0')} <small>/ {scenarios.length}</small></strong></div><div className="mini-progress" aria-label={`완료율 ${Math.round(cleared.length / scenarios.length * 100)}%`}><i style={{ width: `${cleared.length / scenarios.length * 100}%` }} /></div></div>
       <div className="lab-stat"><span className="stat-icon amber"><Icon name="chart" /></span><div><span>나의 최고 점수</span><strong>{best || '—'} <small>점</small></strong></div><span className="stat-note">한 번의 실습, 하나의 성장</span></div>
     </section>
@@ -67,14 +62,14 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
         <label className="scenario-search"><Icon name="search" size={17} /><input aria-label="시나리오 검색" value={query} onChange={e => setQuery(e.target.value)} placeholder="시나리오 검색..." /></label></div>
       <div className="filter-row"><div className="category-tabs" role="group" aria-label="시나리오 분류">
         <button aria-pressed={category === 'all'} onClick={() => setCategory('all')}>전체 <span>{scenarios.length}</span></button>
-        {(Object.keys(CATEGORIES) as Category[]).map(key => <button key={key} aria-pressed={category === key} onClick={() => setCategory(key)}><Icon name={CATEGORIES[key].icon} size={15} />{CATEGORIES[key].label}</button>)}
+        {CATEGORY_LIST.map(({ id, icon, label }) => <button key={id} aria-pressed={category === id} onClick={() => setCategory(id)}><Icon name={icon} size={15} />{label}</button>)}
       </div><select aria-label="난이도 필터" value={difficulty} onChange={e => setDifficulty(e.target.value)}><option value="all">모든 난이도</option><option value="1">입문</option><option value="2">중급</option><option value="3">고급</option></select></div>
       <div className="scenario-grid">{visible.map((scenario, index) => {
         const info = CATEGORIES[scenario.category];
         const record = progress[scenario.id];
         return <button key={scenario.id} className={`scenario-card category-${scenario.category}`} onClick={() => onSelect(scenario)} style={{ '--card-index': index } as CSSProperties}>
           <div className="card-top"><span className="card-icon"><Icon name={info.icon} size={21} /></span><span className={`difficulty level-${scenario.difficulty}`}><i /><i /><i />{LEVELS[scenario.difficulty]}</span></div>
-          <span className="card-category">{info.tag} <span>/ {String(scenarios.indexOf(scenario) + 1).padStart(2, '0')}</span></span>
+          <span className="card-category">{info.wallTag} <span>/ {String(scenarios.indexOf(scenario) + 1).padStart(2, '0')}</span></span>
           <h3>{scenario.title}</h3><p className="card-description">{scenario.ticket.split('\n').find(line => line.length > 25) ?? scenario.ticket.split('\n')[0]}</p>
           <div className="card-bottom"><span>{record?.cleared ? <><Icon name="check" size={14} /> 해결 완료 · {record.bestScore}점</> : <><span className="tiny-dot" /> {info.label} 실습</>}</span><span className="card-go"><Icon name="arrow" size={17} /></span></div>
         </button>;

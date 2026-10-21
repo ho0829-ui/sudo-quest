@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 import type { Scenario } from "../../engine/scenario/types";
 import { scenarios } from "../../scenarios";
-import { CATEGORY_ROOM, CATEGORY_TAG, THEMES } from "../campus/themes";
+import { THEMES } from "../campus/themes";
+import { CATEGORIES } from "../categories";
 import { RoomVignette } from "../campus/RoomVignette";
 
 interface TicketScreenProps {
@@ -33,7 +34,7 @@ export function TicketScreen({ scenario, resumable, onStart, onBack }: TicketScr
         <section className="briefing-ticket">
           <div className="briefing-meta">
             <span className="briefing-code">TICKET · MISSION {missionNo}</span>
-            <span className="briefing-tag">{CATEGORY_TAG[scenario.category]}</span>
+            <span className="briefing-tag">{CATEGORIES[scenario.category].tag}</span>
             <span className="briefing-level" aria-label={`난이도 ${LEVELS[scenario.difficulty]}`}>
               {[1, 2, 3].map(n => <i key={n} className={n <= scenario.difficulty ? "on" : undefined} />)} {LEVELS[scenario.difficulty]}
             </span>
@@ -55,9 +56,9 @@ export function TicketScreen({ scenario, resumable, onStart, onBack }: TicketScr
             <button className="primary" onClick={onStart}>{resumable ? "조사 이어서 하기" : "조사 시작"}</button>
           </div>
         </section>
-        <aside className="briefing-site" aria-label={`출동 장소 ${CATEGORY_ROOM[scenario.category]}`}>
+        <aside className="briefing-site" aria-label={`출동 장소 ${CATEGORIES[scenario.category].room}`}>
           <span className="briefing-code">DEPLOY TO</span>
-          <strong>{CATEGORY_ROOM[scenario.category]}</strong>
+          <strong>{CATEGORIES[scenario.category].room}</strong>
           <RoomVignette kind={scenario.category} />
         </aside>
       </div>

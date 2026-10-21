@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react";
-import type { Category, Scenario } from "../../engine/scenario/types";
+import type { Scenario } from "../../engine/scenario/types";
 import type { Progress } from "../storage";
 import { operatorRank } from "../rank";
-import { CATEGORY_TAG, THEMES } from "../campus/themes";
+import { THEMES } from "../campus/themes";
+import { CATEGORY_LIST } from "../categories";
 import { Icon, type IconName } from "./Icon";
 import { BrandMark } from "./BrandLogo";
 
@@ -36,7 +37,6 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
     knowledge: { text: "AI", label: "AI 근거 답변" },
     records: { text: String(cleared.length), label: `해결 ${cleared.length}건` },
   };
-  const categories = Object.keys(CATEGORY_TAG) as Category[];
 
   return <aside className="app-rail">
     <button className="brand" onClick={onHome} aria-label="SUDO QUEST 홈"><span className="brand-mark"><BrandMark /></span><span className="brand-word">SUDO<span className="brand-accent">QUEST</span><small>INCIDENT RPG</small></span></button>
@@ -64,12 +64,12 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
 
     <div className="rail-section-label">SECTOR STATUS</div>
     <ul className="sector-status" aria-label="분류별 해결 현황">
-      {categories.map(kind => {
+      {CATEGORY_LIST.map(({ id: kind, tag }) => {
         const own = scenarios.filter(s => s.category === kind);
         const done = own.filter(s => progress[s.id]?.cleared).length;
         return <li key={kind} style={{ "--sector": THEMES[kind].accent } as CSSProperties}>
           <span className={`sector-dot${done < own.length ? " open" : ""}`} />
-          <span className="sector-name">{CATEGORY_TAG[kind]}</span>
+          <span className="sector-name">{tag}</span>
           <span className="sector-pips" aria-label={`${own.length}개 중 ${done}개 해결`}>
             {own.map((s, i) => <i key={s.id} className={i < done ? "on" : undefined} />)}
           </span>

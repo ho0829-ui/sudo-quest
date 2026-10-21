@@ -1,7 +1,8 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import type { Session } from "../../engine/session/session";
 import { calculateScore } from "../../engine/session/score";
-import { CATEGORY_ROOM, CATEGORY_TAG, THEMES } from "../campus/themes";
+import { THEMES } from "../campus/themes";
+import { CATEGORIES } from "../categories";
 import { RoomVignette } from "../campus/RoomVignette";
 
 function clock(seconds: number): string {
@@ -31,7 +32,7 @@ export function MissionHud({ session, missionNo }: { session: Session; missionNo
   return <section className="mission-hud" aria-label="미션 상황판" style={{ "--room": THEMES[scenario.category].accent } as CSSProperties}>
     <RoomVignette kind={scenario.category} className="mission-room" />
     <div className="mission-main">
-      <div className="mission-kicker"><span className="mission-live" /> MISSION {String(missionNo).padStart(2, "0")} · {CATEGORY_TAG[scenario.category]} · {CATEGORY_ROOM[scenario.category]}</div>
+      <div className="mission-kicker"><span className="mission-live" /> MISSION {String(missionNo).padStart(2, "0")} · {CATEGORIES[scenario.category].tag} · {CATEGORIES[scenario.category].room}</div>
       <h2>{scenario.title}</h2>
       <ol className="quest-steps">
         {steps.map((step, i) => <li key={step.label} className={step.done ? "done" : i === current ? "current" : undefined}>

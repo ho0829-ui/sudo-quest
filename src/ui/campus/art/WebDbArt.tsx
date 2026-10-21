@@ -36,7 +36,7 @@ function PipelineBoard() {
   </OnWall>;
 }
 
-/** 웹·DB실(네온 마젠타): 스토리지·앱 서버 랙, 복제되는 DB 세 대, 배포 보드, 인증서, 개발자 책상 두 개. */
+/** 웹·DB 운영실(네온 마젠타): 스토리지·앱 서버 랙, 복제되는 DB 세 대, 배포 보드, 인증서, 개발자 책상 두 개. */
 export function WebDbArt() {
   return <g>
     <PipelineBoard />

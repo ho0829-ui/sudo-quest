@@ -1,6 +1,7 @@
 import type { Scenario } from "../../engine/scenario/types";
 import type { Progress } from "../storage";
-import { CATEGORY_TAG as TAGS } from "./themes";
+import { CATEGORIES } from "../categories";
+import { THEMES } from "./themes";
 const LEVELS = ["", "입문", "중급", "고급"];
 
 /** 아직 풀지 않은 실습. 전광판은 실제 진행 기록만 보여 준다. */
@@ -19,7 +20,7 @@ export function IncidentTicker({ scenarios, progress, onOpen }: { scenarios: Sce
   const item = (s: Scenario, copy: number) => <li key={`${copy}-${s.id}`}>
     {/* 끊김 없이 흐르도록 목록을 두 번 그린다. 두 번째 복사본은 보조기기와 Tab 순서에서 뺀다. */}
     <button type="button" tabIndex={copy ? -1 : 0} aria-hidden={copy ? true : undefined} onClick={() => onOpen(s)}>
-      <span className={`ticker-tag tag-${s.category}`}>{TAGS[s.category]}</span>
+      <span className="ticker-tag" style={{ color: THEMES[s.category].accent }}>{CATEGORIES[s.category].tag}</span>
       <span>{s.title}</span>
       <span className="ticker-level">{LEVELS[s.difficulty]}</span>
     </button>

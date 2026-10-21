@@ -98,7 +98,6 @@
 .incident-ticker:hover .ticker-track, .incident-ticker:focus-within .ticker-track { animation-play-state: paused; }
 .ticker-track button { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 20px; border-color: #1f2833; background: #0d1118; font-size: 11.5px; white-space: nowrap; }
 .ticker-tag { font: 700 8.5px var(--mono); letter-spacing: 1px; }
-.ticker-tag.tag-linux { color: #00ff66; } .ticker-tag.tag-network { color: #a259ff; } .ticker-tag.tag-web-db { color: #ff2d95; } .ticker-tag.tag-aws { color: #5cc8ff; }
 .ticker-level { font-size: 10px; color: var(--muted); }
 .incident-ticker.is-clear .ticker-label { color: var(--ok); }
 .ticker-empty { color: var(--muted); }
