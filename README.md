@@ -1,8 +1,83 @@
 # InfraCoach — 인프라 장애 대응 학습
 
-기존 가상 장애 대응 게임에 Python RAG 코치를 추가하는 개발을 진행 중입니다.
-**신규 개발 환경·GMS 설정·서버 실행 방법은 [backend/README.md](backend/README.md)를 참고하세요.**
-현재 서버 연결과 모델 어댑터를 준비했으며 문서 수집·검색·코칭은 다음 단계입니다.
+가상 장애 대응 게임에 **공식 문서 근거 RAG 코치**를 붙인 인프라 학습 서비스입니다(AI 코어 프로젝트 2회차).
+
+- **지식 탐색·질의응답**: curl·Linux errno·AWS ALB 오류 100개 항목을 공식 문서 근거로 설명합니다. 모든 주장에 [근거 N]과 원문 링크가 붙고, 문서에 없으면 답을 보류합니다.
+- **조건으로 항목 찾기**: "curl에서 인증서 검증과 관련된 오류"처럼 자연어로 조건을 적으면 맞는 항목만 보여줍니다.
+- **실습 코치**: 실습 중 막히면 내가 실행한 명령의 출력과 공식 문서만으로 다음 점검을 안내합니다. 정답·풀이는 코치에게 전달되지 않고, 복구 판정은 게임 엔진이 합니다.
+
+| 구분 | 기능 |
+|---|---|
+| 필수 F2001~F2012 | 항목 100건 색인, 검색어 추출·후보 선별·문서 수집, 두 컬렉션 검색·병합, retrieve→generate 그래프, 인용 표시, 항목별 대화, 게임 코치(특화), 조건 탐색, 진행 상태·오류 안내 |
+| 심화 F2013 | React/TypeScript 화면 직접 구현(FastAPI와 분리, 요청·응답 계약) |
+| 심화 F2015 | RAG 사용 전후 답변 비교(9문항) |
+
+제출 문서: [요구사항 정의서](docs/submission/요구사항정의서.md) · [RAG 파이프라인 설계문서](docs/submission/RAG_파이프라인_설계문서.md) · [검증 결과](docs/submission/검증결과.md) · [RAG 전후 비교](docs/submission/RAG_전후비교.md) · [청크·Top-k 비교](docs/submission/청크_TopK_비교.md) · [출처 고지](THIRD_PARTY_NOTICES.md)
+
+## RAG 코치 실행하기 (로컬)
+
+확인 환경: Windows 11, Node 24.18 / npm 11.16, Python 3.11.9. 명령은 저장소 루트의 PowerShell 기준입니다. 자세한 설정은 [backend/README.md](backend/README.md)에 있습니다.
+
+```powershell
+# 1. 설치
+npm ci
+python -m venv backend/.venv
+backend/.venv/Scripts/python.exe -X utf8 -m pip install -r backend/requirements.lock.txt
+Copy-Item backend/.env.example backend/.env    # 이미 있으면 생략
+```
+
+2. `backend/.env`의 `GMS_KEY=`에 본인 키를 넣습니다. 키는 이 파일에만 두고, 코드·문서·브라우저에는 넣지 않습니다(`.env`는 Git 제외). 사용 모델은 생성 `gpt-6.1-sol`, 임베딩 `text-embedding-3-large`입니다. 다른 공급자를 쓰려면 `LLM_*`·`EMBEDDING_*` 변수를 설정합니다.
+
+```powershell
+# 3. 데이터 준비 (backend 폴더에서)
+Set-Location backend
+.venv/Scripts/python.exe -X utf8 -m scripts.check_providers           # 키·모델 연결 확인 (짧은 유료 호출 2회)
+.venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog          # 100개 항목의 원문 절 확인 (유료 호출 없음)
+.venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus            # 공식 문서 수집·임베딩·색인 (첫 실행만 유료)
+
+# 4. 서버 (터미널 A, backend 폴더)
+.venv/Scripts/python.exe -X utf8 -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000
+```
+
+```powershell
+# 5. 화면 (터미널 B, 저장소 루트)
+npm run dev
+```
+
+http://127.0.0.1:5173 을 엽니다. 상단 상태 줄에 "지식 100건 · 지식 RAG 준비됨"이 보이면 준비가 끝난 것입니다. 키나 색인이 없으면 화면에 해결 방법이 표시됩니다. Python 서버가 없어도 게임 자체는 동작합니다.
+
+- 카탈로그(`backend/catalog/`)는 저장소에 포함되어 있습니다. 출처 페이지나 주석을 바꿨을 때만 `scripts.build_catalog`와 `scripts.build_section_catalog`를 다시 실행합니다.
+- 청크·임베딩 설정을 바꾸면 기존 색인을 재사용하지 않습니다. `.env`의 `CHROMA_PATH`를 새 경로로 바꾸고 `prepare_corpus`를 다시 실행합니다.
+- 시연 순서 예: 지식 탐색에서 "장치에 남은 공간 없음(ENOSPC)" 선택 → "write에서 ENOSPC와 EDQUOT는 각각 어떤 조건에서 발생하나요?" → 조건 탐색 "ALB에서 타깃 연결 문제로 생기는 5xx 오류" → 실습 "웹사이트가 갑자기 안 열려요"에서 `systemctl status nginx`, `df -h` 실행 후 코치에게 질문.
+
+### 테스트
+
+```powershell
+npm test; npm run typecheck; npm run build
+Set-Location backend
+.venv/Scripts/python.exe -X utf8 -m unittest discover -s tests
+```
+
+2026-10-21 기준 결과: Vitest 193개, 백엔드 37개 통과. 상세 결과표는 [검증 결과](docs/submission/검증결과.md)에 있습니다.
+
+### 데이터 출처와 이용 조건
+
+| 출처 | 라이선스 |
+|---|---|
+| curl 매뉴얼·libcurl 오류 코드 (curl.se) | curl license |
+| Linux man-pages errno(3), connect/open/write(2) (man7.org, man-pages 6.19) | GPL-2.0-or-later / Linux-man-pages-copyleft |
+| AWS ALB 문제 해결·타깃 그룹 헬스체크 (docs.aws.amazon.com) | CC BY-SA 4.0 |
+
+수집은 등록된 공식 페이지만 대상으로 합니다. robots.txt를 확인하고, 호스트당 1초 간격을 두며, 429면 재시도하지 않습니다. 원문 캐시는 Git에서 제외합니다. 저장소에 들어 있는 발췌와 변경 사항은 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 고지했습니다.
+
+### 알려진 한계
+
+- 실습 "로드밸런서가 503만 돌려줘요"는 "모든 타깃 unhealthy → 503"을 전제로 합니다. AWS 문서는 이 경우 fail-open을 설명하므로, 코치 답변과 실습 설명이 어긋날 수 있습니다(수정 전).
+- 한국어 항목 주석 100건은 LLM 보조로 작성했고 사람 검수 전입니다.
+- 첫 질문 응답은 약 20~40초입니다(생성 3회 직렬). 같은 질문은 캐시로 즉시 응답합니다.
+- 로컬 시연 기준입니다. GitHub Pages 배포본에서는 게임만 동작하고 RAG 서버는 동작하지 않습니다.
+
+---
 
 아래는 기존 게임의 설명입니다.
 
@@ -192,7 +267,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**175개 테스트** 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
+**193개 테스트**(2026-10-21 기준, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가

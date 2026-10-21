@@ -1,6 +1,6 @@
 # InfraCoach 개발 환경
 
-기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 현재 서버는 10건 RAG 파일럿 단계다(curl 6·ALB 4 항목). 수집·색인(`scripts.prepare_corpus`), `/api/items`, `POST /api/chat`+`/api/jobs/{id}`, retrieve→generate 그래프와 인용 검증이 동작한다. 100건 데이터·조건 탐색·실습 코치는 아직 없다.
+기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 지식 항목 100건(curl 40·Linux errno 40·AWS ALB 20)을 색인하고, `/api/items`, `POST /api/chat`(질문 중 외부 후보 검색·수집 포함), `POST /api/items/search`(조건 탐색), `POST /api/coach`(실습 코치), `/api/jobs/{id}`(진행 상태)를 제공한다. 전체 구조와 실행 순서는 루트 README와 `docs/submission/`을 본다.
 
 ## 설치 (Windows PowerShell)
 
