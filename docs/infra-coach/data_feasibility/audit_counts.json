@@ -1,0 +1,29 @@
+{
+  "counts": {
+    "curl": 86,
+    "linux-errno": 123,
+    "aws-alb": 28
+  },
+  "core_counts": {
+    "curl": 57,
+    "linux-errno": 64,
+    "aws-alb": 28
+  },
+  "total": 237,
+  "core_total": 149,
+  "short_under_80_chars": {
+    "curl": 71,
+    "linux-errno": 114,
+    "aws-alb": 2
+  },
+  "excluded_curl_codes": [
+    "0"
+  ],
+  "excluded_errno_aliases": [
+    "EDEADLOCK",
+    "ENOTSUP",
+    "EWOULDBLOCK"
+  ],
+  "raw_source_count": 3,
+  "all_candidates_need_semantic_review": true
+}

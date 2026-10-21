@@ -1,0 +1,961 @@
+{
+  "model": "gpt-6.1-sol",
+  "results": [
+    {
+      "id": "Q1",
+      "question": "ALB 타깃 그룹의 타깃이 모두 unhealthy이면 ALB는 항상 503을 반환하나요?",
+      "no_rag": {
+        "answer": "아니요. **모든 타깃이 unhealthy라고 해서 ALB가 항상 503을 반환하는 것은 아닙니다.**\n\n- **모든 타깃이 unhealthy인 경우:** ALB는 **fail-open** 방식으로 unhealthy 타깃에도 요청을 전달합니다. 따라서 타깃이 요청을 처리하면 정상 응답이 나올 수도 있고, 연결·처리 상태에 따라 오류가 발생할 수도 있습니다.\n- **타깃 그룹에 등록된 타깃이 없는 경우:** ALB가 **503 Service Unavailable**을 반환합니다. 모든 타깃이 `unused` 상태인 경우에도 503이 발생할 수 있습니다.\n\n핵심은 **`unhealthy`와 ‘요청을 보낼 타깃이 없음’은 다르다**는 점입니다.",
+        "error": null,
+        "seconds": 11.5
+      },
+      "rag": {
+        "seconds": 22.7,
+        "status": "complete",
+        "error": null,
+        "answer": "아니요. 등록된 타깃이 모두 unhealthy인 경우 ALB는 항상 503을 반환하는 것이 아니라, 상태와 관계없이 해당 타깃들로 요청을 라우팅하는 fail-open 동작을 합니다. 모든 활성 가용 영역에서 모든 타깃이 동시에 헬스 체크에 실패하는 경우가 이에 해당합니다. [근거 3][근거 4]\n\n이는 등록된 타깃이 없거나 모든 타깃이 unused인 경우와 구분해야 합니다. 문서는 이 두 경우와, target optimizer가 활성화된 타깃 그룹에 준비된 타깃이 없어 요청이 거부된 경우를 503의 가능한 원인으로 제시합니다. [근거 2]\n\n따라서 ‘모두 unhealthy’라는 사실만으로 503 반환을 단정할 수 없습니다. [근거 3][근거 4]",
+        "suggested_checks": [
+          "타깃 그룹에 등록된 타깃이 없는지, 또는 모두 unused 상태인지 확인하세요. [근거 2]",
+          "target optimizer가 활성화되어 있고, 요청을 받을 준비가 된 타깃이 없어 요청이 거부된 경우인지 확인하세요. [근거 2]"
+        ],
+        "citations": [
+          {
+            "product": "AWS ALB",
+            "fetched_at": "2026-10-21T06:07:57.434049+00:00",
+            "title": "HTTP 503: Service unavailable",
+            "publisher": "Amazon Web Services",
+            "license": "CC-BY-SA-4.0",
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-503-issues",
+            "doc_id": "alb-http-503-issues",
+            "product_version": "rolling snapshot",
+            "chunk_hash": "0c679a42a54bd45611789479ebffb4b9964fc1f706e253a85463b75543c854c3",
+            "item_id": "aws-alb-http-503-issues",
+            "source_type": "external_document",
+            "content_hash": "0c679a42a54bd45611789479ebffb4b9964fc1f706e253a85463b75543c854c3",
+            "chunk_index": 0,
+            "text": "HTTP 503: Service unavailable\nPossible causes:\nThe target groups for the load balancer have no registered targets,\nor all of the registered targets are in an unused state.\nThe request was routed to a target group with target optimizer enabled, and\nwas rejected because no targets were ready to receive requests.\nSee Troubleshoot target optimizer.",
+            "evidence_id": 2
+          },
+          {
+            "publisher": "Amazon Web Services",
+            "source_type": "external_document",
+            "fetched_at": "2026-10-21T06:09:46.670777+00:00",
+            "content_hash": "c4341e53b39797b27cea42bcefbc7b533d3d4da912c53d647d0308ecc912aed9",
+            "product_version": "rolling snapshot",
+            "license": "CC-BY-SA-4.0",
+            "product": "AWS ALB",
+            "chunk_hash": "fbfdcb394b5ddefc5485575c2c2e281f08867101c954a073d55c8d5d765222e2",
+            "item_id": "aws-alb-http-503-issues",
+            "chunk_index": 0,
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html#target-group-health-checks",
+            "title": "ALB health checks and fail-open",
+            "doc_id": "alb-health-overview",
+            "text": "Health checks for Application Load Balancer target groups\nYour Application Load Balancer periodically sends requests to its registered targets to test their status.\nThese tests are called health checks.\nEach load balancer node routes requests only to the healthy targets in the enabled\nAvailability Zones for the load balancer. Each load balancer node checks the health of each\ntarget, using the health check settings for the target groups with which the target is\nregistered. After your target is registered, it must pass one health check to be considered\nhealthy. After each health check is completed, the load balancer node closes the connection\nthat was established for the health check.\nIf a target group contains only unhealthy registered targets, the load balancer routes\nrequests to all those targets, regardless of their health status. This means that if all targets\nfail health checks at the same time in all enabled Availability Zones, the load balancer",
+            "evidence_id": 3
+          },
+          {
+            "source_type": "external_document",
+            "chunk_hash": "5181e5748db6603009b5d61d479e92eeaeee000265ce6288d10caef04c34c221",
+            "product": "AWS ALB",
+            "title": "ALB health checks and fail-open",
+            "license": "CC-BY-SA-4.0",
+            "item_id": "aws-alb-http-503-issues",
+            "doc_id": "alb-health-overview",
+            "chunk_index": 1,
+            "product_version": "rolling snapshot",
+            "content_hash": "c4341e53b39797b27cea42bcefbc7b533d3d4da912c53d647d0308ecc912aed9",
+            "fetched_at": "2026-10-21T06:09:46.670777+00:00",
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html#target-group-health-checks",
+            "publisher": "Amazon Web Services",
+            "text": "requests to all those targets, regardless of their health status. This means that if all targets\nfail health checks at the same time in all enabled Availability Zones, the load balancer\nfails open. The effect of the fail-open is to allow traffic to all targets in all enabled\nAvailability Zones, regardless of their health status, based on the load balancing\nalgorithm.\nHealth checks do not support WebSockets.\nFor more information, see Target group health.\nYou can use health check logs to capture detailed information about the health checks\nmade to your registered targets for your load balancer and store them as log files in Amazon S3.\nYou can use these health check logs to troubleshoot issues with your targets.\nFor more information, see Health check logs.\nContents\nHealth check settings\nTarget health status\nHealth check reason codes\nCheck target health\nUpdate health check settings",
+            "evidence_id": 4
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "AWS ALB all targets unhealthy fail-open HTTP 503",
+            "AWS ALB HTTP 503 no registered targets unused state",
+            "AWS ALB target group health checks fail-open behavior"
+          ],
+          "candidate_ids": [
+            "alb-http-503-issues",
+            "alb-health-overview",
+            "alb-health-states",
+            "alb-target-not-inservice",
+            "alb-troubleshoot-with-resourcemap",
+            "alb-health-health-check-settings",
+            "alb-target-http-errors",
+            "alb-http-464-issues",
+            "alb-health-target-health-reason-codes",
+            "alb-http-413-issues",
+            "alb-http-502-issues"
+          ],
+          "selected_ids": [
+            "alb-http-503-issues",
+            "alb-health-overview",
+            "alb-health-states"
+          ],
+          "excluded_ids": [
+            "alb-target-not-inservice",
+            "alb-troubleshoot-with-resourcemap",
+            "alb-health-health-check-settings",
+            "alb-target-http-errors",
+            "alb-http-464-issues",
+            "alb-health-target-health-reason-codes",
+            "alb-http-413-issues",
+            "alb-http-502-issues"
+          ],
+          "reasons": {
+            "alb-http-503-issues": "선정: ALB의 503 발생 조건인 등록 타깃 부재 또는 모든 타깃의 unused 상태를 확인하여, 모두 unhealthy인 경우와 구분하는 데 필요하다.",
+            "alb-health-overview": "선정: 모든 타깃이 unhealthy일 때의 라우팅 및 fail-open 동작을 확인할 핵심 헬스 체크 문서다.",
+            "alb-health-states": "선정: unhealthy와 unused 등 타깃 상태의 차이를 확인하여 503 발생 조건과 혼동하지 않도록 하는 데 필요하다.",
+            "alb-target-not-inservice": "제외: 개별 타깃이 서비스 상태에 진입하지 못하는 문제로, 모든 타깃이 unhealthy일 때의 ALB 응답 동작을 설명하는 데 필수적이지 않다.",
+            "alb-troubleshoot-with-resourcemap": "제외: 비정상 타깃의 원인을 조사하는 도구 사용법으로, 질문의 핵심인 fail-open과 503 조건 비교에는 필요하지 않다.",
+            "alb-health-health-check-settings": "제외: 헬스 체크 설정 항목은 모든 타깃이 unhealthy일 때 항상 503인지 판단하는 데 필요하지 않다.",
+            "alb-target-http-errors": "제외: 타깃이 생성한 HTTP 오류의 전달과 기록에 관한 내용으로, ALB의 unhealthy 타깃 라우팅 및 자체 503 조건 확인에는 필수적이지 않다.",
+            "alb-http-464-issues": "제외: 요청 프로토콜 불일치로 발생하는 464 오류로 질문과 관련이 없다.",
+            "alb-health-target-health-reason-codes": "제외: 개별 타깃 상태의 원인 진단용 코드이며, 상태 구분과 전체 unhealthy 시 동작 확인은 선정 문서로 충분하다.",
+            "alb-http-413-issues": "제외: 요청 크기 제한으로 발생하는 413 오류로 질문과 관련이 없다.",
+            "alb-http-502-issues": "제외: 연결 및 응답 문제로 발생하는 502 오류로, 모든 타깃이 unhealthy일 때의 503 반환 여부를 판단하는 데 필요하지 않다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 5,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q2",
+      "question": "ALB 액세스 로그에 HTTP 460이 찍혔습니다. 무슨 뜻이고 무엇을 확인해야 하나요?",
+      "no_rag": {
+        "answer": "**HTTP 460은 클라이언트가 ALB의 응답을 받기 전에 연결을 끊었다는 뜻**입니다. AWS ALB가 사용하는 비표준 상태 코드로, 클라이언트가 ALB의 idle timeout이 지나기 전에 연결을 종료했을 때 기록됩니다. **460만으로 백엔드 장애라고 단정할 수는 없습니다.**\n\n### 무엇을 확인해야 하나요?\n\n1. **클라이언트의 요청 취소·타임아웃**\n   - 브라우저 페이지 이동, 사용자 취소, 앱의 요청 취소가 있었는지 확인합니다.\n   - SDK나 HTTP 클라이언트의 응답 대기 시간이 너무 짧지 않은지 확인합니다.\n   - ALB 앞에 CDN·프록시가 있다면, ALB 입장에서는 이들이 클라이언트이므로 해당 구간의 타임아웃과 로그도 확인합니다.\n\n2. **백엔드 응답 지연**\n   - 같은 시각의 애플리케이션 로그, DB 지연, 외부 API 호출 시간을 확인합니다.\n   - ALB 로그의 `target_processing_time`과 CloudWatch의 `TargetResponseTime`을 함께 봅니다.\n   - 단, 요청이 중단된 로그에서는 시간 필드가 `-1`일 수 있어 해당 값만으로 지연 여부를 판단하면 안 됩니다.\n\n3. **구간별 타임아웃 설정**\n   - 클라이언트·프록시의 타임아웃과 ALB의 `idle_timeout.timeout_seconds`를 비교합니다.\n   - 예를 들어 클라이언트는 30초에 포기하지만 백엔드 응답은 40초 걸리면 460이 발생할 수 있습니다.\n   - **ALB idle timeout만 늘려서는 클라이언트의 조기 종료가 해결되지 않습니다.**\n\n4. **로그의 상태 코드 구분**\n   - `elb_status_code=460`인지 확인합니다.\n   - `target_status_code`는 별도입니다. `-`라면 타깃 응답 코드를 기록하지 못했다는 뜻이지, 타깃 장애가 확정됐다는 뜻은 아닙니다.\n\n간헐적인 소수 발생은 사용자 취소일 수 있습니다. **특정 URL이나 일정한 요청 경과 시간에 집중된다면, 백엔드 지연과 클라이언트·프록시 타임아웃을 우선 의심**하세요.",
+        "error": null,
+        "seconds": 18.7,
+        "retry_note": "1차 generation_request_failed(GMS 502) 후 1회 재실행"
+      },
+      "rag": {
+        "seconds": 20.6,
+        "status": "complete",
+        "error": null,
+        "answer": "HTTP 460은 ALB가 클라이언트의 요청을 받았지만, ALB의 유휴 제한 시간(idle timeout)이 지나기 전에 클라이언트가 ALB와의 연결을 닫았다는 뜻입니다. [근거 2]\n\n문서는 클라이언트 제한 시간과 ALB 유휴 제한 시간을 비교하고, 타깃이 클라이언트 제한 시간 내에 응답하는지 확인하도록 안내합니다. 다만 제공된 정보만으로 실제 연결 종료 원인을 확정할 수는 없습니다. [근거 2]",
+        "suggested_checks": [
+          "클라이언트의 제한 시간이 ALB의 유휴 제한 시간보다 긴지 비교하세요. [근거 2]",
+          "타깃이 클라이언트 제한 시간이 만료되기 전에 응답하는지 확인하세요. [근거 2]",
+          "클라이언트가 지원한다면, 클라이언트 제한 시간을 늘려 ALB 유휴 제한 시간에 맞추는 방안을 검토하세요. [근거 2]"
+        ],
+        "citations": [
+          {
+            "chunk_hash": "4cf0023b0ce47b3b126bea7a102def7546995d527cd456293d9d4571ead339f9",
+            "doc_id": "alb-http-460-issues",
+            "chunk_index": 0,
+            "title": "HTTP 460",
+            "item_id": "aws-alb-http-460-issues",
+            "product_version": "rolling snapshot",
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-460-issues",
+            "fetched_at": "2026-10-21T06:07:57.434049+00:00",
+            "content_hash": "4cf0023b0ce47b3b126bea7a102def7546995d527cd456293d9d4571ead339f9",
+            "publisher": "Amazon Web Services",
+            "product": "AWS ALB",
+            "license": "CC-BY-SA-4.0",
+            "source_type": "external_document",
+            "text": "HTTP 460\nThe load balancer received a request from a client, but the client closed the\nconnection with the load balancer before the idle timeout period elapsed.\nCheck whether the client timeout period is greater than the idle timeout period\nfor the load balancer. Ensure that your target provides a response to the client\nbefore the client timeout period elapses, or increase the client timeout period to\nmatch the load balancer idle timeout, if the client supports this.",
+            "evidence_id": 2
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "AWS ALB HTTP 460 troubleshooting",
+            "Application Load Balancer client closed connection before idle timeout",
+            "AWS ALB client timeout load balancer idle timeout"
+          ],
+          "candidate_ids": [
+            "alb-http-460-issues",
+            "alb-http-504-issues",
+            "alb-load-balancer-http-error-codes",
+            "alb-elevated-processing-time",
+            "alb-health-overview",
+            "alb-http-408-issues",
+            "alb-response-code-000",
+            "alb-client-cannot-connect",
+            "alb-custom-domain-request"
+          ],
+          "selected_ids": [
+            "alb-http-460-issues"
+          ],
+          "excluded_ids": [
+            "alb-http-504-issues",
+            "alb-load-balancer-http-error-codes",
+            "alb-elevated-processing-time",
+            "alb-health-overview",
+            "alb-http-408-issues",
+            "alb-response-code-000",
+            "alb-client-cannot-connect",
+            "alb-custom-domain-request"
+          ],
+          "reasons": {
+            "alb-http-460-issues": "선정: HTTP 460은 ALB 유휴 제한 시간이 지나기 전에 클라이언트가 연결을 닫았다는 뜻임을 직접 설명하며, 클라이언트 제한 시간과 ALB 유휴 제한 시간을 비교하라는 확인 사항을 제공한다.",
+            "alb-http-504-issues": "제외: 대상 연결 또는 응답 시간 초과로 발생하는 HTTP 504 문서로, 클라이언트가 연결을 먼저 종료하는 HTTP 460과 원인이 다르다.",
+            "alb-load-balancer-http-error-codes": "제외: ALB 오류 코드의 액세스 로그 기록과 지표에 대한 일반 설명으로, HTTP 460의 의미와 확인 사항은 선정 문서로 충분하다.",
+            "alb-elevated-processing-time": "제외: 처리 시간 집계 방식에 관한 문서로, HTTP 460의 의미나 제한 시간 비교를 직접 설명하지 않는다.",
+            "alb-health-overview": "제외: 대상 그룹 상태 확인에 관한 문서이며, 질문에 상태 확인 실패를 의심할 근거가 없다.",
+            "alb-http-408-issues": "제외: 유휴 제한 시간 내에 클라이언트가 데이터를 보내지 않은 HTTP 408을 다루며, 제한 시간 전에 연결을 닫는 HTTP 460과 다르다.",
+            "alb-response-code-000": "제외: HTTP/2 연결의 요청 수 초과에 따른 연결 종료와 코드 000을 다루므로 HTTP 460 질문에 필요하지 않다.",
+            "alb-client-cannot-connect": "제외: 인터넷 연결 ALB에 접속하지 못하는 문제를 다루며, 요청 수신 후 클라이언트가 연결을 종료한 HTTP 460과 다르다.",
+            "alb-custom-domain-request": "제외: 사용자 지정 도메인의 요청이 ALB에 도달하지 않는 문제로, 이미 액세스 로그에 기록된 HTTP 460의 의미와 확인 사항에 필요하지 않다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 2,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q3",
+      "question": "ALB에서 408 Request timeout이 납니다. TCP keep-alive를 켜면 막을 수 있나요?",
+      "no_rag": {
+        "answer": "**아니요. TCP keep-alive만으로는 ALB의 408을 막을 수 없습니다.** ALB는 TCP keep-alive 패킷을 데이터 전송으로 보지 않으므로 **idle timeout이 초기화되지 않습니다.**\n\nALB가 직접 반환한 `408 Request Timeout`은 클라이언트가 요청을 보내다가 **idle timeout 동안 데이터를 보내지 않았을 때** 발생합니다. ALB의 기본 idle timeout은 **60초**입니다.\n\n확인·대응 방법:\n- **ALB 액세스 로그 확인:** `elb_status_code=408`, `target_status_code=-`라면 ALB가 반환한 오류인지 확인할 수 있습니다.\n- **클라이언트 점검:** 느린 업로드나 네트워크 문제로 요청 전송이 중단되는지 확인하세요.\n- **idle timeout 조정:** 정상적인 요청에서도 긴 전송 공백이 필요하다면 늘리세요. 요청 전송 중에는 timeout 전에 실제 데이터가 전달되어야 합니다.\n\n참고로 **HTTP keep-alive도 유휴 연결 재사용 기능이지, 이 문제를 막는 heartbeat가 아닙니다.**",
+        "error": null,
+        "seconds": 13.1
+      },
+      "rag": {
+        "seconds": 22.1,
+        "status": "complete",
+        "error": null,
+        "answer": "아니요. TCP keep-alive를 보내는 것만으로는 ALB의 HTTP 408 타임아웃을 막을 수 없습니다. 문서는 클라이언트가 유휴 제한 시간(idle timeout)이 만료되기 전에 데이터를 보내지 않았을 때 이 오류가 발생한다고 설명합니다. [근거 2]",
+        "suggested_checks": [
+          "매 유휴 제한 시간이 만료되기 전에 클라이언트가 최소 1바이트의 데이터를 보내는지 확인하세요. [근거 2]",
+          "필요에 따라 유휴 제한 시간을 늘리는 방안을 검토하세요. [근거 2]"
+        ],
+        "citations": [
+          {
+            "chunk_index": 0,
+            "license": "CC-BY-SA-4.0",
+            "content_hash": "ae90192150a0ccd2ebd0d41a7ee3e0740a9d6f7d3853eed0ff5ec3b3819459fa",
+            "product_version": "rolling snapshot",
+            "source_type": "external_document",
+            "product": "AWS ALB",
+            "item_id": "aws-alb-http-408-issues",
+            "publisher": "Amazon Web Services",
+            "chunk_hash": "ae90192150a0ccd2ebd0d41a7ee3e0740a9d6f7d3853eed0ff5ec3b3819459fa",
+            "fetched_at": "2026-10-21T06:07:57.434049+00:00",
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-408-issues",
+            "title": "HTTP 408: Request timeout",
+            "doc_id": "alb-http-408-issues",
+            "text": "HTTP 408: Request timeout\nThe client did not send data before the idle timeout period expired. Sending a TCP\nkeep-alive does not prevent this timeout. Send at least 1 byte of data before each\nidle timeout period elapses. Increase the length of the idle timeout period as\nneeded.",
+            "evidence_id": 2
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "AWS ALB HTTP 408 Request timeout",
+            "AWS ALB idle timeout TCP keep-alive",
+            "AWS ALB idle timeout configuration"
+          ],
+          "candidate_ids": [
+            "alb-http-408-issues",
+            "alb-http-400-issues",
+            "alb-http-460-issues",
+            "alb-http-504-issues",
+            "alb-http-562-issues",
+            "alb-http-413-issues",
+            "alb-http-414-issues",
+            "alb-http-463-issues",
+            "alb-http-464-issues"
+          ],
+          "selected_ids": [
+            "alb-http-408-issues"
+          ],
+          "excluded_ids": [
+            "alb-http-400-issues",
+            "alb-http-460-issues",
+            "alb-http-504-issues",
+            "alb-http-562-issues",
+            "alb-http-413-issues",
+            "alb-http-414-issues",
+            "alb-http-463-issues",
+            "alb-http-464-issues"
+          ],
+          "reasons": {
+            "alb-http-408-issues": "선정: ALB 408의 원인이 유휴 제한 시간 내 클라이언트 데이터 미전송이며, TCP keep-alive로는 방지할 수 없다고 명시한다. 제한 시간마다 최소 1바이트를 전송하거나 유휴 제한 시간을 늘리는 대응도 제시한다.",
+            "alb-http-400-issues": "제외: 잘못된 요청 형식이나 헤더 크기 초과에 따른 400 오류로, 408 및 TCP keep-alive 질문과 무관하다.",
+            "alb-http-460-issues": "제외: 유휴 제한 시간 전에 클라이언트가 연결을 종료하는 460 오류로, 질문의 408 발생 원인 및 TCP keep-alive 효과와 다르다.",
+            "alb-http-504-issues": "제외: 대상 연결 또는 응답 시간 초과에 따른 504 오류로, 클라이언트 데이터 미전송에 따른 408과 다르다.",
+            "alb-http-562-issues": "제외: JWKS 엔드포인트 응답 실패에 관한 오류로, 질문과 무관하다.",
+            "alb-http-413-issues": "제외: 요청 본문이나 헤더 크기 초과에 관한 오류로, 질문과 무관하다.",
+            "alb-http-414-issues": "제외: 요청 URL이나 쿼리 문자열 크기 초과에 관한 오류로, 질문과 무관하다.",
+            "alb-http-463-issues": "제외: X-Forwarded-For 헤더의 IP 주소 개수 초과에 관한 오류로, 질문과 무관하다.",
+            "alb-http-464-issues": "제외: 요청 프로토콜과 대상 그룹 프로토콜 버전의 호환성 오류로, 질문과 무관하다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 2,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q4",
+      "question": "ALB가 타깃과 연결을 맺는 데 기다리는 연결 제한 시간은 몇 초이고, 504의 다른 원인에는 무엇이 있나요?",
+      "no_rag": {
+        "answer": "ALB가 타깃과 **TCP 연결을 맺기 위해 기다리는 제한 시간은 10초**이며, 변경할 수 없습니다.\n\n그 외 **HTTP 504(Gateway Timeout)**의 주요 원인은 다음과 같습니다.\n\n- **타깃 응답 지연**: 연결은 됐지만 타깃이 ALB의 유휴 제한 시간(`idle timeout`, 기본 60초) 안에 응답하지 않음\n- **TLS 핸드셰이크 시간 초과**: HTTPS 타깃과 TLS 핸드셰이크가 10초 안에 완료되지 않음\n- **네트워크 ACL 차단**: 타깃에서 ALB 노드로 돌아오는 응답 트래픽의 임시 포트(`1024–65535`)가 차단됨\n- **잘못된 `Content-Length`**: 헤더에 명시된 크기보다 실제 응답 본문이 작아, ALB가 나머지 데이터를 기다리다 시간 초과됨\n\n즉, **연결 제한 시간 10초**와 **연결 후 응답을 기다리는 유휴 제한 시간**은 구분해야 합니다.",
+        "error": null,
+        "seconds": 12.9
+      },
+      "rag": {
+        "seconds": 19.0,
+        "status": "complete",
+        "error": null,
+        "answer": "ALB가 타깃과 연결을 맺기 위해 기다리는 연결 제한 시간은 **10초**입니다. 이 시간 안에 연결하지 못하면 504의 원인이 될 수 있습니다. [근거 2]\n\n문서에 제시된 다른 가능한 원인은 다음과 같습니다.\n- 연결은 맺었지만 타깃이 유휴 제한 시간(idle timeout) 내에 응답하지 않음. [근거 2]\n- 서브넷의 네트워크 ACL이 타깃에서 ALB 노드로 향하는 임시 포트(1024–65535) 트래픽을 허용하지 않음. [근거 2]\n- 타깃의 Content-Length 헤더 값이 실제 응답 본문보다 커서, ALB가 누락된 바이트를 기다리다 시간 초과됨. [근거 2]\n- 타깃이 Lambda 함수이며 Lambda 서비스가 연결 제한 시간 내에 응답하지 않음. [근거 2]\n- 타깃 연결 과정에서 SSL 핸드셰이크 제한 시간인 10초를 초과함. [근거 2]\n\n이는 가능한 원인 목록이며, 실제 발생 원인이 확정된 것은 아닙니다.",
+        "suggested_checks": [],
+        "citations": [
+          {
+            "source_type": "external_document",
+            "content_hash": "f394a9b23899f9acba346754222f6ecbfb56c7b368b4a20dd5e510f776e5408e",
+            "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-504-issues",
+            "publisher": "Amazon Web Services",
+            "license": "CC-BY-SA-4.0",
+            "doc_id": "alb-http-504-issues",
+            "product": "AWS ALB",
+            "chunk_index": 0,
+            "item_id": "aws-alb-http-504-issues",
+            "chunk_hash": "f394a9b23899f9acba346754222f6ecbfb56c7b368b4a20dd5e510f776e5408e",
+            "fetched_at": "2026-10-21T06:07:57.434049+00:00",
+            "title": "HTTP 504: Gateway timeout",
+            "product_version": "rolling snapshot",
+            "text": "HTTP 504: Gateway timeout\nPossible causes:\nThe load balancer failed to establish a connection to the target before\nthe connection timeout expired (10 seconds).\nThe load balancer established a connection to the target but the target\ndid not respond before the idle timeout period elapsed.\nThe network ACL for the subnet did not allow traffic from\nthe targets to the load balancer nodes on the ephemeral ports (1024-65535).\nThe target returns a content-length header that is larger than the entity\nbody. The load balancer timed out waiting for the missing bytes.\nThe target is a Lambda function and the Lambda service did not respond\nbefore the connection timeout expired.\nThe load balancer encountered an SSL handshake\ntimeout (10 seconds) when connecting to a target.",
+            "evidence_id": 2
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "AWS ALB HTTP 504 Gateway timeout connection timeout 10 seconds",
+            "AWS ALB HTTP 504 idle timeout target response",
+            "AWS ALB HTTP 504 network ACL ephemeral ports 1024-65535 content-length header"
+          ],
+          "candidate_ids": [
+            "alb-http-504-issues",
+            "alb-health-overview",
+            "alb-health-states",
+            "alb-http-502-issues",
+            "alb-http-408-issues",
+            "alb-http-460-issues",
+            "alb-response-code-000",
+            "alb-target-http-errors",
+            "curl-option-expect100-timeout",
+            "alb-http-413-issues",
+            "curl-option-keepalive-time"
+          ],
+          "selected_ids": [
+            "alb-http-504-issues"
+          ],
+          "excluded_ids": [
+            "alb-health-overview",
+            "alb-health-states",
+            "alb-http-502-issues",
+            "alb-http-408-issues",
+            "alb-http-460-issues",
+            "alb-response-code-000",
+            "alb-target-http-errors",
+            "curl-option-expect100-timeout",
+            "alb-http-413-issues",
+            "curl-option-keepalive-time"
+          ],
+          "reasons": {
+            "alb-http-504-issues": "선정: ALB의 타깃 연결 제한 시간이 10초임을 명시하고, HTTP 504의 가능한 원인을 직접 설명하는 문서다.",
+            "alb-health-overview": "제외: 타깃 그룹 상태 확인 개요로, 504의 연결 제한 시간과 다른 원인을 설명하는 데 필요하지 않다.",
+            "alb-health-states": "제외: 타깃 상태에 관한 문서로, 질문의 연결 제한 시간 및 504 원인과 직접 관련이 없다.",
+            "alb-http-502-issues": "제외: HTTP 502의 원인을 다루며 질문의 HTTP 504와 다르다.",
+            "alb-http-408-issues": "제외: 클라이언트가 데이터를 보내지 않아 발생하는 HTTP 408을 다루며, ALB와 타깃 사이의 504 원인과 다르다.",
+            "alb-http-460-issues": "제외: 클라이언트가 연결을 먼저 종료하는 HTTP 460을 다루며, 질문의 HTTP 504 원인 설명에 필요하지 않다.",
+            "alb-response-code-000": "제외: HTTP/2 연결 종료에 따른 응답 코드 000을 다루며 HTTP 504와 관련이 없다.",
+            "alb-target-http-errors": "제외: 타깃이 생성한 HTTP 오류의 전달 및 기록을 다루며, ALB의 연결 제한 시간과 504 원인을 직접 설명하지 않는다.",
+            "curl-option-expect100-timeout": "제외: AWS ALB가 아닌 curl의 100-continue 응답 대기 옵션이며, 질문은 curl을 다루지 않는다.",
+            "alb-http-413-issues": "제외: 요청 본문 및 헤더 크기로 인한 HTTP 413을 다루며 HTTP 504와 다르다.",
+            "curl-option-keepalive-time": "제외: AWS ALB가 아닌 curl의 TCP keepalive 설정이며, 질문은 curl을 다루지 않는다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 2,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q5",
+      "question": "curl이 404 응답을 받으면 항상 종료 코드 22로 끝나나요?",
+      "no_rag": {
+        "answer": "아니요. **기본적으로 `curl`은 HTTP 404를 받아도 전송 자체가 성공하면 종료 코드 `0`을 반환합니다.**\n\nHTTP 오류를 종료 코드 `22`로 처리하려면 옵션을 지정해야 합니다.\n\n- **`-f` / `--fail`**: HTTP 400 이상이면 종료 코드 `22`, 응답 본문은 출력하지 않음\n- **`--fail-with-body`**: HTTP 400 이상이면 종료 코드 `22`, 응답 본문도 출력\n\n```bash\ncurl https://example.com/not-found\necho $?  # 전송이 성공했다면 0\n\ncurl -f https://example.com/not-found\necho $?  # 404 응답이면 22\n```\n\n즉, **HTTP 상태 코드와 `curl`의 종료 코드는 별개**입니다.",
+        "error": null,
+        "seconds": 11.7
+      },
+      "rag": {
+        "seconds": 24.8,
+        "status": "complete",
+        "error": null,
+        "answer": "아니요. curl은 기본적으로 HTTP 응답 코드를 실패로 간주하지 않으므로, 404 응답만으로 항상 종료 코드 22가 되는 것은 아닙니다. [근거 2]\n- `--fail`을 사용하면 404를 포함한 HTTP 400 이상 응답에서 종료 코드 22를 반환하고 응답 본문을 출력하지 않습니다. [근거 2]\n- `--fail-with-body`를 사용해도 종료 코드 22를 반환하지만, 응답 본문은 출력·저장할 수 있습니다. [근거 4]",
+        "suggested_checks": [],
+        "citations": [
+          {
+            "chunk_hash": "e3f76d51d6334a2b467f3830567ea2792ff679fd6f9fedddd28e981651089677",
+            "doc_id": "curl-option-fail",
+            "source_type": "external_document",
+            "source_url": "https://curl.se/docs/manpage.html#--fail",
+            "chunk_index": 0,
+            "origin": "query_selected",
+            "product_version": "8.23.1",
+            "item_id": "curl-22",
+            "license": "curl",
+            "publisher": "curl contributors",
+            "content_hash": "e3f76d51d6334a2b467f3830567ea2792ff679fd6f9fedddd28e981651089677",
+            "fetched_at": "2026-10-21T05:45:45.909244+00:00",
+            "title": "-f, --fail",
+            "product": "curl",
+            "text": "-f, --fail\n(HTTP) Fail with error code 22 and with no response body output at all for HTTP transfers returning HTTP response codes at 400 or greater.\nIn normal cases when an HTTP server fails to deliver a document, it returns a body of text stating so (which often also describes why and more) and a 4xx HTTP response code. This command line option prevents curl from outputting that data and instead returns error 22 early. By default, curl does not consider HTTP response codes to indicate failure.\nTo get both the error code and also save the content, use --fail-with-body instead.\nThis method is not fail-safe and there are occasions where non-successful response codes slip through, especially when authentication is involved (response codes 401 and 407).\nProviding --fail multiple times has no extra effect. Disable it again with --no-fail.\nExample:\ncurl --fail https://example.com\nThis option is mutually exclusive with --fail-with-body. See also --fail-with-body and --fail-early.",
+            "evidence_id": 2
+          },
+          {
+            "product": "curl",
+            "product_version": "8.23.1",
+            "source_type": "external_document",
+            "doc_id": "curl-option-fail-with-body",
+            "origin": "query_selected",
+            "publisher": "curl contributors",
+            "item_id": "curl-22",
+            "title": "--fail-with-body",
+            "content_hash": "11f55f0f0aec4f0aed25e8302e5c1aebb9f34af1e3b5fa1cd836a5eb06f02c63",
+            "chunk_hash": "11f55f0f0aec4f0aed25e8302e5c1aebb9f34af1e3b5fa1cd836a5eb06f02c63",
+            "license": "curl",
+            "chunk_index": 0,
+            "source_url": "https://curl.se/docs/manpage.html#--fail-with-body",
+            "fetched_at": "2026-10-21T05:45:45.909244+00:00",
+            "text": "--fail-with-body\n(HTTP) Return an error on server errors where the HTTP response code is 400 or greater). In normal cases when an HTTP server fails to deliver a document, it returns an HTML document stating so (which often also describes why and more). This option allows curl to output and save that content but also to return error 22.\nThis is an alternative option to --fail which makes curl fail for the same circumstances but without saving the content.\nProviding --fail-with-body multiple times has no extra effect. Disable it again with --no-fail-with-body.\nExample:\ncurl --fail-with-body https://example.com\nThis option is mutually exclusive with --fail. Added in 7.76.0. See also --fail and --fail-early.",
+            "evidence_id": 4
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "curl exit code 22 HTTP 404 --fail",
+            "curl --fail-with-body HTTP error exit code"
+          ],
+          "candidate_ids": [
+            "curl-exit-22",
+            "libcurl-22",
+            "curl-option-fail",
+            "curl-exit-16",
+            "curl-exit-33",
+            "curl-exit-34",
+            "curl-exit-92",
+            "curl-exit-95",
+            "curl-option-fail-with-body",
+            "alb-http-561-issues"
+          ],
+          "selected_ids": [
+            "curl-exit-22",
+            "curl-option-fail",
+            "curl-option-fail-with-body"
+          ],
+          "excluded_ids": [
+            "libcurl-22",
+            "curl-exit-16",
+            "curl-exit-33",
+            "curl-exit-34",
+            "curl-exit-92",
+            "curl-exit-95",
+            "alb-http-561-issues"
+          ],
+          "reasons": {
+            "curl-exit-22": "선정: 종료 코드 22가 HTTP 400 이상 응답만으로 항상 발생하는 것이 아니라 --fail 사용 조건과 연결됨을 직접 설명한다.",
+            "libcurl-22": "제외: libcurl API의 CURLOPT_FAILONERROR 설정에 관한 설명으로, curl 명령줄의 종료 코드에 대한 질문에는 선정한 문서로 충분하다.",
+            "curl-option-fail": "선정: --fail이 HTTP 404를 포함한 400 이상 응답에서 종료 코드 22를 반환하고 응답 본문을 출력하지 않는 동작을 설명한다.",
+            "curl-exit-16": "제외: HTTP/2 프레이밍 오류로, HTTP 404와 종료 코드 22의 관계를 설명하지 않는다.",
+            "curl-exit-33": "제외: HTTP 범위 요청 오류로 질문과 관련이 없다.",
+            "curl-exit-34": "제외: POST 요청 생성 오류로 질문과 관련이 없다.",
+            "curl-exit-92": "제외: HTTP/2 스트림 오류로 질문과 관련이 없다.",
+            "curl-exit-95": "제외: HTTP/3 계층 오류로 질문과 관련이 없다.",
+            "curl-option-fail-with-body": "선정: HTTP 400 이상을 오류로 처리하는 다른 옵션을 설명하므로, --fail을 사용할 때만 해당한다는 설명을 보완하는 데 필요하다.",
+            "alb-http-561-issues": "제외: curl이 아닌 AWS ALB의 인증 관련 HTTP 561 오류 문서이며, 질문은 AWS ALB를 직접 다루지 않는다."
+          },
+          "collected_ids": [
+            "curl-option-fail",
+            "curl-option-fail-with-body"
+          ],
+          "collect_embedding_calls": 2,
+          "evidence_count": 4,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [
+          {
+            "doc_id": "curl-option-fail",
+            "title": "-f, --fail"
+          },
+          {
+            "doc_id": "curl-option-fail-with-body",
+            "title": "--fail-with-body"
+          }
+        ],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q6",
+      "question": "curl --connect-timeout은 DNS 조회 시간도 포함하나요? --max-time과는 무엇이 다른가요?",
+      "no_rag": {
+        "answer": "네. **`--connect-timeout`에는 DNS 조회 시간도 포함됩니다.**\n\n| 옵션 | 제한하는 범위 |\n|---|---|\n| `--connect-timeout` | DNS 조회 → TCP 연결 → TLS 핸드셰이크 등 **연결이 완료될 때까지** |\n| `--max-time` | 위 연결 과정부터 요청 전송, 서버 응답 대기, 본문 다운로드까지 **전체 작업 시간** |\n\n예를 들어:\n\n```bash\ncurl --connect-timeout 5 --max-time 20 https://example.com\n```\n\n- DNS 조회와 TCP·TLS 연결에 **합쳐서 최대 5초**를 허용합니다. 단계별로 5초씩이 아닙니다.\n- 연결 이후 응답 수신까지 포함한 **전체 작업은 최대 20초**입니다.\n- 두 제한은 더해지지 않습니다. 전체 제한이 25초가 되는 것은 아닙니다.\n\n즉, **연결 자체가 느린 경우는 `--connect-timeout`**, **연결 후 서버 응답이나 다운로드가 느린 경우까지 제한하려면 `--max-time`**을 사용합니다.",
+        "error": null,
+        "seconds": 11.2
+      },
+      "rag": {
+        "seconds": 23.5,
+        "status": "complete",
+        "error": null,
+        "answer": "네, `--connect-timeout`에는 DNS 조회 시간도 포함됩니다. 연결 단계는 DNS 조회와 요청된 TCP·TLS 또는 QUIC 핸드셰이크가 완료될 때까지이며, 이 옵션은 그 단계만 제한합니다. 제한 시간 안에 연결되면 이후 전송은 계속됩니다. [근거 2]\n\n반면 `--max-time`(`-m`)은 연결 단계만이 아니라 각 전송 전체에 허용하는 최대 시간을 제한합니다. 즉, 연결 단계의 제한은 `--connect-timeout`, 전송 전체의 제한은 `--max-time`입니다. [근거 2][근거 3]\n\n참고로 `--retry`를 사용하면 `--max-time`의 시간 카운터는 재시도마다 초기화됩니다. 재시도 시간을 제한하려면 문서에서 안내하는 `--retry-max-time`을 구분해 사용해야 합니다. [근거 3]",
+        "suggested_checks": [],
+        "citations": [
+          {
+            "product": "curl",
+            "chunk_hash": "4760b9e6d8be18fc1aa03c766a804ffe4c9da552457c0e5c1145b81d67f769fb",
+            "product_version": "8.23.1",
+            "content_hash": "4760b9e6d8be18fc1aa03c766a804ffe4c9da552457c0e5c1145b81d67f769fb",
+            "license": "curl",
+            "item_id": "curl-28",
+            "doc_id": "curl-option-connect-timeout",
+            "source_type": "external_document",
+            "title": "curl --connect-timeout",
+            "publisher": "curl contributors",
+            "source_url": "https://curl.se/docs/manpage.html#--connect-timeout",
+            "fetched_at": "2026-10-21T05:45:45.909244+00:00",
+            "chunk_index": 0,
+            "text": "--connect-timeout <seconds>\nMaximum time in seconds that you allow curl's connection to take. This only limits the connection phase, so if curl connects within the given period it continues - if not it exits.\nThis option accepts decimal values. The decimal value needs to be provided using a dot (.) as decimal separator - not the local version even if it might be using another separator.\nThe connection phase is considered complete when the DNS lookup and requested TCP, TLS or QUIC handshakes are done.\nIf --connect-timeout is provided several times, the last set value is used.\nExamples:\ncurl --connect-timeout 20 https://example.com\ncurl --connect-timeout 3.14 https://example.com\nSee also --max-time.",
+            "evidence_id": 2
+          },
+          {
+            "license": "curl",
+            "content_hash": "c3b679ad1786d8af8ba057131d326259a88e5927936c94cc0286a628e89f2654",
+            "doc_id": "curl-option-max-time",
+            "item_id": "curl-28",
+            "product": "curl",
+            "chunk_hash": "c3b679ad1786d8af8ba057131d326259a88e5927936c94cc0286a628e89f2654",
+            "fetched_at": "2026-10-21T05:45:45.909244+00:00",
+            "source_type": "external_document",
+            "product_version": "8.23.1",
+            "source_url": "https://curl.se/docs/manpage.html#--max-time",
+            "publisher": "curl contributors",
+            "title": "curl --max-time",
+            "chunk_index": 0,
+            "text": "-m, --max-time <seconds>\nSet the maximum time in seconds that you allow each transfer to take. Prevents your batch jobs from hanging for hours due to slow networks or links going down. This option accepts decimal values.\nIf you enable retrying the transfer (--retry) then the maximum time counter is reset each time the transfer is retried. You can use --retry-max-time to limit the retry time.\nThe decimal value needs to be provided using a dot (.) as decimal separator - not the local version even if it might be using another separator.\nIf --max-time is provided several times, the last set value is used.\nExamples:\ncurl --max-time 10 https://example.com\ncurl --max-time 2.92 https://example.com\nSee also --connect-timeout and --retry-max-time.",
+            "evidence_id": 3
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "curl --connect-timeout DNS lookup timeout",
+            "curl --connect-timeout --max-time difference",
+            "curl exit code 28 Operation timeout"
+          ],
+          "candidate_ids": [
+            "curl-exit-28",
+            "libcurl-28",
+            "curl-option-connect-timeout",
+            "curl-option-max-time",
+            "curl-exit-0",
+            "curl-exit-12",
+            "curl-exit-38",
+            "alb-http-408-issues",
+            "alb-http-504-issues",
+            "alb-response-code-000",
+            "curl-exit-10",
+            "curl-exit-22"
+          ],
+          "selected_ids": [
+            "curl-exit-28",
+            "curl-option-connect-timeout",
+            "curl-option-max-time"
+          ],
+          "excluded_ids": [
+            "libcurl-28",
+            "curl-exit-0",
+            "curl-exit-12",
+            "curl-exit-38",
+            "alb-http-408-issues",
+            "alb-http-504-issues",
+            "alb-response-code-000",
+            "curl-exit-10",
+            "curl-exit-22"
+          ],
+          "reasons": {
+            "curl-exit-28": "선택 항목 자체 설명 문서는 항상 포함",
+            "libcurl-28": "제외: 시간 제한 초과 오류의 정의로, 질문한 CLI 옵션의 차이를 설명하는 데 필요하지 않다.",
+            "curl-option-connect-timeout": "선정: 연결 단계의 시간 제한을 정의하는 옵션 문서로, DNS 조회가 제한 범위에 포함되는지 확인하는 데 필요한 핵심 후보이다.",
+            "curl-option-max-time": "선정: 각 전송 전체에 적용되는 최대 시간을 설명하여 연결 단계만 제한하는 --connect-timeout과 비교하는 데 필요하다.",
+            "curl-exit-0": "제외: 성공 종료 코드로 시간 제한 옵션과 관련이 없다.",
+            "curl-exit-12": "제외: 활성 FTP의 역방향 연결 대기 시간 초과에 관한 내용으로 질문의 옵션 비교와 무관하다.",
+            "curl-exit-38": "제외: LDAP 바인딩 실패에 관한 내용으로 질문과 무관하다.",
+            "alb-http-408-issues": "제외: curl이 아닌 AWS ALB의 유휴 시간 제한 문제이며, 질문은 AWS ALB를 직접 다루지 않는다.",
+            "alb-http-504-issues": "제외: curl이 아닌 AWS ALB의 대상 연결 및 게이트웨이 시간 초과 문제이며, 질문은 AWS ALB를 직접 다루지 않는다.",
+            "alb-response-code-000": "제외: curl이 아닌 AWS ALB의 HTTP/2 연결 종료 동작이며, 질문은 AWS ALB를 직접 다루지 않는다.",
+            "curl-exit-10": "제외: 활성 FTP 연결 수락 실패에 관한 내용으로 DNS 조회 및 두 시간 제한 옵션의 차이와 무관하다.",
+            "curl-exit-22": "제외: --fail 사용 시 HTTP 오류에 관한 종료 코드로 시간 제한 옵션과 무관하다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 4,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q7",
+      "question": "EMFILE과 ENFILE은 각각 어떤 한도를 넘었을 때 나나요?",
+      "no_rag": {
+        "answer": "- **EMFILE**: **프로세스별 열린 파일 디스크립터(FD) 한도**를 넘었을 때 발생합니다. Linux에서는 보통 `RLIMIT_NOFILE`에 해당하며, `ulimit -n`으로 확인합니다.\n- **ENFILE**: **시스템 전체의 열린 파일 한도**를 넘었을 때 발생합니다. Linux에서는 보통 `fs.file-max`와 관련됩니다.\n\n즉, **EMFILE은 프로세스별**, **ENFILE은 시스템 전체** 한도입니다. 소켓도 FD를 사용하므로 같은 오류가 날 수 있습니다.",
+        "error": null,
+        "seconds": 4.8
+      },
+      "rag": {
+        "seconds": 20.9,
+        "status": "complete",
+        "error": null,
+        "answer": "- EMFILE: 프로세스별 열린 파일 디스크립터 수 한도인 RLIMIT_NOFILE에 도달했을 때 발생합니다. 문서는 /proc/sys/fs/nr_open 한도 초과로도 발생할 수 있다고 설명합니다. [근거 4] [근거 2]\n- ENFILE: 시스템 전체의 열린 파일 수 한도에 도달했을 때 발생합니다. Linux에서는 /proc/sys/fs/file-max 한도에 걸린 결과일 가능성이 있다고 설명하며, 이를 확정 원인으로 단정하지는 않습니다. [근거 3]\n\n핵심 차이는 EMFILE은 프로세스별 한도, ENFILE은 시스템 전체 한도라는 점입니다. [근거 4] [근거 3]",
+        "suggested_checks": [],
+        "citations": [
+          {
+            "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html#DESCRIPTION/EMFILE",
+            "item_id": "linux-errno-EMFILE",
+            "license": "GPL-2.0-or-later",
+            "source_type": "external_document",
+            "title": "errno(3): EMFILE",
+            "chunk_index": 0,
+            "chunk_hash": "eb2b0c8e27a4556948f1c403d6ebe3a5854e6f03c80aee79a0f0078f3bc2b3b3",
+            "product": "Linux",
+            "product_version": "6.19",
+            "fetched_at": "2026-10-21T06:07:24.935613+00:00",
+            "doc_id": "linux-errno-EMFILE",
+            "publisher": "Linux man-pages project (man7.org HTML)",
+            "content_hash": "eb2b0c8e27a4556948f1c403d6ebe3a5854e6f03c80aee79a0f0078f3bc2b3b3",
+            "text": "EMFILE Too many open files (POSIX.1-2001). Commonly caused by exceeding the RLIMIT_NOFILE resource limit described in getrlimit(2). Can also be caused by exceeding the limit specified in /proc/sys/fs/nr_open.",
+            "evidence_id": 2
+          },
+          {
+            "title": "errno(3): ENFILE",
+            "chunk_hash": "92a562661bd3b889c956929bd8c348a5fd698e2d7f993940e6f6e44bbcab1ca4",
+            "content_hash": "92a562661bd3b889c956929bd8c348a5fd698e2d7f993940e6f6e44bbcab1ca4",
+            "publisher": "Linux man-pages project (man7.org HTML)",
+            "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html#DESCRIPTION/ENFILE",
+            "product_version": "6.19",
+            "fetched_at": "2026-10-21T06:07:24.935613+00:00",
+            "license": "GPL-2.0-or-later",
+            "chunk_index": 0,
+            "doc_id": "linux-errno-ENFILE",
+            "origin": "query_selected",
+            "item_id": "linux-errno-EMFILE",
+            "product": "Linux",
+            "source_type": "external_document",
+            "text": "ENFILE Too many open files in system (POSIX.1-2001). On Linux, this is probably a result of encountering the /proc/sys/fs/file-max limit (see proc(5)).",
+            "evidence_id": 3
+          },
+          {
+            "fetched_at": "2026-10-21T06:07:57.012813+00:00",
+            "source_url": "https://man7.org/linux/man-pages/man2/open.2.html#ERRORS/EMFILE",
+            "title": "open(2) ERRORS: EMFILE",
+            "publisher": "Linux man-pages project (man7.org HTML)",
+            "doc_id": "linux-open-EMFILE",
+            "product": "Linux",
+            "source_type": "external_document",
+            "license": "Linux-man-pages-copyleft",
+            "content_hash": "afe9e256f236e21261f267f24131406bee752f2a2ebc7407b6309892407ceb90",
+            "chunk_hash": "afe9e256f236e21261f267f24131406bee752f2a2ebc7407b6309892407ceb90",
+            "item_id": "linux-errno-EMFILE",
+            "chunk_index": 0,
+            "product_version": "6.19",
+            "text": "EMFILE The per-process limit on the number of open file descriptors has been reached (see the description of RLIMIT_NOFILE in getrlimit(2)).",
+            "evidence_id": 4
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "Linux EMFILE RLIMIT_NOFILE getrlimit(2)",
+            "Linux EMFILE /proc/sys/fs/nr_open",
+            "Linux ENFILE system-wide open files limit /proc/sys/fs/file-max"
+          ],
+          "candidate_ids": [
+            "linux-errno-EMFILE",
+            "linux-open-EMFILE",
+            "linux-errno-ENFILE",
+            "linux-open-ENFILE",
+            "curl-exit-37",
+            "linux-open-EINTR",
+            "linux-open-ENOMEM",
+            "linux-open-ENXIO",
+            "linux-open-EOVERFLOW",
+            "linux-open-EACCES"
+          ],
+          "selected_ids": [
+            "linux-errno-EMFILE",
+            "linux-open-EMFILE",
+            "linux-errno-ENFILE"
+          ],
+          "excluded_ids": [
+            "linux-open-ENFILE",
+            "curl-exit-37",
+            "linux-open-EINTR",
+            "linux-open-ENOMEM",
+            "linux-open-ENXIO",
+            "linux-open-EOVERFLOW",
+            "linux-open-EACCES"
+          ],
+          "reasons": {
+            "linux-errno-EMFILE": "선정: EMFILE이 RLIMIT_NOFILE 자원 제한 초과로 흔히 발생하며 /proc/sys/fs/nr_open 제한으로도 발생할 수 있음을 설명한다.",
+            "linux-open-EMFILE": "선정: RLIMIT_NOFILE이 프로세스별 열린 파일 디스크립터 수 제한임을 명시하여 ENFILE의 시스템 전체 제한과 구분하는 데 필요하다.",
+            "linux-errno-ENFILE": "선정: ENFILE이 시스템 전체의 열린 파일 수 제한과 관련되며 Linux에서는 /proc/sys/fs/file-max 제한에 도달한 결과일 수 있음을 설명한다.",
+            "linux-open-ENFILE": "제외: ENFILE의 시스템 전체 제한을 설명하지만 선정한 linux-errno-ENFILE과 내용이 중복된다.",
+            "curl-exit-37": "제외: Linux errno가 아닌 curl의 파일 읽기 실패 종료 코드로, 질문은 curl을 직접 다루지 않는다.",
+            "linux-open-EINTR": "제외: 시그널에 의한 open 호출 중단으로, 열린 파일 수 제한과 무관하다.",
+            "linux-open-ENOMEM": "제외: 메모리 할당 실패에 관한 오류로, EMFILE과 ENFILE의 한도 비교에 필요하지 않다.",
+            "linux-open-ENXIO": "제외: FIFO의 읽기 측 부재나 장치 부재 등에 관한 오류로, 열린 파일 수 제한과 무관하다.",
+            "linux-open-EOVERFLOW": "제외: 표현 가능한 파일 크기 초과에 관한 오류로, 열린 파일 수 제한과 무관하다.",
+            "linux-open-EACCES": "제외: 파일 및 경로 접근 권한 오류로, EMFILE과 ENFILE의 한도 비교에 필요하지 않다."
+          },
+          "collected_ids": [
+            "linux-errno-ENFILE"
+          ],
+          "collect_embedding_calls": 0,
+          "evidence_count": 4,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [
+          {
+            "doc_id": "linux-errno-ENFILE",
+            "title": "errno(3): ENFILE"
+          }
+        ],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q8",
+      "question": "write가 ENOSPC와 EDQUOT를 반환하는 조건은 각각 무엇인가요?",
+      "no_rag": {
+        "answer": "`write()`에서 두 오류의 차이는 **파일시스템 공간 부족인지, 할당량 초과인지**입니다.\n\n- **`ENOSPC` (No space left on device)**: 파일이 있는 장치·파일시스템에 데이터를 기록할 여유 공간이 없는 경우입니다.\n- **`EDQUOT` (Disk quota exceeded)**: 사용자·그룹 등에 설정된 디스크 공간 할당량(quota)을 소진한 경우입니다. 파일시스템에 여유 공간이 남아 있어도 발생할 수 있습니다.\n\n오류가 발생하면 보통 `write()`는 `-1`을 반환하고 `errno`에 해당 오류 코드를 설정합니다. 다만 일부 데이터를 이미 썼다면, `-1` 대신 **실제로 쓴 바이트 수**를 반환할 수 있습니다.",
+        "error": null,
+        "seconds": 14.4
+      },
+      "rag": {
+        "seconds": 31.4,
+        "status": "complete",
+        "error": null,
+        "answer": "write(2)의 두 오류 조건은 다음과 같습니다.\n- ENOSPC: fd가 가리키는 파일이 있는 장치에 데이터를 쓸 공간이 없을 때 발생합니다. [근거 4]\n- EDQUOT: fd가 가리키는 파일이 속한 파일시스템에서 사용자의 디스크 블록 할당량이 소진되었을 때 발생합니다. [근거 3]\n즉, 장치의 데이터 저장 공간 부족과 사용자의 디스크 블록 할당량 소진을 구분합니다. [근거 4] [근거 3]",
+        "suggested_checks": [],
+        "citations": [
+          {
+            "product_version": "6.19",
+            "title": "write(2) ERRORS: EDQUOT",
+            "fetched_at": "2026-10-21T06:07:28.226951+00:00",
+            "product": "Linux",
+            "origin": "query_selected",
+            "chunk_index": 0,
+            "doc_id": "linux-write-EDQUOT",
+            "source_type": "external_document",
+            "source_url": "https://man7.org/linux/man-pages/man2/write.2.html#ERRORS/EDQUOT",
+            "license": "Linux-man-pages-copyleft",
+            "item_id": "linux-errno-ENOSPC",
+            "content_hash": "187e43133d15105ff1ba85389fa16b2431c9c17f9480d12f6ccbb444e30dfa6c",
+            "publisher": "Linux man-pages project (man7.org HTML)",
+            "chunk_hash": "187e43133d15105ff1ba85389fa16b2431c9c17f9480d12f6ccbb444e30dfa6c",
+            "text": "EDQUOT The user's quota of disk blocks on the filesystem containing the file referred to by fd has been exhausted.",
+            "evidence_id": 3
+          },
+          {
+            "product": "Linux",
+            "chunk_hash": "43f71adac8a8134462796a200eb6ccadd7cac80892b3296a8b390a454de2b0e6",
+            "publisher": "Linux man-pages project (man7.org HTML)",
+            "source_url": "https://man7.org/linux/man-pages/man2/write.2.html#ERRORS/ENOSPC",
+            "content_hash": "43f71adac8a8134462796a200eb6ccadd7cac80892b3296a8b390a454de2b0e6",
+            "chunk_index": 0,
+            "fetched_at": "2026-10-21T06:07:28.226951+00:00",
+            "license": "Linux-man-pages-copyleft",
+            "doc_id": "linux-write-ENOSPC",
+            "title": "write(2) ERRORS: ENOSPC",
+            "source_type": "external_document",
+            "product_version": "6.19",
+            "item_id": "linux-errno-ENOSPC",
+            "text": "ENOSPC The device containing the file referred to by fd has no room for the data.",
+            "evidence_id": 4
+          }
+        ],
+        "warnings": [],
+        "trace": {
+          "queries": [
+            "Linux write(2) ENOSPC No space left on device",
+            "Linux write(2) EDQUOT disk quota exceeded"
+          ],
+          "candidate_ids": [
+            "linux-errno-ENOSPC",
+            "linux-open-ENOSPC",
+            "linux-write-ENOSPC",
+            "linux-write-EDQUOT",
+            "curl-exit-70",
+            "linux-errno-EDQUOT",
+            "linux-open-EDQUOT",
+            "curl-exit-1",
+            "curl-exit-23",
+            "curl-exit-74",
+            "curl-exit-89"
+          ],
+          "selected_ids": [
+            "linux-errno-ENOSPC",
+            "linux-write-ENOSPC",
+            "linux-write-EDQUOT"
+          ],
+          "excluded_ids": [
+            "linux-open-ENOSPC",
+            "curl-exit-70",
+            "linux-errno-EDQUOT",
+            "linux-open-EDQUOT",
+            "curl-exit-1",
+            "curl-exit-23",
+            "curl-exit-74",
+            "curl-exit-89"
+          ],
+          "reasons": {
+            "linux-errno-ENOSPC": "선택 항목 자체 설명 문서는 항상 포함",
+            "linux-open-ENOSPC": "제외: open(2)의 파일 생성 공간 부족 조건으로, 질문의 write(2) 반환 조건과 다르다.",
+            "linux-write-ENOSPC": "선정: fd가 가리키는 파일이 있는 장치에 데이터를 쓸 공간이 없을 때 write(2)가 ENOSPC를 반환함을 설명한다.",
+            "linux-write-EDQUOT": "선정: fd가 가리키는 파일이 있는 파일시스템에서 사용자의 디스크 블록 할당량이 소진되었을 때 write(2)가 EDQUOT를 반환함을 설명한다.",
+            "curl-exit-70": "제외: Linux write(2)가 아닌 curl 제품의 TFTP 서버 공간 부족 종료 코드이며, 질문에서 curl을 다루지 않는다.",
+            "linux-errno-EDQUOT": "제외: EDQUOT의 일반적 의미만 설명하며, write(2)의 구체적인 할당량 소진 조건은 선정 문서가 설명한다.",
+            "linux-open-EDQUOT": "제외: open(2)에서 O_CREAT로 파일을 생성할 때의 블록 또는 inode 할당량 조건으로, write(2)의 반환 조건과 다르다.",
+            "curl-exit-1": "제외: Linux가 아닌 curl 제품의 미지원 프로토콜 종료 코드로, 질문과 무관하다.",
+            "curl-exit-23": "제외: Linux write(2)가 아닌 curl 제품의 쓰기 오류 종료 코드로, ENOSPC와 EDQUOT의 반환 조건을 설명하지 않는다.",
+            "curl-exit-74": "제외: Linux가 아닌 curl 제품의 TFTP 사용자 관련 종료 코드로, 질문과 무관하다.",
+            "curl-exit-89": "제외: Linux가 아닌 curl 제품의 연결 대기 관련 종료 코드로, 질문과 무관하다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 4,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    },
+    {
+      "id": "Q9",
+      "question": "ALB 503 장애가 났을 때 AWS Business 지원 플랜의 최초 응답 시간은 몇 분인가요?",
+      "no_rag": {
+        "answer": "AWS **Business Support 기준**, ALB 503으로 **프로덕션 시스템이 중단된 경우 최초 응답 시간은 1시간 이내(60분)**입니다.\n\n단, 일부 기능만 저하된 경우에는 **4시간 이내**이며, 이는 **장애 복구 시간이 아니라 지원팀의 최초 응답 시간**입니다.",
+        "error": null,
+        "seconds": 8.6
+      },
+      "rag": {
+        "seconds": 23.7,
+        "status": "complete",
+        "error": null,
+        "answer": "AWS Business 지원 플랜의 최초 응답 시간이 몇 분인지는 제공된 문서에서 확인되지 않습니다. 지원 플랜의 응답 시간에 관한 근거가 없어 답변을 보류합니다.",
+        "suggested_checks": [],
+        "citations": [],
+        "warnings": [
+          "답변에 인용된 근거가 없습니다."
+        ],
+        "trace": {
+          "queries": [
+            "AWS Business Support initial response time production system down",
+            "AWS Business Support response times HTTP 503 Application Load Balancer"
+          ],
+          "candidate_ids": [
+            "alb-http-503-issues",
+            "alb-health-overview",
+            "alb-health-states",
+            "alb-elevated-processing-time",
+            "alb-response-code-000",
+            "alb-load-balancer-http-error-codes",
+            "alb-client-cannot-connect",
+            "alb-custom-domain-request",
+            "alb-http-403-issues",
+            "alb-http-502-issues",
+            "alb-http-562-issues"
+          ],
+          "selected_ids": [
+            "alb-http-503-issues"
+          ],
+          "excluded_ids": [
+            "alb-health-overview",
+            "alb-health-states",
+            "alb-elevated-processing-time",
+            "alb-response-code-000",
+            "alb-load-balancer-http-error-codes",
+            "alb-client-cannot-connect",
+            "alb-custom-domain-request",
+            "alb-http-403-issues",
+            "alb-http-502-issues",
+            "alb-http-562-issues"
+          ],
+          "reasons": {
+            "alb-http-503-issues": "선택 항목 자체 설명 문서는 항상 포함",
+            "alb-health-overview": "제외: ALB 타깃 그룹의 상태 확인 문서로, AWS Business 지원 플랜의 최초 응답 시간과 무관하다.",
+            "alb-health-states": "제외: ALB 타깃 상태를 설명하며, AWS Business 지원 플랜의 최초 응답 시간 정보가 없다.",
+            "alb-elevated-processing-time": "제외: ALB 요청 처리 시간에 관한 문서이며, 지원 요청의 최초 응답 시간을 다루지 않는다.",
+            "alb-response-code-000": "제외: ALB 응답 코드 000의 원인을 설명하며, 지원 플랜의 최초 응답 시간과 무관하다.",
+            "alb-load-balancer-http-error-codes": "제외: ALB의 HTTP 오류 코드에 관한 문서로, AWS Business 지원 플랜의 최초 응답 시간을 확인할 수 없다.",
+            "alb-client-cannot-connect": "제외: ALB 연결 장애 진단 문서이며, 지원 플랜의 최초 응답 시간은 다루지 않는다.",
+            "alb-custom-domain-request": "제외: 사용자 지정 도메인의 ALB 요청 전달 문제에 관한 문서로, 지원 플랜의 최초 응답 시간과 무관하다.",
+            "alb-http-403-issues": "제외: ALB 403 오류에 관한 문서이며, AWS Business 지원 플랜의 최초 응답 시간 정보가 없다.",
+            "alb-http-502-issues": "제외: ALB 502 오류의 원인을 설명하며, 지원 플랜의 최초 응답 시간은 다루지 않는다.",
+            "alb-http-562-issues": "제외: ALB 562 오류의 원인을 설명하며, AWS Business 지원 플랜의 최초 응답 시간과 무관하다."
+          },
+          "collected_ids": [],
+          "collect_embedding_calls": 0,
+          "evidence_count": 2,
+          "graph_nodes": [
+            "retrieve",
+            "generate"
+          ]
+        },
+        "collected_documents": [],
+        "cache_hit": false
+      }
+    }
+  ]
+}

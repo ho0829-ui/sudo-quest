@@ -1,0 +1,66 @@
+[
+  {
+    "name": "curl_license",
+    "url": "https://curl.se/docs/copyright.html",
+    "resolved_url": "https://curl.se/docs/copyright.html",
+    "status": 200,
+    "bytes": 7650,
+    "sha256": "8c404d1465ad207f867a7d2590dcd5e2b5ebdc47505c0d44ff874c236785b0a5"
+  },
+  {
+    "name": "errno_source",
+    "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/master/man3/errno.3",
+    "resolved_url": "https://raw.githubusercontent.com/mkerrisk/man-pages/master/man3/errno.3",
+    "status": 200,
+    "bytes": 14357,
+    "sha256": "aa87d04757cc059d77df12891e6dbe7c966443f221ef1250963466799d34270c"
+  },
+  {
+    "name": "aws_terms",
+    "url": "https://aws.amazon.com/terms/",
+    "resolved_url": "https://aws.amazon.com/terms/",
+    "status": 200,
+    "bytes": 403111,
+    "sha256": "b0da78cc46b5df7495dd0683eb2077ac1a14fbb952557d9726d11b03ca50d5bb"
+  },
+  {
+    "name": "curl_lib_errors",
+    "url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "resolved_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "status": 200,
+    "bytes": 40714,
+    "sha256": "a364be82c99bc06c8ee57dbf9e0932c4c06c04366bf7aa347e6dd0e6659d13f8"
+  },
+  {
+    "name": "linux_connect",
+    "url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "resolved_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "status": 200,
+    "bytes": 17917,
+    "sha256": "c1dc236f5c1e61012db9c05db3c72884b02f100edd9e9f0f6fd142d7556c2a4a"
+  },
+  {
+    "name": "linux_open",
+    "url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "resolved_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "status": 200,
+    "bytes": 76506,
+    "sha256": "d665489cadb85624d98fae03a8d8d06209030f32735cff8aeba949ad8491c789"
+  },
+  {
+    "name": "linux_write",
+    "url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "resolved_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "status": 200,
+    "bytes": 23203,
+    "sha256": "82dd6ad3e998940915d9a9dc92d42afdb64ccb75121d350ae5ee42279d684ccc"
+  },
+  {
+    "name": "aws_health",
+    "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+    "resolved_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+    "status": 200,
+    "bytes": 30770,
+    "sha256": "66e1c9569970c1b7acefe267eb209e219d70f40cc27d3cd9bdd169a81db987b1"
+  }
+]

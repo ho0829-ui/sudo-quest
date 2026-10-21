@@ -1,0 +1,693 @@
+{
+  "index": {
+    "700": {
+      "chunks": 247,
+      "min": 20,
+      "median": 143,
+      "mean": 266,
+      "max": 698,
+      "documents_split_into_several": 23,
+      "max_chunks_per_document": 7,
+      "embedding_batches": 0
+    },
+    "1000": {
+      "chunks": 221,
+      "min": 20,
+      "median": 105,
+      "mean": 278,
+      "max": 996,
+      "documents_split_into_several": 17,
+      "max_chunks_per_document": 5,
+      "embedding_batches": 0
+    },
+    "1400": {
+      "chunks": 214,
+      "min": 20,
+      "median": 95.0,
+      "mean": 285,
+      "max": 1391,
+      "documents_split_into_several": 15,
+      "max_chunks_per_document": 3,
+      "embedding_batches": 0
+    }
+  },
+  "chunk_retrieval": {
+    "700": {
+      "Q1": {
+        "hits": [
+          "fails open",
+          "unused state"
+        ],
+        "evidence_chars": 2334,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-overview#0",
+          "alb-health-overview#1",
+          "alb-health-states#2"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 2250,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-http-504-issues#1",
+          "alb-health-overview#0",
+          "alb-health-states#2"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1790,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-connect-timeout#1",
+          "curl-option-max-time#1",
+          "curl-option-max-time#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 217,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0",
+          "linux-open-ENOSPC#0"
+        ]
+      }
+    },
+    "1000": {
+      "Q1": {
+        "hits": [
+          "unused state"
+        ],
+        "evidence_chars": 3084,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 3505,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1664,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-max-time#0",
+          "libcurl-28#0",
+          "curl-exit-28#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 217,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0",
+          "linux-open-ENOSPC#0"
+        ]
+      }
+    },
+    "1400": {
+      "Q1": {
+        "hits": [
+          "fails open",
+          "unused state"
+        ],
+        "evidence_chars": 3454,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-states#0",
+          "alb-health-overview#0",
+          "alb-health-states#1"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 3875,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1664,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-max-time#0",
+          "libcurl-28#0",
+          "curl-exit-28#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 217,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0",
+          "linux-open-ENOSPC#0"
+        ]
+      }
+    }
+  },
+  "top_k_retrieval": {
+    "2": {
+      "Q1": {
+        "hits": [
+          "unused state"
+        ],
+        "evidence_chars": 1147,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-states#1"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 1568,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-health-states#1"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1453,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-max-time#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 127,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0"
+        ]
+      }
+    },
+    "4": {
+      "Q1": {
+        "hits": [
+          "unused state"
+        ],
+        "evidence_chars": 3084,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 3505,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1664,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-max-time#0",
+          "libcurl-28#0",
+          "curl-exit-28#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 217,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0",
+          "linux-open-ENOSPC#0"
+        ]
+      }
+    },
+    "6": {
+      "Q1": {
+        "hits": [
+          "fails open",
+          "unused state"
+        ],
+        "evidence_chars": 3974,
+        "chunks": [
+          "alb-http-503-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0",
+          "alb-health-overview#1"
+        ]
+      },
+      "Q2": {
+        "hits": [
+          "client closed the connection",
+          "increase the client timeout"
+        ],
+        "evidence_chars": 471,
+        "chunks": [
+          "alb-http-460-issues#0"
+        ]
+      },
+      "Q3": {
+        "hits": [
+          "keep-alive does not prevent",
+          "at least 1 byte"
+        ],
+        "evidence_chars": 278,
+        "chunks": [
+          "alb-http-408-issues#0"
+        ]
+      },
+      "Q4": {
+        "hits": [
+          "(10 seconds)",
+          "ephemeral ports"
+        ],
+        "evidence_chars": 4395,
+        "chunks": [
+          "alb-http-504-issues#0",
+          "alb-health-states#1",
+          "alb-health-overview#0",
+          "alb-health-states#0",
+          "alb-health-overview#1"
+        ]
+      },
+      "Q5": {
+        "hits": [
+          "only appears if --fail is used"
+        ],
+        "evidence_chars": 319,
+        "chunks": [
+          "curl-exit-22#0",
+          "libcurl-22#0"
+        ]
+      },
+      "Q6": {
+        "hits": [
+          "DNS lookup",
+          "maximum time in seconds that you allow each transfer"
+        ],
+        "evidence_chars": 1664,
+        "chunks": [
+          "curl-option-connect-timeout#0",
+          "curl-option-max-time#0",
+          "libcurl-28#0",
+          "curl-exit-28#0"
+        ]
+      },
+      "Q7": {
+        "hits": [
+          "nr_open"
+        ],
+        "evidence_chars": 348,
+        "chunks": [
+          "linux-errno-EMFILE#0",
+          "linux-open-EMFILE#0"
+        ]
+      },
+      "Q8": {
+        "hits": [
+          "no room for the data"
+        ],
+        "evidence_chars": 217,
+        "chunks": [
+          "linux-write-ENOSPC#0",
+          "linux-errno-ENOSPC#0",
+          "linux-open-ENOSPC#0"
+        ]
+      }
+    }
+  },
+  "generation": [
+    {
+      "k": 2,
+      "id": "Q2",
+      "seconds": 28.8,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 460"
+      ],
+      "collected": [],
+      "answer": "HTTP 460은 ALB가 클라이언트 요청을 받았지만, ALB의 유휴 제한 시간(idle timeout)이 지나기 전에 클라이언트가 ALB와의 연결을 닫았다는 뜻입니다. [근거 2] 클라이언트 제한 시간과 ALB 유휴 제한 시간을 비교하고, 타깃이 클라이언트 제한 시간 안에 응답하는지 확인해야 합니다. [근거 2]"
+    },
+    {
+      "k": 2,
+      "id": "Q3",
+      "seconds": 28.9,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 408: Request timeout"
+      ],
+      "collected": [],
+      "answer": "아니요. TCP keep-alive를 켜도 이 타임아웃은 막을 수 없습니다. 문서에 따르면 ALB의 HTTP 408은 클라이언트가 유휴 제한 시간(idle timeout)이 만료되기 전에 데이터를 보내지 않았을 때 발생합니다. [근거 2]"
+    },
+    {
+      "k": 2,
+      "id": "Q4",
+      "seconds": 23.0,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 504: Gateway timeout"
+      ],
+      "collected": [],
+      "answer": "ALB가 타깃과 연결을 맺기 위해 기다리는 연결 제한 시간은 **10초**입니다. 이 시간 안에 연결하지 못하면 504의 원인이 될 수 있습니다. [근거 2]\n\n그 밖의 가능한 원인은 다음과 같습니다. [근거 2]\n- 연결은 맺었지만 타깃이 유휴 제한 시간(idle timeout) 안에 응답하지 않음. [근거 2]\n- 서브넷의 네트워크 ACL이 타깃에서 ALB 노드로 향하는 임시 포트(1024~65535) 트래픽을 허용하지 않음. [근거 2]\n- 타깃의 Content-Length 헤더 값이 실제 응답 본문보다 커서, ALB가 누락된 바이트를 기다리다 시간 초과됨. [근거 2]\n- 타깃이 Lambda 함수이며, Lambda 서비스가 연결 제한 시간 안에 응답하지 않음. [근거 2]\n- 타깃 연결 과정에서 SSL 핸드셰이크 제한 시간인 10초를 초과함. [근거 2]\n\n이는 문서에 제시된 가능한 원인이며, 실제 장애 원인이 확정된 것은 아닙니다."
+    },
+    {
+      "k": 4,
+      "id": "Q2",
+      "seconds": 0.0,
+      "cache_hit": true,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 460"
+      ],
+      "collected": [],
+      "answer": "HTTP 460은 ALB가 클라이언트의 요청을 받았지만, ALB의 유휴 제한 시간(idle timeout)이 지나기 전에 클라이언트가 ALB와의 연결을 닫았다는 뜻입니다. [근거 2]\n\n문서는 클라이언트 제한 시간과 ALB 유휴 제한 시간을 비교하고, 타깃이 클라이언트 제한 시간 내에 응답하는지 확인하도록 안내합니다. 다만 제공된 정보만으로 실제 연결 종료 원인을 확정할 수는 없습니다. [근거 2]"
+    },
+    {
+      "k": 4,
+      "id": "Q3",
+      "seconds": 0.0,
+      "cache_hit": true,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 408: Request timeout"
+      ],
+      "collected": [],
+      "answer": "아니요. TCP keep-alive를 보내는 것만으로는 ALB의 HTTP 408 타임아웃을 막을 수 없습니다. 문서는 클라이언트가 유휴 제한 시간(idle timeout)이 만료되기 전에 데이터를 보내지 않았을 때 이 오류가 발생한다고 설명합니다. [근거 2]"
+    },
+    {
+      "k": 4,
+      "id": "Q4",
+      "seconds": 0.0,
+      "cache_hit": true,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 504: Gateway timeout"
+      ],
+      "collected": [],
+      "answer": "ALB가 타깃과 연결을 맺기 위해 기다리는 연결 제한 시간은 **10초**입니다. 이 시간 안에 연결하지 못하면 504의 원인이 될 수 있습니다. [근거 2]\n\n문서에 제시된 다른 가능한 원인은 다음과 같습니다.\n- 연결은 맺었지만 타깃이 유휴 제한 시간(idle timeout) 내에 응답하지 않음. [근거 2]\n- 서브넷의 네트워크 ACL이 타깃에서 ALB 노드로 향하는 임시 포트(1024–65535) 트래픽을 허용하지 않음. [근거 2]\n- 타깃의 Content-Length 헤더 값이 실제 응답 본문보다 커서, ALB가 누락된 바이트를 기다리다 시간 초과됨. [근거 2]\n- 타깃이 Lambda 함수이며 Lambda 서비스가 연결 제한 시간 내에 응답하지 않음. [근거 2]\n- 타깃 연결 과정에서 SSL 핸드셰이크 제한 시간인 10초를 초과함. [근거 2]\n\n이는 가능한 원인 목록이며, 실제 발생 원인이 확정된 것은 아닙니다."
+    },
+    {
+      "k": 6,
+      "id": "Q2",
+      "seconds": 45.1,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 460"
+      ],
+      "collected": [],
+      "answer": "HTTP 460은 ALB가 클라이언트의 요청을 받았지만, ALB의 유휴 제한 시간(idle timeout)이 지나기 전에 클라이언트가 ALB와의 연결을 닫았다는 뜻입니다. [근거 2] 클라이언트 제한 시간과 ALB 유휴 제한 시간을 비교하고, 대상(target)이 클라이언트 제한 시간 안에 응답하는지 확인하세요. [근거 2]"
+    },
+    {
+      "k": 6,
+      "id": "Q3",
+      "seconds": 10.2,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 408: Request timeout"
+      ],
+      "collected": [],
+      "answer": "아니요. TCP keep-alive를 켜도 ALB의 이 타임아웃을 막을 수 없습니다. 문서에서는 클라이언트가 유휴 제한 시간(idle timeout)이 만료되기 전에 데이터를 보내지 않은 경우 HTTP 408이 발생한다고 설명합니다. [근거 2]"
+    },
+    {
+      "k": 6,
+      "id": "Q4",
+      "seconds": 37.2,
+      "cache_hit": false,
+      "evidence_count": 2,
+      "citations": [
+        "HTTP 504: Gateway timeout"
+      ],
+      "collected": [],
+      "answer": "ALB가 타깃과 연결을 맺기 위해 기다리는 연결 제한 시간은 **10초**입니다. 이 시간 내에 연결하지 못하면 HTTP 504의 원인이 될 수 있습니다. [근거 2]\n\n그 밖에 문서에 명시된 가능한 원인은 다음과 같습니다.\n- 연결은 맺었지만 타깃이 유휴 제한 시간(idle timeout) 내에 응답하지 않음. [근거 2]\n- 서브넷의 네트워크 ACL이 타깃에서 로드 밸런서 노드로 향하는 임시 포트(1024–65535) 트래픽을 허용하지 않음. [근거 2]\n- 타깃의 Content-Length 헤더 값이 실제 응답 본문보다 커서, ALB가 부족한 바이트를 기다리다 시간 초과됨. [근거 2]\n- 타깃이 Lambda 함수인데 Lambda 서비스가 연결 제한 시간 내에 응답하지 않음. [근거 2]\n- 타깃 연결 시 SSL 핸드셰이크 제한 시간인 10초를 초과함. [근거 2]\n\n이는 가능한 원인 목록이며, 실제 발생 원인이 무엇인지는 제공된 정보만으로 확인되지 않습니다."
+    }
+  ],
+  "query_embedding_calls": 0
+}
