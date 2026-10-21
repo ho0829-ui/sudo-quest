@@ -1,6 +1,6 @@
 # InfraCoach 개발 환경
 
-기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 지식 항목 100건(curl 40·Linux errno 40·AWS ALB 20)을 색인하고, `/api/items`, `POST /api/chat`(질문 중 외부 후보 검색·수집 포함), `POST /api/items/search`(조건 탐색), `POST /api/coach`(실습 코치), `/api/jobs/{id}`(진행 상태)를 제공한다. 전체 구조와 실행 순서는 루트 README와 `docs/submission/`을 본다.
+기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 지식 항목 131건(curl 40·Linux 42·AWS ALB 20·Kubernetes 16·Docker 8·AWS 5)을 색인하고, `/api/items`, `POST /api/chat`(질문 중 외부 후보 검색·수집 포함), `POST /api/items/search`(조건 탐색), `POST /api/coach`(실습 코치), `/api/jobs/{id}`(진행 상태)를 제공한다. 전체 구조와 실행 순서는 루트 README와 `docs/submission/`을 본다.
 
 ## macOS / Linux 실행 준비
 
@@ -75,7 +75,8 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 - 생성 요청: `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/responses`
 - `LLM_BASE_URL`은 `/v1/`까지 지정한다. SDK가 `responses`를 붙인다.
 - `backend/.env`의 `GMS_KEY`에 본인 키를 입력한다. 설정 존재와 실제 연결 성공은 별개다.
-- 임베딩 모델: `text-embedding-3-large`. `EMBEDDING_BASE_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/`이며 SDK가 `embeddings`를 붙인다. 2026-10-21 실제 1건 호출 성공, 3,072차원 확인. 별도 dimensions 지정이나 추가 정규화는 하지 않았다.
+- 임베딩 모델(2026-10-22부터): `gemini-embedding-2`. `EMBEDDING_API=gemini`, `EMBEDDING_BASE_URL=https://gms.ssafy.io/gmsapi/generativelanguage.googleapis.com/v1beta/`이며 서버가 `models/gemini-embedding-2:batchEmbedContents`를 붙이고 키는 `x-goog-api-key` 헤더로만 보낸다(주소에 넣지 않음). 문서·질문 모두 taskType 없이 같은 방식으로 만든다(벡터 캐시를 한 갈래로 유지). 3,072차원, 색인 `data/chroma-gemini`(131/298). 실제 호출로 단건·배치·차원 확인.
+- 이전 임베딩 모델: `text-embedding-3-large`(`EMBEDDING_API=openai`). `EMBEDDING_BASE_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/`이며 SDK가 `embeddings`를 붙인다. 2026-10-21 실제 1건 호출 성공, 3,072차원 확인. 별도 dimensions 지정이나 추가 정규화는 하지 않았다.
 - 생성과 임베딩은 독립 설정이다. GMS 호스트에만 `GMS_KEY`를 적용한다. 개인 공급자는 해당 URL과 `LLM_API_KEY` 또는 `EMBEDDING_API_KEY`를 명시한다. 실패 시 다른 공급자로 자동 전환하지 않는다.
 
 `backend` 폴더에서 실행:
@@ -91,7 +92,7 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 
 호출 형식 참고: [OpenAI Responses](https://developers.openai.com/api/reference/python/resources/responses/methods/create), [Embeddings](https://developers.openai.com/api/reference/python/resources/embeddings/methods/create). GMS 모델 가용성은 GMS 안내 및 실제 호출로 별도 확인한다.
 
-## 지식 카탈로그 (100건)
+## 지식 카탈로그 (131건)
 
 `catalog/`에 도메인 데이터가 있다. `sources.json`은 출처와 라이선스, `shortlist_100.json`은 후보 목록, `annotations_ko.json`은 한국어 주석(LLM 보조 작성, 검수 대기), `items.json`·`documents.json`은 생성물이다. 주석이나 후보를 바꾼 뒤에는 다음 순서로 실행한다(유료 API 호출 없음, 원문은 `data/corpus` 캐시 사용).
 
@@ -107,6 +108,17 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 ```
 
 카탈로그가 바뀌면 색인 내용도 바뀐다. 기존 Chroma 경로는 재사용하지 않고 새 `CHROMA_PATH`로 다시 색인한다.
+
+### 실습 시나리오 근거 문서 (31건, 2026-10-22)
+
+`catalog/scenario_sources.json`에 실습 시나리오(현재 14개와 추가 예정인 K8s CrashLoop·OOM·readiness·Service selector, Docker 포트·디스크·환경 변수, Linux EMFILE)를 뒷받침하는 공식 문서 절과 한국어 메타데이터를 둔다. 한국어 제목·증상·요약은 Claude가 원문을 읽고 작성했다(사람 검수 대기). 라이선스는 Kubernetes CC-BY-4.0, Docker Apache-2.0, AWS CC-BY-SA-4.0, man-pages는 원본 SPDX(getrlimit copyleft, proc_pid_oom_score_adj GPL-3.0-or-later)를 확인했다. nginx·MySQL·Ubuntu·Let's Encrypt 문서는 재사용 조건이 불명확하거나 허용 목록 밖이라 넣지 않았다.
+
+```bash
+.venv/bin/python -X utf8 -m scripts.add_scenario_catalog   # 원문 수집(robots·1초 간격·캐시) → items/documents에 합침(같은 id는 교체)
+.venv/bin/python -X utf8 -m scripts.validate_catalog       # 발췌·라이선스 대조, 실패 0이어야 함
+```
+
+kubernetes.io는 압축 HTML이라 제목 `id`에 따옴표가 없다(`id=pod-phase`). `extract_section`이 두 형식을 모두 받는다.
 
 ## 데이터·그래프
 

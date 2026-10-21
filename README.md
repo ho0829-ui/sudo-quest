@@ -2,7 +2,7 @@
 
 가상 장애 대응 게임에 **공식 문서 근거 RAG 코치**를 붙인 인프라 학습 서비스입니다(AI 코어 프로젝트 2회차).
 
-- **지식 탐색·질의응답**: curl·Linux errno·AWS ALB 오류 100개 항목을 공식 문서 근거로 설명합니다. 모든 주장에 [근거 N]과 원문 링크가 붙고, 문서에 없으면 답을 보류합니다.
+- **지식 탐색·질의응답**: curl·Linux errno·AWS·Kubernetes·Docker 공식 문서 131개 항목(실습 시나리오를 뒷받침하는 쿠버네티스·도커·AWS·Linux 문서 31개 포함)을 공식 문서 근거로 설명합니다. 모든 주장에 [근거 N]과 원문 링크가 붙고, 문서에 없으면 답을 보류합니다.
 - **조건으로 항목 찾기**: "curl에서 인증서 검증과 관련된 오류"처럼 자연어로 조건을 적으면 맞는 항목만 보여줍니다.
 - **실습 코치**: 실습 중 막히면 내가 실행한 명령의 출력과 공식 문서만으로 다음 점검을 안내합니다. 정답·풀이는 코치에게 전달되지 않고, 복구 판정은 게임 엔진이 합니다.
 - **커뮤니티 카페(게시판)**: 질문·운영 팁·장애 회고를 나누는 게시판(FastAPI + SQLite). 익명 닉네임과 선택 삭제 비밀번호, 운영자 삭제, 코드 블록 표시, 실습 리포트에서 바로 회고 작성(풀이가 담긴 글은 미리보기를 가림). 백엔드가 꺼져 있어도 게임은 동작합니다. 자세한 동작은 [backend/README](backend/README.md#커뮤니티-게시판-sqlite).
@@ -44,13 +44,13 @@ backend/.venv/Scripts/python.exe -X utf8 -m pip install -r backend/requirements.
 Copy-Item backend/.env.example backend/.env    # 이미 있으면 생략
 ```
 
-2. `backend/.env`의 `GMS_KEY=`에 본인 키를 넣습니다. 키는 이 파일에만 두고, 코드·문서·브라우저에는 넣지 않습니다(`.env`는 Git 제외). 사용 모델은 생성 `gpt-6.1-sol`, 임베딩 `text-embedding-3-large`입니다. 다른 공급자를 쓰려면 `LLM_*`·`EMBEDDING_*` 변수를 설정합니다.
+2. `backend/.env`의 `GMS_KEY=`에 본인 키를 넣습니다. 키는 이 파일에만 두고, 코드·문서·브라우저에는 넣지 않습니다(`.env`는 Git 제외). 사용 모델은 생성 `gpt-6.1-sol`, 임베딩 `gemini-embedding-2`(Gemini API, 2026-10-22 전환 · 이전 `text-embedding-3-large`)입니다. 다른 공급자를 쓰려면 `LLM_*`·`EMBEDDING_*` 변수를 설정합니다.
 
 ```powershell
 # 3. 데이터 준비 (backend 폴더에서)
 Set-Location backend
 .venv/Scripts/python.exe -X utf8 -m scripts.check_providers           # 키·모델 연결 확인 (짧은 유료 호출 2회)
-.venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog          # 100개 항목의 원문 절 확인 (유료 호출 없음)
+.venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog          # 131개 항목의 원문 절 확인 (유료 호출 없음)
 .venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus            # 공식 문서 수집·임베딩·색인 (첫 실행만 유료)
 
 # 4. 서버 (터미널 A, backend 폴더)
@@ -62,7 +62,7 @@ Set-Location backend
 npm run dev
 ```
 
-http://127.0.0.1:5173 을 엽니다. 상단 상태 줄에 "지식 100건 · 지식 RAG 준비됨"이 보이면 준비가 끝난 것입니다. 키나 색인이 없으면 화면에 해결 방법이 표시됩니다. Python 서버가 없어도 게임 자체는 동작합니다.
+http://127.0.0.1:5173 을 엽니다. 상단 상태 줄에 "지식 131건 · 지식 RAG 준비됨"이 보이면 준비가 끝난 것입니다. 키나 색인이 없으면 화면에 해결 방법이 표시됩니다. Python 서버가 없어도 게임 자체는 동작합니다.
 
 - 카탈로그(`backend/catalog/`)는 저장소에 포함되어 있습니다. 출처 페이지나 주석을 바꿨을 때만 `scripts.build_catalog`와 `scripts.build_section_catalog`를 다시 실행합니다.
 - 청크·임베딩 설정을 바꾸면 기존 색인을 재사용하지 않습니다. `.env`의 `CHROMA_PATH`를 새 경로로 바꾸고 `prepare_corpus`를 다시 실행합니다.

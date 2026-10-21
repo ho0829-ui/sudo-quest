@@ -1,8 +1,22 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: 커뮤니티 게시판(SQLite) 구현·2단계 보강 완료, 다음은 문제 보강 또는 게시판 후속
+갱신: 2026-10-22 · 단계: 시나리오 근거 문서 131건·gemini-embedding-2 색인 완료, 다음은 예정 시나리오 구현
 
-## 최신 상태 — 커뮤니티 게시판 구현·2단계 보강 (2026-10-22, Mac, Claude)
+## 최신 상태 — 시나리오 근거 공식 문서 31건 추가, 임베딩 gemini-embedding-2 전환, UI 두 곳 정리 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: ① 추가하기로 한 시나리오·추가된 시나리오를 뒷받침할 공식 문서 업데이트와 그 임베딩 ② 임베딩 모델을 GMS `gemini-embedding-2`로 변경 ③ 왼쪽 레일 "커뮤니티 카페"가 다른 메뉴와 다름 ④ 홈 히어로 "첫 장애 해결하기" 아래 "지식 탐색"의 어긋난 구조.
+- UI: 레일 커뮤니티 배지가 빈 상자였음 → 실제 게시글 수(`ui/community/useBoardCount.ts`, 서버 꺼지면 "–"). 히어로 보조 버튼이 글자 링크로 다음 줄에 떨어져 있었음 → 같은 폭·높이의 테두리 버튼으로 세로 정렬(좁은 화면은 가로 두 칸, `campus/campus.css`).
+- 카탈로그(`backend/catalog/scenario_sources.json` + `scripts/add_scenario_catalog.py`): 31건 추가(Kubernetes 16, Docker 8, AWS 5, Linux 2) → **131건, 문서 절 220개**. 각 항목은 원문 절 추출 + 원문을 읽고 쓴 한국어 메타데이터(사람 검수 대기). `scenario_ids`는 현재 시나리오만(kubernetes-image-pull, aws-security-group, aws-iam-s3, linux-oom), 예정 시나리오는 데이터 파일의 `planned`에만 기록. 라이선스 원본 확인: K8s CC-BY-4.0, Docker Apache-2.0, AWS CC-BY-SA-4.0, man-pages SPDX(getrlimit copyleft, proc_pid_oom_score_adj GPL-3.0-or-later → 허용 목록에 GPL-3.0-or-later 추가). bind.2(BSD-4-Clause-UC 혼합)·resolv.conf.5(SPDX 없음)·nginx·MySQL·Ubuntu·Let's Encrypt는 제외.
+- 코드: `collectors.extract_section`이 따옴표 없는 `id=`(kubernetes.io 압축 HTML)도 받음. `explore.py` 제품 인식에 Kubernetes·Docker·AWS 추가(AWS라고만 하면 AWS ALB 함께), 분류 "container". 프런트 지식 화면 머리 문구를 실제 제품 목록으로, 제품 태그 색(K8s 금빛·Docker 청록·AWS 하늘색), 자료실 방 설명 갱신.
+- 임베딩: `providers.py`에 Gemini `batchEmbedContents`(요청 `requests` 라이브러리, 기존 의존성) — 키는 `x-goog-api-key` 헤더만, 오류는 상태 코드만 기록. `config.embedding_api`(openai|gemini). 문서·질문 모두 taskType 없이(벡터 캐시 한 갈래). GMS 실제 확인: 단건·배치 200, 3072차원, taskType도 허용.
+- `backend/.env`: 키 줄은 건드리지 않고 비밀 아닌 4줄만 바꿈 — `EMBEDDING_API=gemini`(추가), `EMBEDDING_BASE_URL=https://gms.ssafy.io/gmsapi/generativelanguage.googleapis.com/v1beta/`, `EMBEDDING_MODEL=gemini-embedding-2`, `CHROMA_PATH=data/chroma-gemini`. `EMBEDDING_API_KEY`는 비어 있어 기존처럼 `GMS_KEY` 사용. 예전 색인 `data/chroma`(OpenAI, 100/221)는 그대로 남겨 둠 — 되돌리려면 위 4줄을 예전 값(.env.example 주석)으로.
+- 색인: `scripts.prepare_corpus`로 `data/chroma-gemini` 생성 — knowledge_items **131**, reference_chunks **298**, 3072차원, 임베딩 요청 15회. 재실행 cache_hit·임베딩 0회 확인. 검색 확인(질문 8개 모두 해당 문서 1위): ImagePullBackOff→k8s-imagepullbackoff, 종료 코드 137→k8s-oomkilled, 도커 이미지 디스크→docker-system-df·prune-images, SSH 시간 초과→aws-ec2-connection-timeout, Too many open files→EMFILE·RLIMIT_NOFILE, S3 403→aws-s3-403-permission-tips, READY 0/1→k8s-readiness-probe.
+- 실행한 검사: frontend typecheck·vitest **498/22**·build 통과, backend unittest **66** OK(Gemini 임베딩 4·추출 1·제품 인식 추가), `scripts.validate_catalog` 실패 0(131/220, HTTP 0). 브라우저: 레일 배지·히어로 버튼, 지식 화면 131개·제품 태그 6종, 조건 탐색 "쿠버네티스에서 파드가 계속 재시작되는 문제" → 필터 Kubernetes·후보 16건 중 2건(CrashLoopBackOff, 파드 디버깅). 유료 호출: 임베딩(확인 3회+색인 15회+검색 확인 1회+조건 탐색 질문), 생성(조건 탐색 판정 1회, gpt-6-luna).
+- 실행 중: Vite 5173(PID 61243), API 8000(api-mac, 새 설정으로 재시작).
+- 남은 것·주의: `docs/submission/`의 100건·text-embedding-3-large 기록, `08_RAG_전후비교`·`09_청크_TopK` 수치는 예전 모델 기준(다시 재지 않음). 31건 한국어 메타데이터 사람 검수. 예정 시나리오를 실제로 만들면 그 id를 `scenario_ids`에 옮길 것.
+- 다음 후보: 예정 시나리오 구현(K8s CrashLoop/OOM부터, kubectl logs --previous·set resources 필요), 제출 문서의 모델·건수 갱신 여부 결정(사용자).
+
+## 이전 상태 — 커뮤니티 게시판 구현·2단계 보강 (2026-10-22, Mac, Claude)
 
 - 시작 상태: 브랜치 `feature/sudo-quest`, HEAD `63545c9`. HANDOFF에는 "게시판 미착수"였지만 작업 트리에 이전 도우미의 **커밋 안 된 게시판 1단계**(backend `app/community/{models,routes,store}.py`·`tests/test_community.py`, 프런트 `api/community.ts`·`ui/community/*`·`tests/community.test.ts`, App·라우트·레일·캠퍼스 연결)가 있었다. 지우지 않고 그대로 이어 받아 테스트(백엔드 52·프런트 488) 통과를 먼저 확인한 뒤 보강했다.
 - 사용자 요청: "게시판은 약간 미완성이야 발전시킬 수 있으면 발전시켜줘"(저장 방식 FastAPI+SQLite는 이미 승인, 재질문 안 함).
