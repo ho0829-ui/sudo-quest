@@ -44,7 +44,7 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 - 생성 요청: `POST https://gms.ssafy.io/gmsapi/api.openai.com/v1/responses`
 - `LLM_BASE_URL`은 `/v1/`까지 지정한다. SDK가 `responses`를 붙인다.
 - `backend/.env`의 `GMS_KEY`에 본인 키를 입력한다. 설정 존재와 실제 연결 성공은 별개다.
-- 임베딩 모델·GMS 지원 엔드포인트는 아직 확인 전이다. `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`을 확인 후 채운다. OpenAI 호환 `/embeddings` 형식 어댑터만 준비했다.
+- 임베딩 모델: `text-embedding-3-large`. `EMBEDDING_BASE_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1/`이며 SDK가 `embeddings`를 붙인다. 2026-10-21 실제 1건 호출 성공, 3,072차원 확인. 별도 dimensions 지정이나 추가 정규화는 하지 않았다.
 - 생성과 임베딩은 독립 설정이다. GMS 호스트에만 `GMS_KEY`를 적용한다. 개인 공급자는 해당 URL과 `LLM_API_KEY` 또는 `EMBEDDING_API_KEY`를 명시한다. 실패 시 다른 공급자로 자동 전환하지 않는다.
 
 `backend` 폴더에서 실행:
