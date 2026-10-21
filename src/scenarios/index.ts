@@ -17,6 +17,8 @@ import { awsAlbHealthcheck } from "./aws-alb-healthcheck";
 import { awsIamS3 } from "./aws-iam-s3";
 import { dbMaxConnections } from "./db-max-connections";
 import { kubernetesImagePull } from "./kubernetes-image-pull";
+import { kubernetesCrashloop } from "./kubernetes-crashloop";
+import { kubernetesOom } from "./kubernetes-oom";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -33,6 +35,9 @@ export const scenarios: Scenario[] = [
   awsAlbHealthcheck,
   awsIamS3,
   kubernetesImagePull,
+  // 실습 번호는 이 순서다. 기존 번호가 밀리지 않게 새 실습은 끝에 붙인다.
+  kubernetesCrashloop,
+  kubernetesOom,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

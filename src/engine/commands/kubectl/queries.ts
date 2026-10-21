@@ -1,5 +1,6 @@
 import { deploymentPods, podReady, serviceEndpoints } from "../../state/kubernetes/reconcile";
-import type { KubernetesState } from "../../state/kubernetes/types";
+import { effectiveRestarts, formatMemory } from "../../state/kubernetes/runtime";
+import type { ContainerSpec, KubernetesState } from "../../state/kubernetes/types";
 import { fail, ok, type CommandResult } from "../types";
 import { age, labels, notFound, table, type Resource } from "./resources";
 
@@ -13,7 +14,7 @@ export function getResources(cluster: KubernetesState, resource: Resource, name:
     cluster.pods.filter(selected).map(p => [
       p.name, `${p.containers.filter(c => c.ready).length}/${p.containers.length}`,
       p.node ? p.containers.find(c => c.reason)?.reason ?? p.phase : p.phase,
-      String(p.containers.reduce((sum, c) => sum + c.restartCount, 0)), age(p.createdAt, clock),
+      String(p.containers.reduce((sum, c) => sum + effectiveRestarts(c, clock), 0)), age(p.createdAt, clock),
       ...(wide ? [p.ip ?? "<none>", p.node ?? "<none>"] : []),
     ]),
   );
@@ -38,6 +39,16 @@ export function getResources(cluster: KubernetesState, resource: Resource, name:
     cluster.events.filter(selected).map(e => [age(e.time, clock), e.type, e.reason, `pod/${e.pod}`, e.message]));
 }
 
+/** describe의 Limits·Requests·Environment 줄. 실제 kubectl처럼 들여쓰기 단계를 맞춘다. */
+function specLines(c: ContainerSpec, indent: string): string[] {
+  const list = (title: string, values: { memoryMi?: number; cpu?: string } | undefined) => values && (values.memoryMi !== undefined || values.cpu)
+    ? [`${indent}${title}:`, ...(values.cpu ? [`${indent}  cpu:     ${values.cpu}`] : []),
+       ...(values.memoryMi !== undefined ? [`${indent}  memory:  ${formatMemory(values.memoryMi)}`] : [])] : [];
+  const env = Object.entries(c.env ?? {});
+  return [...list("Limits", c.resources?.limits), ...list("Requests", c.resources?.requests),
+    `${indent}Environment:${env.length ? "" : "  <none>"}`, ...env.map(([k, v]) => `${indent}  ${k}:  ${v}`)];
+}
+
 export function describeResources(cluster: KubernetesState, resource: Resource, name: string | undefined, clock: number): CommandResult {
   if (resource !== "pods" && resource !== "deployments") return fail(`error: describe is not supported for resource type "${resource}"`);
   const selected = (value: { name: string }) => !name || value.name === name;
@@ -49,6 +60,7 @@ export function describeResources(cluster: KubernetesState, resource: Resource, 
     `  Labels:       ${labels(d.template.labels)}`, ...d.template.containers.flatMap(c => [
       `  ${c.name}:`, `    Image:      ${c.image}`,
       ...(c.readinessProbe ? [`    Readiness:  http-get http://:${c.readinessProbe.port}${c.readinessProbe.path}`] : []),
+      ...specLines(c, "    "),
     ]),
   ].join("\n")).join("\n\n") || "No resources found in default namespace.");
   return ok(cluster.pods.filter(selected).map(p => [
@@ -58,7 +70,11 @@ export function describeResources(cluster: KubernetesState, resource: Resource, 
     ...p.containers.flatMap(c => [
       `  ${c.name}:`, `    Image:          ${c.image}`, `    State:          ${c.state}`,
       ...(c.reason ? [`      Reason:       ${c.reason}`] : []),
-      `    Ready:          ${c.ready ? "True" : "False"}`, `    Restart Count:  ${c.restartCount}`,
+      // 직전 실행이 어떻게 끝났는지. OOMKilled·종료 코드 137은 여기서만 보인다(get pods는 CrashLoopBackOff).
+      ...(c.lastState ? [`    Last State:     Terminated`, `      Reason:       ${c.lastState.reason}`,
+        `      Exit Code:    ${c.lastState.exitCode}`] : []),
+      `    Ready:          ${c.ready ? "True" : "False"}`, `    Restart Count:  ${effectiveRestarts(c, clock)}`,
+      ...specLines(c, "    "),
     ]),
     "Events:", table(["TYPE", "REASON", "AGE", "MESSAGE"], cluster.events.filter(e => e.pod === p.name)
       .map(e => [e.type, e.reason, age(e.time, clock), e.message])),

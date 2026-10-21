@@ -74,4 +74,21 @@ export const explorations: Record<string, ExplorationCase> = {
     unrelated: ["kubectl set image deploy/status-page status=registry.example.com/status:1.0.0", "kubectl set image deploy/shop-web web=missing:1"],
     alternative: ["kubectl set image deploy/shop-web web=registry.example.com/shop/web:1.4.2", "kubectl rollout status deploy/shop-web"],
   },
+  "kubernetes-crashloop": {
+    inspect: ["kubectl get po -o wide", "kubectl describe deploy/order-api", "kubectl logs order-api-0000000002-00002 --previous",
+      "kubectl logs deploy/order-api --tail=1", "kubectl set env deploy/order-api --list", "kubectl get events | grep BackOff",
+      "kubectl rollout history deploy/order-api", "cat /home/ubuntu/order-api/CHANGELOG.md | grep PAYMENT"],
+    unrelated: ["kubectl set env deploy/payment-gateway PAYMENT_API_URL=http://payment-gateway:8080",
+      "kubectl set resources deploy/order-api --limits=memory=1Gi", "kubectl set env deploy/order-api DB_HOST-"],
+    alternative: ["kubectl rollout undo deploy/order-api", "kubectl rollout status deploy/order-api"],
+  },
+  "kubernetes-oom": {
+    inspect: ["kubectl get pods -o wide", "kubectl describe deploy catalog-api", "kubectl logs deploy/catalog-api -p", "kubectl get events",
+      "kubectl get nodes", "kubectl rollout history deployment/catalog-api", "ls /home/ubuntu", "kubectl set env deployment/catalog-api --list"],
+    unrelated: ["kubectl set resources deployment/catalog-api --requests=memory=100Mi",
+      "kubectl set resources deployment/catalog-api -c api --limits=memory=256Mi",
+      "kubectl set image deployment/catalog-api api=registry.example.com/shop/catalog-api:3.1.0"],
+    alternative: ["kubectl rollout undo deployment/catalog-api --to-revision=1", "kubectl rollout status deployment/catalog-api",
+      "kubectl rollout history deployment/catalog-api"],
+  },
 };

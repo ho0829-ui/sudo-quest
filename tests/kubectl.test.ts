@@ -61,7 +61,8 @@ describe("kubectl 조사와 복구", () => {
     "kubectl get pods --watch", "kubectl get pods -o json", "kubectl get pods -o", "kubectl get pods -o wide -o wide",
     "kubectl get secrets", "kubectl get pods missing", "kubectl get pods one two", "kubectl get pods/",
     "kubectl describe svc", "kubectl describe pod missing", "kubectl describe deploy missing",
-    "kubectl logs shop-web", "kubectl rollout undo deployment/shop-web", "kubectl rollout status deployment/shop-web extra",
+    "kubectl logs shop-web", "kubectl rollout undo deployment/shop-web --to-revision=9", "kubectl rollout undo deploy/missing",
+    "kubectl rollout status deployment/shop-web extra",
     "kubectl set image", "kubectl set image pod/shop-web web=image:1", "kubectl set image deploy/missing web=image:1",
     "kubectl set image deploy/shop-web web=", "kubectl set image deploy/shop-web web=a=b",
     "kubectl set image deploy/shop-web web=image:1 web=image:2", `${repair} --dry-run=client`,
@@ -88,8 +89,9 @@ describe("kubectl 조사와 복구", () => {
   it("코치에는 구현한 작업만 공개하고 모든 풀이 명령을 허용한다", () => {
     const ops = commandOperations(scenario.commands!);
     expect(ops.kubectl).toContain("set image");
-    expect(ops.kubectl).not.toContain("logs");
-    expect(ops.kubectl).not.toContain("rollout undo");
+    // logs·rollout undo·set env·set resources는 CrashLoop/OOM 실습에서 구현했다. delete는 아직 없다.
+    for (const op of ["logs", "rollout undo", "rollout history", "set env", "set resources"]) expect(ops.kubectl).toContain(op);
+    expect(ops.kubectl).not.toContain("delete");
     for (const line of scenario.solutionPath) expect(supportsInvocation(line, scenario.commands!), line).toBe(true);
     expect(supportsInvocation("kubectl delete pod example", scenario.commands!)).toBe(false);
   });

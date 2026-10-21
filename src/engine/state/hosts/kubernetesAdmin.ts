@@ -32,11 +32,12 @@ export function kubernetesAdmin(): SystemState {
         name: "shop-web", replicas: 2, revision: 1, createdAt, strategy: "Recreate",
         template: { labels: { app: "shop-web" }, containers: [{
           name: "web", image: "registry.example.com/shop/web:1.4.2", readinessProbe: { path: "/health", port: 8080 },
-        }] },
+        }] }, history: [],
       },
       {
         name: "status-page", replicas: 1, revision: 1, createdAt, strategy: "Recreate",
         template: { labels: { app: "status-page" }, containers: [{ name: "status", image: "registry.example.com/status:1.0.0" }] },
+        history: [],
       },
     ],
     services: [
@@ -45,6 +46,10 @@ export function kubernetesAdmin(): SystemState {
     ],
     pods: [], events: [],
   };
+  // 첫 배포도 이력 한 줄로 남긴다(rollout history·undo가 되돌아갈 곳).
+  for (const deployment of state.kubernetes.deployments) {
+    deployment.history = [{ revision: 1, template: structuredClone(deployment.template), changeCause: `release ${deployment.template.containers[0].image.split("/").pop()}` }];
+  }
   reconcileKubernetes(state.kubernetes, createdAt);
   return state;
 }

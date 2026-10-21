@@ -1,5 +1,6 @@
 import { withCommands } from "../engine/commands";
 import type { Scenario } from "../engine/scenario/types";
+import { changeTemplate } from "../engine/state/kubernetes/history";
 import { deploymentReady, reconcileKubernetes, serviceEndpoints } from "../engine/state/kubernetes/reconcile";
 
 export const kubernetesImagePull: Scenario = {
@@ -22,8 +23,7 @@ export const kubernetesImagePull: Scenario = {
   faults: [(state) => {
     const cluster = state.kubernetes!;
     const deployment = cluster.deployments.find(d => d.name === "shop-web")!;
-    deployment.template.containers[0].image = "registry.example.com/shop/web:1.4.22";
-    deployment.revision++;
+    changeTemplate(deployment, "release web:1.4.22", template => { template.containers[0].image = "registry.example.com/shop/web:1.4.22"; });
     reconcileKubernetes(cluster, state.clock - 300_000);
   }],
   rootCause: {

@@ -1,3 +1,4 @@
+import { outcome } from "./runtime";
 import type { KubeContainer, KubeDeployment, KubePod, KubernetesState, KubeService } from "./types";
 
 export const podReady = (pod: KubePod): boolean =>
@@ -36,19 +37,25 @@ export function reconcileKubernetes(cluster: KubernetesState, clock: number): vo
       const containers: KubeContainer[] = deployment.template.containers.map(spec => {
         const image = Object.hasOwn(cluster.images, spec.image) ? cluster.images[spec.image] : undefined;
         const probe = spec.readinessProbe;
-        const running = !!node && !!image;
-        return {
-          ...structuredClone(spec), state: running ? "Running" : "Waiting",
-          ...(!running ? { reason: node ? "ImagePullBackOff" as const : "ContainerCreating" as const } : {}),
-          ready: running && (!probe || (image.ports.includes(probe.port) && image.paths.includes(probe.path))),
-          restartCount: old?.containers.find(c => c.name === spec.name)?.restartCount ?? 0,
-        };
+        const before = old?.containers.find(c => c.name === spec.name);
+        const result = outcome(spec, image);
+        const base = { ...structuredClone(spec), restartCount: before?.restartCount ?? 0 };
+        if (!node || result.kind === "pull") {
+          return { ...base, state: "Waiting", reason: node ? "ImagePullBackOff" : "ContainerCreating", ready: false };
+        }
+        if (result.kind === "crash") {
+          // 시작은 했지만 곧 끝나는 컨테이너. 같은 파드면 반복 종료가 시작된 시각을 그대로 둔다.
+          return { ...base, state: "Waiting", reason: "CrashLoopBackOff", ready: false, lastState: result.last,
+            crashingSince: before?.crashingSince ?? clock };
+        }
+        return { ...base, state: "Running", ready: !probe || (image!.ports.includes(probe.port) && image!.paths.includes(probe.path)) };
       });
       const pod: KubePod = {
         name, deployment: deployment.name, revision: deployment.revision,
         labels: { ...deployment.template.labels }, createdAt: old?.createdAt ?? clock,
         node: node?.name, ip: node ? `10.244.${deploymentIndex}.${i + 10}` : undefined,
-        phase: containers.every(c => c.state === "Running") ? "Running" : "Pending", containers,
+        // 반복 종료 중인 컨테이너가 있어도 파드는 노드에서 실행 중(Running)이다. 이미지를 못 받으면 Pending.
+        phase: containers.every(c => c.state === "Running" || c.reason === "CrashLoopBackOff") ? "Running" : "Pending", containers,
       };
       pods.push(pod);
       const event = (reason: string, message: string, warning = false, container = "") => {
@@ -68,7 +75,9 @@ export function reconcileKubernetes(cluster: KubernetesState, clock: number): vo
           } else {
             event("Pulled", `Successfully pulled image "${container.image}"`, false, container.name);
             event("Started", `Started container ${container.name}`, false, container.name);
-            if (!container.ready) event("Unhealthy", "Readiness probe failed", true, container.name);
+            if (container.reason === "CrashLoopBackOff") {
+              event("BackOff", `Back-off restarting failed container ${container.name} in pod ${pod.name}_default`, true, container.name);
+            } else if (!container.ready) event("Unhealthy", "Readiness probe failed", true, container.name);
           }
         }
       }

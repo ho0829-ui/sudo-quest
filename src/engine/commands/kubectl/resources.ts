@@ -29,3 +29,9 @@ export function table(headers: string[], rows: string[][]): string {
   const widths = headers.map((h, i) => Math.max(h.length, ...rows.map(r => (r[i] ?? "").length)));
   return [headers, ...rows].map(row => row.map((cell, i) => cell.padEnd(widths[i])).join("   ").trimEnd()).join("\n");
 }
+
+/** deployment/NAME, deploy/NAME 형식에서 이름만. 다른 형식이면 undefined. */
+export function deploymentName(target: string | undefined): string | undefined {
+  const parts = target?.split("/");
+  return parts?.length === 2 && resourceOf(parts[0]) === "deployments" && parts[1] ? parts[1] : undefined;
+}

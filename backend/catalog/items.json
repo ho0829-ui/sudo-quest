@@ -2613,7 +2613,10 @@
     "source_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-state-terminated",
     "source_section": "container-state-terminated",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-crashloop",
+      "kubernetes-oom"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2638,7 +2641,9 @@
     "source_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-restarts",
     "source_section": "container-restarts",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-crashloop"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2710,7 +2715,9 @@
     "source_url": "https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#exceed-a-container-s-memory-limit",
     "source_section": "exceed-a-container-s-memory-limit",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-oom"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2734,7 +2741,9 @@
     "source_section": "using-kubectl-describe-pod-to-fetch-details-about-pods",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
     "scenario_ids": [
-      "kubernetes-image-pull"
+      "kubernetes-crashloop",
+      "kubernetes-image-pull",
+      "kubernetes-oom"
     ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
@@ -2758,7 +2767,9 @@
     "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#examine-pod-logs",
     "source_section": "examine-pod-logs",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-crashloop"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2783,7 +2794,9 @@
     "source_section": "debugging-pods",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
     "scenario_ids": [
-      "kubernetes-image-pull"
+      "kubernetes-crashloop",
+      "kubernetes-image-pull",
+      "kubernetes-oom"
     ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
@@ -2877,7 +2890,9 @@
     "source_section": "synopsis",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
     "scenario_ids": [
-      "kubernetes-image-pull"
+      "kubernetes-crashloop",
+      "kubernetes-image-pull",
+      "kubernetes-oom"
     ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
