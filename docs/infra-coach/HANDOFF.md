@@ -1,8 +1,27 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: Kubernetes 첫 실습·14개 시나리오 탐색 점검 완료, SQLite 게시판 다음 Phase
+갱신: 2026-10-22 · 단계: 커뮤니티 게시판(SQLite) 구현·2단계 보강 완료, 다음은 문제 보강 또는 게시판 후속
 
-## 최신 상태 — Kubernetes 실습과 정답 경로 밖 탐색 검증 (2026-10-22, Mac)
+## 최신 상태 — 커뮤니티 게시판 구현·2단계 보강 (2026-10-22, Mac, Claude)
+
+- 시작 상태: 브랜치 `feature/sudo-quest`, HEAD `63545c9`. HANDOFF에는 "게시판 미착수"였지만 작업 트리에 이전 도우미의 **커밋 안 된 게시판 1단계**(backend `app/community/{models,routes,store}.py`·`tests/test_community.py`, 프런트 `api/community.ts`·`ui/community/*`·`tests/community.test.ts`, App·라우트·레일·캠퍼스 연결)가 있었다. 지우지 않고 그대로 이어 받아 테스트(백엔드 52·프런트 488) 통과를 먼저 확인한 뒤 보강했다.
+- 사용자 요청: "게시판은 약간 미완성이야 발전시킬 수 있으면 발전시켜줘"(저장 방식 FastAPI+SQLite는 이미 승인, 재질문 안 함).
+- 이번에 바꾼 것과 이유:
+  - `backend/app/community/schema.py`(새): `PRAGMA user_version` 스키마 버전 2. 기존 파일(버전 1)은 서버가 처음 열 때 `spoiler`·`delete_hash` 열을 더해 올림(데이터 유지). 응답 열을 명시해 `SELECT *`로 해시가 새어 나가지 않게 함.
+  - `passwords.py`(새): 작성자 삭제 비밀번호 scrypt 해시/검증. 이유: 로그인 없는 익명 게시판에서 실수로 올린 비밀 키·개인정보를 작성자가 바로 지울 수 있게.
+  - `store.py`: 작성자 삭제(`delete_by_author`) — 틀린 시도도 속도 제한 횟수에 남기려고 예외를 트랜잭션 커밋 **뒤에** 던짐. 풀이 포함 글은 목록 미리보기를 빈 문자열로.
+  - `routes.py`·`models.py`: `POST /posts/{id}/delete`·`POST /comments/{id}/delete`(작성자), `GET /admin`(운영자 키 확인), 입력에 `password`(선택 4~64자)·`spoiler`.
+  - 프런트: `api/community.ts`(오류 코드별 안내, 삭제·운영자 요청), `ui/community/postFormat.ts`(``` 코드 블록·인라인 코드·미리보기 정리·회고 양식), `moderation.tsx`(본문 표시·삭제 버튼·운영자 모드), `Compose.tsx`(초안 탭 보관·닉네임 기억·삭제 비밀번호·풀이 포함·회고 양식), `PostDetail.tsx`(풀이 포함 접기·삭제), `CommunityScreen.tsx`(글쓰기를 주소로, NEW·풀이 포함 표시), `route.ts`(`#/community/write[/미션]`), `ReportScreen.tsx`·`App.tsx`("커뮤니티에 회고 남기기"), `useStoredState.ts`(`removeStored`: 등록 직후 화면 이동 때 초안이 지워지지 않던 문제 수정), `community.css`.
+  - 문서: `backend/README.md` "커뮤니티 게시판", 루트 README 기능 목록.
+- 운영자 삭제 동작: 서버 `backend/.env`의 `COMMUNITY_ADMIN_KEY`(32자 이상, 사용자가 직접 입력)가 있어야 켜짐. 화면 "운영자 모드"에 입력 → `GET /admin` 확인 → 탭 메모리에만 보관(브라우저 저장소·코드·VITE_ 변수에 없음, 새로고침하면 꺼짐). 지금 `.env`에 값이 있는지는 읽지 않았다.
+- 실행한 명령과 결과(이 Mac): `npm run typecheck` 통과, `npx vitest run` **498개/22파일** 통과, `npm run build` 통과(본체 JS 531.6kB 경고 유지, 게시판 별도 조각 21kB), backend `unittest discover -s tests` **61개** OK(게시판 21개: 기존 12 + 2단계 9), `git diff --check` 통과.
+- 브라우저 검증(5173, 임시 시험 DB·임시 운영자 키로 별도 서버를 띄워 실제 DB에는 시험 글 없음): 캠퍼스 커뮤니티실 → `#/community` 빈 목록 / 글쓰기 주소 / 초안이 다른 화면·새로고침 뒤에도 남음(비밀번호는 저장 안 함) / 코드 블록·인라인 코드 표시 / 회고 양식(`#/community/write/1`, 쓰던 초안이 있으면 바꾸기 제안) / 풀이 포함 목록 미리보기 숨김·상세 펼치기 / 등록 뒤 뒤로 가기가 작성 화면으로 안 돌아감 / 댓글 작성·틀린 비밀번호 안내·맞는 비밀번호 삭제 / 운영자 키 틀림 안내·맞으면 운영자 삭제(키가 DOM·저장소에 남지 않음) / 새로고침 뒤 운영자 모드 꺼짐 / 작성자 글 삭제 / 서버 중지 시 게시판만 연결 실패 안내·홈과 14개 실습 정상 / 실습 1 클리어 → 리포트 "커뮤니티에 회고 남기기" → 양식 자동 채움 / 375px 목록·글쓰기 가로 넘침 0. 검사 뒤 진행 기록·실습 세션·초안·시험 닉네임을 지워 검사 전 저장소 상태(지식 대화 2키만)로 되돌림.
+- 서버: 시작 시 8000에 떠 있던 이 프로젝트 uvicorn(PID 70722, 게시판 2단계 이전 코드)을 SIGTERM으로 멈추고, 검증 뒤 `.claude/launch.json` "api-mac"으로 새 코드 서버를 다시 띄움. 실행 중: Vite `127.0.0.1:5173`(PID 61243, 이전부터), API `127.0.0.1:8000`(api-mac, 실제 `backend/data/community.sqlite3` — 글 0개, 버전 2로 올라감). 임시 launch 설정은 원래대로 되돌림.
+- 남은 것·미검증: 실제 `COMMUNITY_ADMIN_KEY` 값으로의 운영자 삭제(사용자가 키를 넣어야 함), 여러 사람이 다른 기기에서 쓰는 환경(현재 로컬 프록시 뒤에서는 속도 제한이 한 주소로 묶임), 백엔드 배포. 알려진 오류 없음.
+- 커밋: 이 Phase 코드(이전 도우미의 미커밋 1단계 포함)와 문서를 커밋함(해시는 `git log`). push·master 병합 없음.
+- 다음 시작 작업 후보: (1) 문제 보강 — K8s CrashLoopBackOff/OOMKilled(현재 K8s 모델에 logs·resources가 없으므로 `kubectl logs [--previous]`·`set resources`부터) → Docker 2 → Linux·Web 3, 새 시나리오마다 탐색 검사 추가. (2) 게시판 후속(TASKS 후보 목록). 사용자 미결정: LLM_MODEL 원복·최종 제출·master 병합.
+
+## 이전 상태 — Kubernetes 실습과 정답 경로 밖 탐색 검증 (2026-10-22, Mac)
 
 - 사용자 "진행해줘"로 첫 Phase·게시판 FastAPI+SQLite 선택 승인. 진행 중 "정답 명령만 아닌 비슷한 명령을 입력하며 시나리오 점검" 요청을 우선 반영. 시나리오 **14개**, Docker·게시판은 아직 준비 중.
 - K8s: `state/kubernetes/{types,reconcile}.ts`·`hosts/kubernetesAdmin.ts`로 가상 클러스터/이미지/파드/이벤트/엔드포인트 계산. `commands/kubectl.ts`·`kubectl/{queries,mutations,resources}.ts`로 get/describe/set image/rollout status. `scenarios/kubernetes-image-pull.ts` 추가, 레지스트리 등록·UI comingSoon 해제. default/Recreate/즉시 계산만 지원. logs/undo/resources/delete/실시간 watch는 미구현.
