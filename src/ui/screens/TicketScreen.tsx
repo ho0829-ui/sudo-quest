@@ -6,6 +6,8 @@ import { RoomVignette } from "../campus/RoomVignette";
 
 interface TicketScreenProps {
   scenario: Scenario;
+  /** 같은 실습을 하다 나왔으면 이어서 하기 */
+  resumable?: boolean;
   onStart: () => void;
   onBack: () => void;
 }
@@ -22,7 +24,7 @@ const FLOW: [string, string][] = [
  * 출동 브리핑. 티켓에는 증상만 있고 원인은 없다.
  * 시나리오 ID(예: linux-disk-full)는 원인을 드러내므로 화면에 쓰지 않고 실습 번호만 쓴다.
  */
-export function TicketScreen({ scenario, onStart, onBack }: TicketScreenProps) {
+export function TicketScreen({ scenario, resumable, onStart, onBack }: TicketScreenProps) {
   const missionNo = String(scenarios.indexOf(scenario) + 1).padStart(2, "0");
   return (
     <div className="briefing" style={{ "--room": THEMES[scenario.category].accent } as CSSProperties}>
@@ -50,7 +52,7 @@ export function TicketScreen({ scenario, onStart, onBack }: TicketScreenProps) {
           </p>
           <div className="row end">
             <button onClick={onBack}>목록으로</button>
-            <button className="primary" onClick={onStart}>조사 시작</button>
+            <button className="primary" onClick={onStart}>{resumable ? "조사 이어서 하기" : "조사 시작"}</button>
           </div>
         </section>
         <aside className="briefing-site" aria-label={`출동 장소 ${CATEGORY_ROOM[scenario.category]}`}>

@@ -3,6 +3,15 @@ import { getItems, getJob, startChat, type Item } from "../../api/knowledge";
 import { ConditionSearch } from "../components/ConditionSearch";
 import { RichAnswer, RichLine } from "../components/RichAnswer";
 import { RoomVignette } from "../campus/RoomVignette";
+import { ExternalLink } from "../components/ExternalLink";
+import { settlePending, useStoredState } from "../useStoredState";
+
+function reviveTurns(value: unknown): Record<string, Turn[]> | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const result: Record<string, Turn[]> = {};
+  for (const [item, turns] of Object.entries(value)) if (Array.isArray(turns)) result[item] = settlePending(turns as Turn[]);
+  return result;
+}
 import { historyFor, type Turn } from "../chatHistory";
 
 const stages: Record<string, string> = {
@@ -25,12 +34,12 @@ const EXAMPLE_QUESTIONS = [
 
 export function KnowledgeScreen() {
   const [items, setItems] = useState<Item[]>([]);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useStoredState("incident-game/knowledge/selected", () => "", v => (typeof v === "string" ? v : null));
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("");
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Record<string, Turn[]>>({});
+  const [turns, setTurns] = useStoredState<Record<string, Turn[]>>("incident-game/knowledge/turns", () => ({}), reviveTurns);
   const [pending, setPending] = useState<{ item: string; stage: string } | null>(null);
   const active = useRef(true);
   useEffect(() => {
@@ -121,7 +130,7 @@ export function KnowledgeScreen() {
                 {turn.result.warnings.map((warning, i) => <p className="muted" key={i}>{warning}</p>)}
                 {turn.result.citations.length > 0 && <details open><summary>답변에 사용한 근거 {turn.result.citations.length}건</summary>
                   {turn.result.citations.map(c => <div className="source-card" key={c.evidence_id}>
-                    <a href={c.source_url} target="_blank" rel="noreferrer">[근거 {c.evidence_id}] {c.title}</a>
+                    <ExternalLink href={c.source_url}>[근거 {c.evidence_id}] {c.title}</ExternalLink>
                     <div className="muted small">{c.source_type === "item_metadata" ? "항목 메타데이터" : "공식 상세 문서"} · {c.publisher} · {c.license}</div>
                     <details><summary>검색한 근거 본문 보기</summary><p className="answer-text">{c.text}</p></details>
                   </div>)}

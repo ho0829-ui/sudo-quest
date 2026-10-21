@@ -13,72 +13,110 @@ import { KnowledgeScreen } from './screens/KnowledgeScreen';
 import { Icon } from './components/Icon';
 import { Rail, type Workspace } from './components/Rail';
 import { CampusDefs } from './campus/RoomVignette';
+import { formatRoute, parseRoute, type Route } from './route';
+import { loadActiveSession, saveActiveSession } from './sessionStore';
 import './styles.css';
 import './command-center.css';
 import './coach.css';
 import './game.css';
 
-type Screen = 'list' | 'ticket' | 'play' | 'report';
-
+/**
+ * 화면은 주소(해시 라우트)에서 정해진다. 이동할 때 브라우저 기록에 쌓아 두므로
+ * 뒤로/앞으로 가기가 화면 사이를 오간다. 진행 중 실습은 탭 저장소에 보관해 새로고침이나
+ * 외부 링크에서 돌아와도 이어진다(sessionStore.ts).
+ */
 export function App() {
-  const [workspace, setWorkspace] = useState<Workspace>('game');
-  const [knowledgeVisited, setKnowledgeVisited] = useState(false);
+  const [route, setRoute] = useState<Route>(() => parseRoute(window.location.hash, scenarios.length));
+  const [knowledgeVisited, setKnowledgeVisited] = useState(route.kind === 'knowledge');
   const [motion, setMotion] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const [screen, setScreen] = useState<Screen>('list');
-  const [scenario, setScenario] = useState<Scenario | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<Session | null>(() => loadActiveSession(scenarios));
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
 
+  const workspace: Workspace = route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
+  const scenario = route.kind === 'mission' ? scenarios[route.no - 1] : null;
+  const ownSession = session && scenario && session.scenario === scenario ? session : null;
+  const stage = route.kind === 'mission' ? route.stage : null;
+
+  function go(next: Route, replace = false) {
+    const url = formatRoute(next);
+    if (replace) window.history.replaceState(null, '', url);
+    else if (window.location.hash !== url) window.history.pushState(null, '', url);
+    if (next.kind === 'knowledge') setKnowledgeVisited(true);
+    setRoute(next);
+  }
+
+  // 뒤로/앞으로 가기. "#main-content" 같은 본문 이동 주소는 화면 이동이 아니므로 무시한다.
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [screen, workspace]);
+    const onPop = () => {
+      const hash = window.location.hash;
+      if (hash !== '' && !hash.startsWith('#/')) return;
+      const next = parseRoute(hash, scenarios.length);
+      if (next.kind === 'knowledge') setKnowledgeVisited(true);
+      setRoute(next);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  useEffect(() => { saveActiveSession(session); }, [session]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [route]);
+
+  // 주소는 실습 중인데 그 실습의 세션이 없으면(직접 입력·오래된 기록) 브리핑으로 돌려보낸다.
+  useEffect(() => {
+    if (route.kind !== 'mission' || route.stage === 'briefing') return;
+    const ready = route.stage === 'play' ? ownSession : ownSession && isCleared(ownSession) ? ownSession : null;
+    if (!ready) go({ ...route, stage: 'briefing' }, true);
+  }, [route, ownSession]);
 
   useEffect(() => {
-    if (!session || screen !== 'play' || !isCleared(session)) return;
-    setProgress(saveClear(session.scenario.id, calculateScore(session).total));
-    setScreen('report');
-  }, [session, screen]);
+    if (!ownSession || stage !== 'play' || !isCleared(ownSession) || route.kind !== 'mission') return;
+    setProgress(saveClear(ownSession.scenario.id, calculateScore(ownSession).total));
+    // 클리어한 실습 화면 기록을 리포트로 바꿔 끼운다. 그래야 뒤로 가기가 다시 리포트로 튕기지 않는다.
+    go({ ...route, stage: 'report' }, true);
+  }, [ownSession, stage]);
 
+  const missionNo = (s: Scenario) => scenarios.indexOf(s) + 1;
   function navigate(next: Workspace) {
-    if (next === 'knowledge') setKnowledgeVisited(true);
-    setWorkspace(next);
+    go(next === 'knowledge' ? { kind: 'knowledge' } : next === 'records' ? { kind: 'records' } : { kind: 'home' });
   }
   function startScenario(selected: Scenario) {
-    setScenario(selected); setSession(null); setScreen('ticket'); setWorkspace('game');
+    go({ kind: 'mission', no: missionNo(selected), stage: 'briefing' });
   }
-  function beginInvestigation() {
+  /** 같은 실습을 하던 중이면 이어서, 아니면 새로 시작한다. */
+  function beginInvestigation(fresh = false) {
     if (!scenario) return;
-    setSession(createSession(scenario)); setScreen('play');
+    if (fresh || !ownSession || isCleared(ownSession)) setSession(createSession(scenario));
+    go({ kind: 'mission', no: missionNo(scenario), stage: 'play' });
   }
   function backToList() {
-    setSession(null); setScenario(null); setScreen('list'); setWorkspace('game');
+    setSession(null); go({ kind: 'home' });
   }
   /** 어디서든 홈(실습 목록)으로. 명령을 실행한 실습 중이면 기록이 사라지므로 한 번 묻는다. */
   function goHome() {
-    const leaving = workspace === 'game' && screen === 'play' && session && session.commands.length > 0;
+    const leaving = stage === 'play' && ownSession && ownSession.commands.length > 0;
     if (leaving && !window.confirm('진행 중인 실습을 나가면 이번 기록이 사라집니다. 홈으로 갈까요?')) return;
     backToList();
   }
 
   return <div className={`control-center ${motion ? '' : 'motion-paused'}`}>
-    <a className="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <a className="skip-link" href="#main-content" onClick={e => { e.preventDefault(); document.getElementById('main-content')?.focus(); }}>본문으로 건너뛰기</a>
     <CampusDefs />
     <Rail workspace={workspace} scenarios={scenarios} progress={progress} onNavigate={navigate} onHome={goHome} />
     <div className="workspace-body">
       <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
-      <main className="app" id="main-content">
+      <main className="app" id="main-content" tabIndex={-1}>
         <BackendStatus />
         {knowledgeVisited && <div hidden={workspace !== 'knowledge'}><KnowledgeScreen /></div>}
         {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} />}
         <div hidden={workspace !== 'game'}>
-          {screen !== 'list' && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario?.title}</span></div>}
-          {screen === 'list' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} />}
-          {screen === 'ticket' && scenario && <TicketScreen scenario={scenario} onStart={beginInvestigation} onBack={backToList} />}
-          {screen === 'play' && session && <PlayScreen session={session}
+          {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
+          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} />}
+          {stage === 'briefing' && scenario && <TicketScreen scenario={scenario} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
+          {stage === 'play' && ownSession && <PlayScreen session={ownSession}
             onCommand={input => setSession(current => current ? execute(current, input) : current)}
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
-            onSubmitCause={choiceId => { const result = submitCause(session, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} />}
-          {screen === 'report' && session && <ReportScreen session={session} onBackToList={backToList} onRetry={beginInvestigation} />}
+            onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} />}
+          {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)} />}
         </div>
       </main>
     </div>

@@ -1,6 +1,7 @@
 import type { CoachAnswer } from "../../api/coach";
 import { runnableCommands } from "../coachPrompts";
 import { RichAnswer, RichLine } from "./RichAnswer";
+import { ExternalLink } from "./ExternalLink";
 
 export type Turn = { question: string; result?: CoachAnswer; error?: string };
 
@@ -37,7 +38,7 @@ export function CoachTurn({ turn, available, onUseCommand }: CoachTurnProps) {
       </details>}
       {result.citations.length > 0 && <details><summary className="small">공식 문서 근거 {result.citations.length}건</summary>
         {result.citations.map(c => <div key={c.evidence_id} className="small source-card">
-          <a href={c.source_url} target="_blank" rel="noreferrer">[근거 {c.evidence_id}] {c.title}</a>
+          <ExternalLink href={c.source_url}>[근거 {c.evidence_id}] {c.title}</ExternalLink>
           <div className="muted">{c.source_type === "item_metadata" ? "항목 메타데이터" : "공식 상세 문서"} · {c.publisher} · {c.license}</div>
         </div>)}
       </details>}

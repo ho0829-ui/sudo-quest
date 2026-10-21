@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Session } from "../../engine/session/session";
 import { DEFAULT_COMMANDS } from "../../engine/commands";
 import { buildCoachRequest, type CoachAnswer } from "../../api/coach";
@@ -6,6 +6,14 @@ import { getHealth } from "../../api/health";
 import { getItems, getJob, startCoach, type Item, type Message } from "../../api/knowledge";
 import { coachNudge, quickPrompts, type QuickPrompt } from "../coachPrompts";
 import { CoachTurn, type Turn } from "./CoachTurn";
+import { settlePending, useStoredState } from "../useStoredState";
+
+function reviveCoach(value: unknown): { sessionId: string; turns: Turn[] } | null {
+  if (typeof value !== "object" || value === null) return null;
+  const v = value as { sessionId?: unknown; turns?: unknown };
+  if (typeof v.sessionId !== "string" || !Array.isArray(v.turns)) return null;
+  return { sessionId: v.sessionId, turns: settlePending(v.turns as Turn[]) };
+}
 
 const stages: Record<string, string> = {
   queued: "요청 대기 중", search_terms: "관찰 기록에서 검색어 뽑는 중", retrieve: "공식 문서 근거 찾는 중",
@@ -29,14 +37,18 @@ interface CoachPanelProps {
  */
 export function CoachPanel({ session, onUseCommand, onAnswer }: CoachPanelProps) {
   // 실습 판마다 새 ID를 쓴다. 시나리오 ID를 쓰면 실습 정체가 드러나므로 무작위 값이다.
-  const sessionId = useMemo(() => crypto.randomUUID(), [session.startedAt]);
+  // 대화와 함께 탭 저장소에 두어, 근거 링크로 페이지를 떠났다 돌아와도 같은 대화가 이어진다.
+  const [coach, setCoach] = useStoredState(`incident-game/coach/${session.startedAt}`,
+    () => ({ sessionId: crypto.randomUUID(), turns: [] as Turn[] }), reviveCoach);
+  const sessionId = coach.sessionId;
+  const turns = coach.turns;
+  const setTurns = (next: Turn[]) => setCoach((current) => ({ ...current, turns: next }));
   const available = session.scenario.commands ?? DEFAULT_COMMANDS;
   const [link, setLink] = useState<Link>("checking");
   const [attempt, setAttempt] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
   const [itemId, setItemId] = useState("");
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
   const [stage, setStage] = useState<string | null>(null);
   // 마지막으로 물어본 시점의 오답·명령 수. 그 뒤의 변화만 보고 코치를 권한다.
   const [askedAt, setAskedAt] = useState({ wrong: 0, commands: 0 });
@@ -48,7 +60,7 @@ export function CoachPanel({ session, onUseCommand, onAnswer }: CoachPanelProps)
     active.current = true;
     return () => { active.current = false; };
   }, []);
-  useEffect(() => { setTurns([]); setItemId(""); setAskedAt({ wrong: 0, commands: 0 }); }, [sessionId]);
+  useEffect(() => { setItemId(""); setAskedAt({ wrong: 0, commands: 0 }); }, [sessionId]);
   useEffect(() => {
     setLink("checking");
     getHealth(AbortSignal.timeout(5000)).then(health => {
