@@ -14,6 +14,10 @@ SAFE_ERRORS = {
     "incomplete_or_empty_generation": "모델 응답이 완성되지 않았습니다. 잠시 후 다시 시도해주세요.",
     "citation_validation_failed": "답변의 인용을 검증하지 못했습니다. 답변을 표시하지 않습니다.",
     "invalid_document_selection": "문서 선별 결과를 검증하지 못했습니다.",
+    "source_section_missing": "선택한 공식 문서에서 해당 절을 찾지 못했습니다. 문서가 바뀌었을 수 있습니다.",
+    "source_http_error": "공식 문서를 가져오지 못했습니다. 잠시 후 다시 시도해주세요.",
+    "source_rate_limited_retry_later": "공식 문서 사이트의 호출 제한에 걸렸습니다. 잠시 후 다시 시도해주세요.",
+    "robots_disallow": "출처의 수집 정책상 이 문서를 가져올 수 없습니다.",
 }
 
 

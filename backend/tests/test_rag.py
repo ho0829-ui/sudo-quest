@@ -20,9 +20,14 @@ from app.rag import respond, validate_answer
 
 
 def fixture_document(key):
-    return {**DOCUMENTS[key], "text": "Fixture official text. " * 60,
+    return {**DOCUMENTS[key], "text": f"Fixture official text for {key}. " * 40,
             "content_hash": digest(key), "source_url": DOCUMENTS[key]["canonical_url"] + "#" + DOCUMENTS[key]["section"],
             "product_version": "fixture", "fetched_at": "2026-10-21"}
+
+
+def fake_vectors(settings, texts):
+    # 모든 벡터가 같으면 Chroma의 필터 검색(HNSW)이 결과를 빠뜨리는 경우가 있어 텍스트마다 다르게 만든다.
+    return [[1., int(digest(text)[:4], 16) / 65535, len(text) % 97 / 97] for text in texts]
 
 
 class RagTests(unittest.TestCase):
@@ -102,7 +107,7 @@ class RagTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             settings = Settings(chroma_path=Path(folder) / "chroma", llm_api_key="test", embedding_api_key="test",
                                 embedding_base_url="https://example.com/v1/", embedding_model="test")
-            prepare(settings, lambda s, texts: [[1., 0., 0.] for _ in texts])
+            prepare(settings, fake_vectors)
             store, collections = open_store(settings.chroma_path)
             def model(settings, system, payload, schema):
                 if schema is SearchTerms:

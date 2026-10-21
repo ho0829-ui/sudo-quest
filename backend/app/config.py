@@ -21,6 +21,8 @@ class Settings(BaseModel):
     chunk_size: int = Field(default=1000, gt=0)
     chunk_overlap: int = Field(default=200, ge=0)
     external_top_k: int = Field(default=4, ge=1, le=20)
+    candidate_limit: int = Field(default=8, ge=0, le=30)
+    max_selected_documents: int = Field(default=4, ge=1, le=10)
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
 
     @model_validator(mode="after")

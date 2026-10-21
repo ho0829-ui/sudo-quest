@@ -69,6 +69,12 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 .venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog
 ```
 
+질문 중 외부 후보 검색(F2004)은 `catalog/section_catalog.json`(허용한 공식 페이지 8개의 절 669개)에서 키워드로 후보를 찾고, 선별 프롬프트로 고른 문서 중 아직 색인되지 않은 것만 수집·색인한다. 출처 페이지나 추출 규칙을 바꾸면 다시 만든다.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m scripts.build_section_catalog
+```
+
 카탈로그가 바뀌면 색인 내용도 바뀐다. 기존 Chroma 경로는 재사용하지 않고 새 `CHROMA_PATH`로 다시 색인한다.
 
 ## 데이터·그래프

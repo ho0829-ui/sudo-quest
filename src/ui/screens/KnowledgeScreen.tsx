@@ -3,7 +3,8 @@ import { getItems, getJob, startChat, type Item, type Answer, type Message } fro
 
 type Turn = { question: string; result?: Answer; error?: string };
 const stages: Record<string, string> = {
-  queued: "요청 대기 중", search_terms: "검색어 추출 중", select_documents: "공식 문서 선별 중",
+  queued: "요청 대기 중", search_terms: "검색어 추출 중", select_documents: "공식 문서 후보 검색·선별 중",
+  select_cache: "이전에 선별한 문서 재사용 중", collect: "선별한 문서 수집·색인 중",
   retrieve: "관련 근거 검색 중", generate: "근거 기반 답변 생성·검증 중", cache: "저장된 답변 확인 중",
 };
 

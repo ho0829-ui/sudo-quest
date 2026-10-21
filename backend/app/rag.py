@@ -3,15 +3,15 @@ import re
 
 from pydantic import ValidationError
 
-from app import prompts
-from app.catalog import DOCUMENTS, ITEM_BY_ID
+from app import discovery, prompts
+from app.catalog import ITEM_BY_ID
 from app.collectors import digest, save_json
 from app.contracts import Answer, SearchTerms, Selection
 from app.corpus import check_manifest
 from app.graphs import build_graph
 from app.providers import generate, embed
 
-PROMPT_VERSION = "pilot-1"
+PROMPT_VERSION = "discovery-1"
 CITATION = re.compile(r"\[근거\s*([\d,\s]+)\]")
 
 
@@ -58,17 +58,23 @@ def respond(settings, collections, request, progress=lambda stage: None):
     except (ValidationError, ValueError):
         terms = [item.title_original, request.question[:200]]
         warnings.append("검색어 형식 오류로 항목명·질문 기반 검색어를 사용했습니다.")
-    # 10건 파일럿: 검토된 항목-문서 관계 안에서만 키워드 후보를 만든다.
-    candidates = [DOCUMENTS[key] for key in item.document_ids]
-    candidates.sort(key=lambda d: sum(term.lower() in (d["title"] + d["section"]).lower() for term in terms), reverse=True)
-    progress("select_documents")
-    selected = json_call(settings, prompts.SELECT, {**payload, "queries": terms, "candidates": candidates}, Selection)
-    allowed = set(item.document_ids)
-    if not set(selected.selected_ids) <= allowed or not set(selected.reasons) <= allowed:
-        raise ValueError("invalid_document_selection")
-    selected_ids = list(dict.fromkeys([item.primary_doc_id] + selected.selected_ids))
-    if item.primary_doc_id not in selected.selected_ids:
-        selected.reasons[item.primary_doc_id] = "선택 항목 자체 설명 문서는 항상 포함"
+    # 같은 항목·같은 검색어면 후보 검색과 선별을 다시 하지 않는다(NF2002).
+    query_path = discovery.query_cache_path(settings, item.item_id, terms)
+    if query_path.exists():
+        progress("select_cache")
+        cached = json.loads(query_path.read_text(encoding="utf-8"))
+        candidate_ids, selected_ids, reasons = cached["candidate_ids"], cached["selected_ids"], cached["reasons"]
+    else:
+        candidates = discovery.find_candidates(item, terms, settings.candidate_limit)
+        candidate_ids = [c["doc_id"] for c in candidates]
+        progress("select_documents")
+        selection = json_call(settings, prompts.SELECT, {
+            **payload, "queries": terms, "candidates": [discovery.candidate_view(c) for c in candidates]}, Selection)
+        selected_ids, reasons = discovery.finalize_selection(item, selection, candidates, settings.max_selected_documents)
+        save_json(query_path, {"queries": terms, "candidate_ids": candidate_ids,
+                               "selected_ids": selected_ids, "reasons": reasons})
+    progress("collect")
+    collection = discovery.ensure_indexed(settings, collections, item, selected_ids, manifest["dimensions"])
 
     def retrieve(state):
         progress("retrieve")
@@ -117,7 +123,10 @@ def respond(settings, collections, request, progress=lambda stage: None):
             "answer": answer.answer, "suggested_checks": answer.suggested_checks,
             "citations": [e for e in evidence if e["evidence_id"] in used],
             "warnings": warnings + (["답변에 인용된 근거가 없습니다."] if not used else []),
-            "trace": {"queries": terms, "selected_ids": selected_ids, "reasons": selected.reasons,
+            "trace": {"queries": terms, "candidate_ids": candidate_ids, "selected_ids": selected_ids,
+                      "excluded_ids": [d for d in candidate_ids if d not in selected_ids],
+                      "reasons": reasons, "collected_ids": collection["collected"],
+                      "collect_embedding_calls": collection["embedding_calls"],
                       "evidence_count": len(evidence), "graph_nodes": ["retrieve", "generate"]},
             "cache_hit": False,
         }}
