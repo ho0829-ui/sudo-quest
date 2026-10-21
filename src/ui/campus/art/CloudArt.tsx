@@ -74,9 +74,9 @@ export function CloudArt() {
     <Neon path={[[0.55, 3.75, 0.95], [0.55, 6.25, 0.95]]} color="#ff7a1a" width={0.8} />
 
     <Person at={[8.6, 9.0, 0]} facing="left" shirt="#e6f7ff" pants="#3a7ea3" hair="#5a3a22" prop="laptop" />
-    {/* 이름 간판(오른쪽 벽 앞쪽)과 옆 관제실을 가리지 않게 방 오른쪽 위에 띄운다. */}
-    <Cloud at={[9.6, 1.2, WALL_HEIGHT + 1.6]} scale={0.85} delay={0} />
-    <Cloud at={[7.6, 0.4, WALL_HEIGHT + 3.0]} scale={0.6} delay={-5.5} />
-    <Cloud at={[9.8, 6.0, WALL_HEIGHT + 0.8]} scale={0.7} delay={-3} />
+    {/* 구름은 방 오른쪽 바깥 낮은 곳에 띄운다. 뒤(벽 위)에 두면 뒤쪽 컨테이너 운영실 운하를 가린다. */}
+    <Cloud at={[11.6, 3.0, 1.2]} scale={0.85} delay={0} />
+    <Cloud at={[11.2, 7.5, 2.4]} scale={0.6} delay={-5.5} />
+    <Cloud at={[12.2, 2.0, 0.4]} scale={0.7} delay={-3} />
   </g>;
 }

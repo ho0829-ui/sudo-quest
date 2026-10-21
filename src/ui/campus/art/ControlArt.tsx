@@ -24,8 +24,8 @@ function StatScreen({ x, y, stat }: { x: number; y: number; stat: WallStat }) {
 }
 
 const MAP = miniMapLayout();
-// 벽에 걸 수 있는 크기(방 6개일 때 크기). 방이 늘어 화면이 커지면 이 안에 들어가게 줄인다.
-const MAP_FIT = Math.min(1, 62 / MAP.width, 46 / MAP.height);
+// 벽에 걸 수 있는 크기. 방이 늘어 화면이 커지면 이 안에 들어가게 줄인다.
+const MAP_FIT = Math.min(1, 62 / MAP.width, 50 / MAP.height);
 
 /** 캠퍼스 미니맵: 방마다 마름모 하나, 경보등 상태를 점으로. 실제 진행 상태를 그대로 보여 준다. rooms는 ROOMS 순서다. */
 function MiniMap({ rooms }: { rooms: MapRoom[] }) {

@@ -3,7 +3,7 @@ import type { Scenario } from "../../engine/scenario/types";
 import type { Progress } from "../storage";
 import { operatorRank } from "../rank";
 import { THEMES } from "../campus/themes";
-import { CATEGORY_LIST } from "../categories";
+import { OPEN_CATEGORIES } from "../categories";
 import { Icon, type IconName } from "./Icon";
 import { BrandMark } from "./BrandLogo";
 
@@ -64,7 +64,7 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
 
     <div className="rail-section-label">SECTOR STATUS</div>
     <ul className="sector-status" aria-label="분류별 해결 현황">
-      {CATEGORY_LIST.map(({ id: kind, tag }) => {
+      {OPEN_CATEGORIES.map(({ id: kind, tag }) => {
         const own = scenarios.filter(s => s.category === kind);
         const done = own.filter(s => progress[s.id]?.cleared).length;
         return <li key={kind} style={{ "--sector": THEMES[kind].accent } as CSSProperties}>

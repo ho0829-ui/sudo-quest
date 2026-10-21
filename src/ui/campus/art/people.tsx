@@ -16,8 +16,14 @@ export interface PersonProps {
   pants?: string;
   skin?: string;
   hair?: string;
-  /** 손에 든 것. 태블릿·노트북·머그잔 */
-  prop?: "tablet" | "laptop" | "mug";
+  /** 손에 든 것. 태블릿·노트북·머그잔·망원경 */
+  prop?: "tablet" | "laptop" | "mug" | "spyglass";
+  /** 넥타이 색(직장인 차림). 등을 보이면 그리지 않는다. */
+  tie?: string;
+  /** 앞치마 색(바리스타). */
+  apron?: string;
+  /** 모자. tricorn은 선장 삼각 모자, cap은 안전모, beanie는 털모자. */
+  hat?: { kind: "tricorn" | "cap" | "beanie"; color: string };
   /** walk일 때 왕복할 공간 좌표상 이동량 */
   walkTo?: Point3;
   delay?: number;
@@ -25,7 +31,7 @@ export interface PersonProps {
   duration?: number;
 }
 
-export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1d2433", skin = "#f2c9a0", hair = "#2a1d18", prop, walkTo, delay = 0, duration }: PersonProps) {
+export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1d2433", skin = "#f2c9a0", hair = "#2a1d18", prop, tie, apron, hat, walkTo, delay = 0, duration }: PersonProps) {
   const [x, y] = project(at);
   const away = facing.startsWith("away");
   // 기본 그림은 오른쪽 아래를 본다. 왼쪽을 보면 좌우를 뒤집는다.
@@ -57,6 +63,8 @@ export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1
               <rect x={0.6} y={hip} width={3.6} height={-hip} rx={1.2} fill={pants} />
             </g>}
         <rect x={-6} y={shoulder} width={12} height={15} rx={4} fill={shirt} />
+        {apron && <rect x={-5} y={shoulder + 5} width={10} height={12} rx={1.5} fill={apron} />}
+        {tie && !away && <path d={`M-0.9,${shoulder + 0.6} h1.8 l0.7,8.5 l-1.6,1.8 l-1.6,-1.8z`} fill={tie} />}
         {/* 팔: 타이핑 중이면 앞으로 뻗어 살짝 흔든다. */}
         {pose === "type"
           ? <rect className="iso-typing" x={2} y={shoulder + 6} width={9} height={3.2} rx={1.5} fill={shirt} style={{ animationDelay: `${delay}s` }} />
@@ -68,6 +76,10 @@ export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1
         {prop === "tablet" && <rect x={6} y={shoulder + 5} width={6} height={8} rx={1} fill="#c9f4ff" stroke="#00d4ff" strokeWidth={0.8} />}
         {prop === "laptop" && <rect x={4} y={shoulder + 9} width={10} height={6} rx={1} fill="#9aa7b8" />}
         {prop === "mug" && <rect x={7} y={shoulder + 7} width={3.5} height={4.5} rx={1} fill="#f4f1ea" />}
+        {prop === "spyglass" && <rect x={4} y={head - 1.5} width={11} height={2.6} rx={1} fill="#c9a24a" transform={`rotate(-12 4 ${head})`} />}
+        {hat?.kind === "tricorn" && <path d={`M-8,${head - 3} q8,-3 16,0 l-2,-5 q-6,-3 -12,0z`} fill={hat.color} />}
+        {hat?.kind === "cap" && <path d={`M-5.6,${head - 1} a5.6,5.6 0 0 1 11.2,0 h2.2 v1.4 h-13.4z`} fill={hat.color} />}
+        {hat?.kind === "beanie" && <path d={`M-5.4,${head - 0.5} a5.4,5.6 0 0 1 10.8,0z`} fill={hat.color} />}
       </g>
     </g>
   </g>;

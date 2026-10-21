@@ -79,8 +79,9 @@
 @keyframes iso-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 
-/* 홈 히어로: 왼쪽 문구 + 오른쪽 캠퍼스. command-center.css보다 먼저 불리므로 선택자를 한 단계 구체적으로 쓴다. */
-.scenario-screen .lab-hero { grid-template-columns: minmax(250px, .72fr) 1.6fr; align-items: center; min-height: 0; }
+/* 홈 히어로: 왼쪽 문구 + 오른쪽 캠퍼스. command-center.css보다 먼저 불리므로 선택자를 한 단계 구체적으로 쓴다.
+   방 9개(3×3)를 다 채운 마름모는 가로로 넓어서 문구 칸을 줄이고 지도에 폭을 더 준다. */
+.scenario-screen .lab-hero { grid-template-columns: minmax(240px, .5fr) 2fr; align-items: center; min-height: 0; }
 .scenario-screen .lab-hero .iso-campus { padding: 18px 22px 18px 0; }
 @media (max-width: 1050px) {
   .scenario-screen .lab-hero { grid-template-columns: 1fr; }
@@ -88,6 +89,9 @@
 }
 /* 한글 제목이 글자 중간("생겼습/니다")에서 끊기지 않게 어절 단위로 줄을 바꾼다. */
 .scenario-screen .hero-copy h2 { word-break: keep-all; }
+/* 좁아진 문구 칸에서 버튼 글자가 두 줄로 쪼개지지 않게, 넘치면 버튼째 다음 줄로 보낸다. */
+.scenario-screen .hero-actions { flex-wrap: wrap; row-gap: 10px; }
+.scenario-screen .hero-actions button { white-space: nowrap; }
 
 /* 출동 대기 티켓 전광판 */
 .incident-ticker { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 7px 10px; border: 1px solid #1f2833; border-radius: 8px; background: #06080d; font-size: 11.5px; overflow: hidden; }
@@ -102,3 +106,32 @@
 .incident-ticker.is-clear .ticker-label { color: var(--ok); }
 .ticker-empty { color: var(--muted); }
 @keyframes ticker-roll { to { transform: translateX(-50%); } }
+
+/* 새 방(컨테이너·쿠버네티스·커뮤니티)과 "준비 중" 표시 */
+.iso-soon { font: 700 7px var(--mono); letter-spacing: 1.4px; }
+.iso-hud-status.soon { color: #ffd08a; background: #ffd08a1a; }
+.iso-bubble-text { font: 700 6px var(--mono); fill: #4a2219; }
+.iso-note-text { font-size: 4.6px; font-weight: 700; fill: #3a2a1c; }
+.iso-chalk { font: 600 4.4px var(--mono); fill: #f4f1ea; opacity: .9; }
+.iso-bob { animation: iso-bob 2.6s ease-in-out infinite; }
+.iso-tail { transform-box: fill-box; transform-origin: 100% 100%; animation: iso-tail 1.4s ease-in-out infinite alternate; }
+.iso-spout { transform-box: fill-box; transform-origin: 50% 100%; animation: iso-spout 3.4s ease-out infinite; }
+.iso-ripple { animation: iso-glow 2.6s ease-in-out infinite; }
+.iso-lift { animation: iso-lift 7s ease-in-out infinite; }
+.iso-sway { transform-box: fill-box; transform-origin: 50% 80%; animation: iso-sway 6s ease-in-out infinite; }
+.iso-flag { transform-box: fill-box; transform-origin: 100% 50%; animation: iso-flag 1.6s ease-in-out infinite alternate; }
+.iso-beam { transform-box: fill-box; transform-origin: 100% 50%; animation: iso-beam 5s ease-in-out infinite alternate; }
+.iso-glint { animation: iso-glow 3s ease-in-out infinite; }
+.iso-warm { animation: iso-warm 4s ease-in-out infinite; }
+.iso-steam { animation: iso-steam 2.8s ease-out infinite; }
+.iso-bubble { transform-box: fill-box; transform-origin: 50% 100%; animation: iso-bubble 6s ease-in-out infinite; }
+@keyframes iso-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes iso-tail { from { transform: rotate(-10deg); } to { transform: rotate(8deg); } }
+@keyframes iso-spout { 0%, 55% { opacity: 0; transform: scaleY(.2); } 65% { opacity: 1; transform: scaleY(1); } 100% { opacity: 0; transform: translateY(-3px); } }
+@keyframes iso-lift { 0%, 15% { transform: translateY(0); } 45%, 60% { transform: translateY(-16px); } 90%, 100% { transform: translateY(0); } }
+@keyframes iso-sway { 0%, 100% { transform: rotate(-.8deg) translateY(0); } 50% { transform: rotate(.8deg) translateY(-2px); } }
+@keyframes iso-flag { from { transform: skewY(-4deg) scaleX(.94); } to { transform: skewY(4deg) scaleX(1); } }
+@keyframes iso-beam { from { transform: rotate(-28deg); } to { transform: rotate(24deg); } }
+@keyframes iso-warm { 0%, 100% { opacity: .12; } 50% { opacity: .24; } }
+@keyframes iso-steam { 0% { opacity: 0; transform: translateY(2px); } 30% { opacity: .8; } 100% { opacity: 0; transform: translateY(-6px); } }
+@keyframes iso-bubble { 0%, 8% { opacity: 0; transform: translateY(3px) scale(.8); } 15%, 60% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; } }

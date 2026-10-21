@@ -28,7 +28,7 @@ function statusText({ total, cleared, alarm }: RoomStatus): string {
 /** 방 하나의 틀. 바닥·뒷벽·이름 간판·문·상태등과 호버·키보드 동작을 맡는다. */
 export function RoomShell({ info, status, theme, doors, index, active, onHover, onPress, onActivate, children }: RoomShellProps) {
   const [ox, oy] = project([info.origin[0], info.origin[1], 0]);
-  const label = `${info.name}. ${info.blurb}. ${statusText(status)}`.trim();
+  const label = `${info.name}. ${info.blurb}. ${info.soon ? "준비 중" : statusText(status)}`.trim();
   function onKeyDown(event: KeyboardEvent<SVGGElement>) {
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onActivate(); }
   }
@@ -58,6 +58,7 @@ export function RoomShell({ info, status, theme, doors, index, active, onHover, 
         <OnWall wall="right" at={[0.45, 0, 4]}>
           <text className="iso-tag" y={9} fill={theme.accent}>{info.tag}</text>
           <text className="iso-name" y={27}>{info.name}</text>
+          {info.soon && <text className="iso-soon" y={39} fill={theme.accent}>OPENING SOON</text>}
         </OnWall>
         {children}
         {/* 바닥 앞 가장자리 네온: 방의 경계를 선으로 띄운다. */}

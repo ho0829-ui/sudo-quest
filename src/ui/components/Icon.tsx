@@ -17,6 +17,8 @@ const paths = {
   clock: 'M12 7v5l3 2 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
   pause: 'M8 5v14 M16 5v14',
   play: 'm8 4 12 8-12 8V4Z',
+  container: 'M3 7h18v12H3z M3 7l3-3h12l3 3 M7.5 10v6 M12 10v6 M16.5 10v6',
+  helm: 'M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17 M12 9.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8 M12 9.6V1 M13.9 10.5l6.7-5.4 M14.3 12.5l8.4 1.9 M13 14.2l3.8 7.7 M11 14.2l-3.8 7.7 M9.7 12.5l-8.4 1.9 M10.1 10.5L3.4 5.1',
 } as const;
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20, style }: { name: IconName; size?: number; style?: CSSProperties }) {

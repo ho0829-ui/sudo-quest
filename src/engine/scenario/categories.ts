@@ -5,7 +5,8 @@
  * UI 레지스트리(src/ui/categories.ts)·방 색(themes.ts)·방 그림(RoomArt.tsx)을 빠뜨리면
  * 컴파일이 실패해 바로 알 수 있다. 자세한 순서는 docs/SCENARIO_GUIDE.md "새 분류 추가".
  */
-export const CATEGORY_IDS = ["linux", "network", "web-db", "aws"] as const;
+// docker·kubernetes는 캠퍼스 방을 먼저 열어 둔 "준비 중" 분류다(시나리오 0개, UI 레지스트리의 comingSoon).
+export const CATEGORY_IDS = ["linux", "network", "web-db", "aws", "docker", "kubernetes"] as const;
 
 export type Category = (typeof CATEGORY_IDS)[number];
 

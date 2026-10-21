@@ -8,7 +8,7 @@ import { RoomArt } from "./art/RoomArt";
 import { Corridor, Ground } from "./CampusGround";
 import { campusViewBox, CORRIDORS, doorsOf, MAX_RANK } from "./layout";
 import { IncidentTicker } from "./IncidentTicker";
-import { CATEGORY_LIST } from "../categories";
+import { OPEN_CATEGORIES } from "../categories";
 import "./campus.css";
 
 const VIEW_BOX = campusViewBox();
@@ -38,14 +38,16 @@ export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords,
   // 마우스가 없는 화면(터치)에서는 호버가 없으므로 첫 탭은 방 정보 보기, 같은 방을 다시 누르면 입장한다.
   const touch = useMemo(() => window.matchMedia("(hover: none)").matches, []);
   const clock = useShiftClock();
-  const stats = CATEGORY_LIST.map(c => ({ label: c.tag, ...roomStatus(c.id, scenarios, progress) }));
+  const stats = OPEN_CATEGORIES.map(c => ({ label: c.tag, ...roomStatus(c.id, scenarios, progress) }));
   const total = { label: "TOTAL", ...roomStatus("control", scenarios, progress) };
   const mapRooms = ROOMS.map(room => ({ accent: THEMES[room.kind].accent, alarm: roomStatus(room.kind, scenarios, progress).alarm }));
 
   function enter(kind: RoomKind) {
-    if (kind === "control") onOpenRecords();
+    // 준비 중인 방은 들어가지 않고 안내만 띄운다(키보드·터치에서도 HUD로 알 수 있게 활성화).
+    if (ROOMS.find(r => r.kind === kind)?.soon) setActive(kind);
+    else if (kind === "control") onOpenRecords();
     else if (kind === "library") onExplore();
-    else onEnterCategory(kind);
+    else if (kind !== "community") onEnterCategory(kind);
   }
 
   const info = ROOMS.find(room => room.kind === active);
@@ -80,7 +82,9 @@ export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords,
         {status.alarm !== null && <span className={`iso-hud-status ${status.alarm ? "alarm" : "clear"}`}>
           {status.alarm ? `미해결 ${status.total - status.cleared}개 · 해결 ${status.cleared}/${status.total}` : `모두 해결 · ${status.cleared}/${status.total}`}
         </span>}
-        <span className="iso-hud-enter">{touch ? "한 번 더 누르면 입장 →" : "클릭하거나 Enter로 입장 →"}</span>
+        {info.soon
+          ? <span className="iso-hud-status soon">OPENING SOON · {info.kind === "community" ? "게시판 준비 중" : "실습 준비 중"}</span>
+          : <span className="iso-hud-enter">{touch ? "한 번 더 누르면 입장 →" : "클릭하거나 Enter로 입장 →"}</span>}
       </> : <>
         <span className="iso-hud-tag">INFRA CAMPUS · SHIFT {clock}</span>
         <strong>어느 방으로 출동할까요?</strong>

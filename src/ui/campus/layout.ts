@@ -36,6 +36,10 @@ const PASSERS: Partial<Record<`${RoomKind}>${RoomKind}`, Pick<CorridorSpec, "wal
   "linux>control": { walker: { shirt: "#00ff66", hair: "#121212" } },
   "network>control": { robot: true },
   "control>web-db": { walker: { shirt: "#ff2d95", hair: "#6b4a2f" } },
+  "network>docker": { walker: { shirt: "#26e5c6", hair: "#121212" } },
+  "kubernetes>web-db": { walker: { shirt: "#ffd447", hair: "#3b2a20" } },
+  "aws>community": { walker: { shirt: "#ff9a6b", hair: "#6b4a2f" } },
+  "web-db>community": { robot: true },
 };
 
 function corridorsOf(room: RoomInfo): CorridorSpec[] {
@@ -83,7 +87,8 @@ export function campusViewBox(rooms: RoomInfo[] = ROOMS): string {
 export function miniMapLayout(rooms: RoomInfo[] = ROOMS): { cells: [number, number][]; width: number; height: number } {
   const raw = rooms.map(({ slot: [col, row] }) => [(col - row) * 14, (col + row) * 8] as const);
   const shift = 16 - Math.min(...raw.map(([x]) => x));
-  const cells = raw.map(([x, y]) => [x + shift, y + 10] as [number, number]);
+  // 위쪽 14는 "CAMPUS MAP" 글자 자리. 맨 위 마름모(자료실)가 글자와 겹치지 않게 내린다.
+  const cells = raw.map(([x, y]) => [x + shift, y + 14] as [number, number]);
   return {
     cells,
     width: Math.max(...cells.map(([x]) => x)) + 18,
