@@ -62,9 +62,17 @@ export const dig: Command = {
   usage: "dig <도메인>",
   run({ state, tokens }: CommandContext) {
     const host = positionals(tokens)[0];
-    if (!host) return fail("dig: 도메인을 지정하세요", 1);
+    const nameserver = configuredNameserver(state) ?? "127.0.0.1";
+    if (!host) {
+      // 루트 질의도 설정된 DNS 서버가 실제로 응답해야 된다(resolveHost와 같은 규칙).
+      const configured = configuredNameserver(state);
+      const reachable = configured !== null && state.network.dnsServers.includes(configured);
+      const root = ["; <<>> DiG 9.18.18-0ubuntu2 <<>>", ";; global options: +cmd"];
+      if (!reachable) return { stdout: [...root, ";; connection timed out; no servers could be reached"].join("\n"), stderr: "", exitCode: 9 };
+      return ok([...root, ";; Got answer:", ";; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1024", "", ";; ANSWER SECTION:",
+        ".\t\t\t518400\tIN\tNS\ta.root-servers.net.", "", `;; SERVER: ${nameserver}#53(${nameserver})`].join("\n"));
+    }
 
-    const nameserver = configuredNameserver(state) ?? "(없음)";
     const resolved = resolveHost(state, host);
 
     const head = [`; <<>> DiG 9.18.18-0ubuntu2 <<>> ${host}`, ";; global options: +cmd"];

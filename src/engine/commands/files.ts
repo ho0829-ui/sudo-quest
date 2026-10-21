@@ -3,6 +3,7 @@ import { flagValue, hasFlag, positionals } from "../parser/parse";
 import { canRead, canWrite, formatMode, isDir, lookup, removeNode, splitLast } from "../state/fs";
 import { formatLogTime, humanKB, table } from "../state/format";
 import type { FsNode } from "../state/types";
+import { lineCount, readSources } from "./input";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
 /** ls -l 한 줄을 만든다. 실제 ls와 열 구성을 맞췄다. */
@@ -70,21 +71,11 @@ export const ls: Command = {
 export const cat: Command = {
   name: "cat",
   summary: "파일 내용을 출력한다",
-  usage: "cat <파일...>",
-  run({ state, tokens, user }: CommandContext) {
-    const paths = positionals(tokens);
-    if (paths.length === 0) return fail("cat: 파일을 지정하세요");
-
-    const out: string[] = [];
-    const errors: string[] = [];
-    for (const path of paths) {
-      const { node } = lookup(state, path);
-      if (!node) errors.push(`cat: ${path}: No such file or directory`);
-      else if (isDir(node)) errors.push(`cat: ${path}: Is a directory`);
-      else if (!canRead(node, user)) errors.push(`cat: ${path}: Permission denied`);
-      else out.push(node.content);
-    }
-    const stdout = out.join("").replace(/\n$/, "");
+  usage: "cat [파일...]",
+  run(ctx: CommandContext) {
+    // 파일이 없으면 파이프로 들어온 내용을 그대로 낸다(실제 cat과 같다).
+    const { sources, errors } = readSources(ctx, "cat", positionals(ctx.tokens));
+    const stdout = sources.map((source) => source.text).join("").replace(/\n$/, "");
     if (errors.length) return { stdout, stderr: errors.join("\n"), exitCode: 1 };
     return ok(stdout);
   },
@@ -114,12 +105,16 @@ export const cd: Command = {
 
 export const tail: Command = {
   name: "tail",
-  summary: "파일의 마지막 줄을 본다 (-n 줄수)",
-  usage: "tail [-n 줄수] <파일>",
-  run({ state, tokens, user }: CommandContext) {
-    const lines = Number(flagValue(tokens, "n", "lines") ?? 10);
+  summary: "파일의 마지막 줄을 본다 (-n 줄수, 기본 10)",
+  usage: "tail [-n 줄수] [파일...]",
+  run(ctx: CommandContext) {
+    const { state, tokens, user } = ctx;
+    const lines = lineCount(tokens, flagValue(tokens, "n", "lines"), 10);
+    if (lines === null) return fail(`tail: invalid number of lines: '${flagValue(tokens, "n", "lines")}'`);
     const paths = positionals(tokens, ["n", "lines"]);
-    if (paths.length === 0) return fail("tail: 파일을 지정하세요");
+    const last = (text: string) => text.split("\n").filter((l) => l !== "").slice(-lines).join("\n");
+    // 파일이 없으면 파이프로 들어온 내용의 끝을 본다(journalctl ... | tail).
+    if (paths.length === 0) return ok(last(ctx.stdin ?? ""));
 
     const out: string[] = [];
     for (const path of paths) {
@@ -127,7 +122,7 @@ export const tail: Command = {
       if (!node) return fail(`tail: cannot open '${path}' for reading: No such file or directory`);
       if (isDir(node)) return fail(`tail: error reading '${path}': Is a directory`);
       if (!canRead(node, user)) return fail(`tail: cannot open '${path}' for reading: Permission denied`);
-      const body = node.content.split("\n").filter((l) => l !== "").slice(-lines).join("\n");
+      const body = last(node.content);
       out.push(paths.length > 1 ? `==> ${path} <==\n${body}` : body);
     }
     return ok(out.join("\n\n"));

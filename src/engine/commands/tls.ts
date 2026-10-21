@@ -2,7 +2,8 @@
 import { hasFlag, positionals } from "../parser/parse";
 import { formatFullTime } from "../state/format";
 import { addLog } from "../state/log";
-import type { Certificate } from "../state/types";
+import type { Certificate, SystemState } from "../state/types";
+import { certificateFor, request } from "../state/network";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
 /** "Sep 11 09:15:00 2026 GMT" — openssl이 쓰는 날짜 형식 */
@@ -43,15 +44,17 @@ function describe(cert: Certificate, tokens: string[]): string {
 
 export const openssl: Command = {
   name: "openssl",
-  summary: "인증서 정보를 본다 (x509 -enddate -noout -in <파일>)",
-  usage: "openssl x509 [-enddate] [-subject] [-issuer] [-noout] -in <인증서파일>",
-  run({ state, tokens }: CommandContext) {
-    if (tokens[0] !== "x509") {
-      return fail(`openssl: 이 시뮬레이터는 x509 하위 명령만 지원합니다\n사용법: ${openssl.usage}`, 1);
-    }
+  summary: "인증서 정보를 본다 (x509 -in <파일>, s_client -connect <호스트:포트>)",
+  usage: "openssl x509 [-enddate] [-subject] [-issuer] [-noout] -in <인증서파일> | openssl s_client -connect <호스트:443>",
+  run(ctx: CommandContext) {
+    const { state, tokens } = ctx;
+    if (tokens[0] === "s_client") return sClient(state, tokens);
+    if (tokens[0] === undefined) return ok("help:\n\nStandard commands\ns_client          x509");
+    if (tokens[0] !== "x509") return fail(`Invalid command '${tokens[0]}'; type "help" for a list.`, 1);
 
+    // -in이 없으면 실제 openssl처럼 stdin에서 인증서를 읽으려 한다. 파이프 입력이 없으니 읽기에 실패한다.
     const path = optValue(tokens, "in");
-    if (!path) return fail("openssl: -in 으로 인증서 파일을 지정하세요", 1);
+    if (!path) return fail("Could not read certificate from <stdin>\nUnable to load certificate", 1);
 
     const cert = state.certificates.find((c) => c.path === path);
     if (!cert) {
@@ -60,6 +63,44 @@ export const openssl: Command = {
     return ok(describe(cert, tokens));
   },
 };
+
+/**
+ * s_client: 서버에 TLS로 붙어 받은 인증서와 검증 결과를 보여 준다.
+ * 연결 가능 여부는 curl과 같은 request()로, 인증서 만료는 시뮬레이션 시각(state.clock)으로 판단한다.
+ */
+function sClient(state: SystemState, tokens: string[]) {
+  // -connect를 빼면 실제 s_client처럼 localhost:4433에 붙으려 한다.
+  const target = optValue(tokens, "connect") ?? "localhost:4433";
+  const [host, portText = "443"] = target.split(":");
+  const reach = request(state, { host, port: Number(portText) });
+  if (!reach.ok) {
+    const errno = reach.stage === "dns" ? "connect:errno=2" : reach.stage === "refused" ? "connect:errno=111" : "connect:errno=110";
+    return fail(`${reach.message ?? "connect failed"}\n${errno}`, 1);
+  }
+  const cert = certificateFor(state, host);
+  if (!cert) return fail(`CONNECTED(00000003)\nwrite:errno=104\nno peer certificate available`, 1);
+  const expired = cert.notAfter < state.clock;
+  const verify = expired ? "10 (certificate has expired)" : "0 (ok)";
+  return ok([
+    "CONNECTED(00000003)",
+    `depth=0 CN = ${cert.domain}`,
+    ...(expired ? ["verify error:num=10:certificate has expired", `notAfter=${opensslDate(cert.notAfter)}`] : []),
+    "verify return:1",
+    "---",
+    "Certificate chain",
+    ` 0 s:CN = ${cert.domain}`,
+    `   i:${cert.issuer}`,
+    `   v:NotBefore: ${opensslDate(cert.notBefore)}; NotAfter: ${opensslDate(cert.notAfter)}`,
+    "---",
+    `Server certificate`,
+    `subject=CN = ${cert.domain}`,
+    `issuer=${cert.issuer}`,
+    "---",
+    "New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384",
+    `Verify return code: ${verify}`,
+    "---",
+  ].join("\n"));
+}
 
 export const certbot: Command = {
   name: "certbot",
@@ -122,6 +163,6 @@ export const certbot: Command = {
       return ok(lines.join("\n"));
     }
 
-    return fail(`certbot: 알 수 없는 하위 명령입니다: ${sub}\n사용법: ${certbot.usage}`, 1);
+    return fail(`certbot: error: unrecognized arguments: ${sub}`, 2);
   },
 };

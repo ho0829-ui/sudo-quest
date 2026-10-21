@@ -1,12 +1,12 @@
 /**
  * 명령어 실행기. 게임과 엔진을 잇는 유일한 입구다.
  *
- * 입력 한 줄을 받아 → 파싱 → glob 확장 → 명령어 실행 → 리다이렉션 처리
+ * 입력 한 줄을 받아 → 파이프로 나누기 → (단계마다) 파싱 → glob 확장 → 명령어 실행 → 리다이렉션 처리
  * 순서로 처리하고, 바뀐 새 상태를 돌려준다.
  */
 import { DEFAULT_COMMANDS, getCommand } from "./commands";
 import type { CommandResult } from "./commands/types";
-import { parse } from "./parser/parse";
+import { parse, splitPipeline } from "./parser/parse";
 import { isDir, lookup, normalizePath, splitLast, writeFile, canWrite, findNode } from "./state/fs";
 import type { SystemState } from "./state/types";
 
@@ -54,16 +54,26 @@ export function runCommand(state: SystemState, input: string, options: RunOption
 
   if (!input.trim()) return { stdout: "", stderr: "", exitCode: 0, state: next };
 
-  // 파이프는 지원하지 않는다. 조용히 이상하게 동작하는 것보다 분명히 알려주는 게 낫다.
-  if (input.includes("|")) {
-    return {
-      stdout: "",
-      stderr: "이 시뮬레이터는 파이프(|)를 지원하지 않습니다. 명령을 나눠서 실행해 보세요.",
-      exitCode: 2,
-      state: next,
-    };
+  const stages = splitPipeline(input);
+  if (!stages) {
+    return { stdout: "", stderr: "bash: syntax error near unexpected token `|'", exitCode: 2, state: next };
   }
 
+  // 파이프: 앞 명령의 stdout이 다음 명령의 stdin이 된다. 각 단계의 stderr는 실제 터미널처럼
+  // 모두 화면에 남고, 종료 코드는 bash 기본값(pipefail 꺼짐)처럼 마지막 명령의 것이다.
+  let stdin: string | undefined;
+  const errors: string[] = [];
+  let last: RunResult = { stdout: "", stderr: "", exitCode: 0, state: next };
+  for (const stage of stages) {
+    last = runStage(next, stage, available, stdin);
+    if (last.stderr) errors.push(last.stderr);
+    stdin = last.stdout;
+  }
+  return { ...last, stderr: errors.join("\n") };
+}
+
+/** 파이프 한 단계(명령 하나)를 실행한다. state는 이미 복사본이라 그대로 바꾼다. */
+function runStage(next: SystemState, input: string, available: string[], stdin?: string): RunResult {
   const parsed = parse(input);
   const user = parsed.sudo ? "root" : next.user;
 
@@ -73,22 +83,15 @@ export function runCommand(state: SystemState, input: string, options: RunOption
     return { stdout: "", stderr: "", exitCode: 0, state: next };
   }
 
+  // 존재하지만 이 시나리오에서 막아둔 명령어도, 플레이어 입장에선 없는 것과 같다
   if (!available.includes(parsed.name)) {
-    const command = getCommand(parsed.name);
-    // 존재하지만 이 시나리오에서 막아둔 명령어도, 플레이어 입장에선 없는 것과 같다
-    return {
-      stdout: "",
-      stderr: `${parsed.name}: command not found`,
-      exitCode: 127,
-      state: next,
-      ...(command ? {} : {}),
-    };
+    return { stdout: "", stderr: `${parsed.name}: command not found`, exitCode: 127, state: next };
   }
 
   const command = getCommand(parsed.name)!;
   const tokens = parsed.tokens.flatMap((t) => (t.startsWith("-") ? [t] : expandGlob(next, t)));
 
-  const result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available });
+  const result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available, stdin });
 
   if (parsed.redirect) return applyRedirect(next, result.stdout, parsed.redirect, user, result);
   return { ...result, state: next };

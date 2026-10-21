@@ -11,6 +11,8 @@ export interface CommandContext {
   user: string;
   /** help 명령이 목록을 만들 때 쓴다 */
   available: string[];
+  /** 파이프 앞 명령의 출력. 파일 인자가 없을 때 grep·head·tail·sort·wc·cat이 읽는다. */
+  stdin?: string;
 }
 
 export interface CommandResult {

@@ -47,9 +47,11 @@ describe("제안 명령을 터미널로 옮기기", () => {
     expect(runnableCommands(check, DEFAULT_COMMANDS)).toEqual(["df -h", "sudo journalctl -u nginx -n 20"]);
   });
 
-  it("지원하지 않는 명령·파이프·리다이렉션은 옮기지 않는다", () => {
-    const check = "`lsof +L1` (실제 환경 참고), `journalctl -u nginx | grep error`, `cat a > b`, `ls; rm -rf /`";
+  it("지원하지 않는 명령·리다이렉션·명령 연결은 옮기지 않는다", () => {
+    const check = "`lsof +L1` (실제 환경 참고), `journalctl -u nginx | lsof`, `cat a > b`, `ls; rm -rf /`";
     expect(runnableCommands(check, DEFAULT_COMMANDS)).toEqual([]);
+    // 파이프는 단계마다 지원하는 명령이면 옮길 수 있다.
+    expect(runnableCommands("`journalctl -u nginx | grep -i error`", DEFAULT_COMMANDS)).toEqual(["journalctl -u nginx | grep -i error"]);
   });
 
   it("같은 명령은 한 번만, 백틱이 없으면 아무것도 고르지 않는다", () => {

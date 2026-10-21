@@ -4,7 +4,7 @@ import { allDiskUsage, duKB } from "../state/derived";
 import { isDir, lookup, walk } from "../state/fs";
 import { formatAgo, formatFullTime, formatLogTime, humanKB, table } from "../state/format";
 import { formatJournalLine } from "../state/log";
-import { findService, startService, stopService } from "../state/services";
+import { findService, reloadService, startService, stopService } from "../state/services";
 import type { Service } from "../state/types";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
@@ -114,8 +114,8 @@ function statusText(service: Service, clock: number, journalTail: string[]): str
 
 export const systemctl: Command = {
   name: "systemctl",
-  summary: "서비스를 조회하고 제어한다 (status/start/stop/restart)",
-  usage: "systemctl <status|start|stop|restart|is-active|list-units> [서비스]",
+  summary: "서비스를 조회하고 제어한다 (status/start/stop/restart/reload)",
+  usage: "systemctl <status|start|stop|restart|reload|is-active|list-units> [서비스]",
   run({ state, tokens, user }: CommandContext) {
     const args = positionals(tokens);
     const sub = args[0] ?? "list-units";
@@ -135,7 +135,11 @@ export const systemctl: Command = {
       return ok(table(rows, ["left", "left", "left", "left", "left"]));
     }
 
-    if (!name) return fail(`systemctl: 서비스 이름이 필요합니다\n사용법: ${systemctl.usage}`);
+    if (!name) {
+      if (sub !== "status") return fail("Too few arguments.");
+      const failed = state.services.filter((s) => s.state === "failed").length;
+      return ok([`● ${state.hostname}`, `    State: ${failed ? "degraded" : "running"}`, "    Units: " + state.services.length + " loaded", `     Jobs: 0 queued`, `   Failed: ${failed} units`].join("\n"));
+    }
     const service = findService(state, name);
     if (!service) {
       return fail(`Unit ${name.replace(/\.service$/, "")}.service could not be found.`, 4);
@@ -177,6 +181,18 @@ export const systemctl: Command = {
           `See "systemctl status ${service.name}.service" and "journalctl -xeu ${service.name}.service" for details.`,
         1,
       );
+    }
+
+    if (sub === "reload") {
+      if (user !== "root") {
+        return fail(`Failed to reload ${service.name}.service: Access denied\nSee system logs and 'systemctl status ${service.name}.service' for details.`, 4);
+      }
+      const outcome = reloadService(state, service.name);
+      if (outcome.ok) return ok();
+      if (outcome.why === "not-applicable") return fail(`Failed to reload ${service.name}.service: Job type reload is not applicable for unit ${service.name}.service.`);
+      if (outcome.why === "inactive") return fail(`${service.name}.service is not active, cannot reload.`);
+      return fail(`Job for ${service.name}.service failed because the control process exited with error code.\n` +
+        `See "systemctl status ${service.name}.service" and "journalctl -xeu ${service.name}.service" for details.`);
     }
 
     return fail(`Unknown operation ${sub}.`);

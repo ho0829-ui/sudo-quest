@@ -21,13 +21,34 @@ export const AWS_OPERATIONS = {
 } as const;
 type AwsService = keyof typeof AWS_OPERATIONS;
 
-function unknownSubcommand(service: AwsService, operation: string | undefined): CommandResult {
-  return fail(
-    `usage: aws ${service} <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-      `지원: ${AWS_OPERATIONS[service].join(", ")}`,
-    252,
-  );
+const AWS_USAGE = [
+  "usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]",
+  "To see help text, you can run:",
+  "",
+  "  aws help",
+  "  aws <command> help",
+  "  aws <command> <subcommand> help",
+  "",
+].join("\n");
+
+/** 실제 AWS CLI v2처럼 고를 수 있는 값을 두 칸씩 " | "로 보여 준다. */
+function choices(values: readonly string[]): string {
+  const width = Math.max(...values.map((v) => v.length));
+  const rows: string[] = [];
+  for (let i = 0; i < values.length; i += 2) rows.push(values[i + 1] ? `${values[i].padEnd(width)} | ${values[i + 1]}` : values[i]);
+  return rows.join("\n");
 }
+
+function invalidChoice(argument: "command" | "operation", values: readonly string[]): CommandResult {
+  return fail(`${AWS_USAGE}\naws: error: argument ${argument}: Invalid choice, valid choices are:\n\n${choices(values)}`, 252);
+}
+
+function unknownSubcommand(service: AwsService, _operation: string | undefined): CommandResult {
+  return invalidChoice("operation", AWS_OPERATIONS[service]);
+}
+
+/** 필수 옵션이 빠졌을 때 CLI가 요청을 보내기 전에 거절하는 메시지. */
+const missing = (option: string) => fail(`${AWS_USAGE}\naws: error: the following arguments are required: ${option}`, 252);
 
 /** "--group-id sg-123 --port 22" 같은 긴 옵션들을 뽑아낸다. */
 function options(tokens: string[]): Record<string, string> {
@@ -151,7 +172,7 @@ function elbv2(state: SystemState, operation: string | undefined, opts: Record<s
       );
     }
     const path = opts["health-check-path"];
-    if (!path) return fail("ModifyTargetGroup: --health-check-path 가 필요합니다", 254);
+    if (!path) return missing("--health-check-path");
     if (!path.startsWith("/")) {
       return fail(
         `An error occurred (ValidationError) when calling the ModifyTargetGroup operation: Health check path must begin with a '/'`,
@@ -202,7 +223,7 @@ function iam(state: SystemState, operation: string | undefined, opts: Record<str
       );
     }
     const arn = opts["policy-arn"];
-    if (!arn) return fail("AttachRolePolicy: --policy-arn 이 필요합니다", 254);
+    if (!arn) return missing("--policy-arn");
     const policy = arn.split("/").pop() ?? arn;
     if (!role.attachedPolicies.includes(policy)) role.attachedPolicies.push(policy);
     return ok("");
@@ -244,7 +265,8 @@ export const aws: Command = {
     if (service === "iam") return iam(state, operation, opts);
 
     if (service !== "ec2") {
-      return fail(`usage: aws <command> <subcommand> [parameters]\nUnknown service: ${service ?? "(없음)"}`, 252);
+      return service === undefined ? fail(`${AWS_USAGE}\naws: error: the following arguments are required: command`, 252)
+        : invalidChoice("command", Object.keys(AWS_OPERATIONS));
     }
 
     if (operation === "describe-instances") {
@@ -305,7 +327,7 @@ export const aws: Command = {
       const cidr = opts["cidr"];
       if (!cidr || (protocol !== "-1" && !Number.isInteger(port))) {
         return fail(
-          "An error occurred (MissingParameter) when calling the AuthorizeSecurityGroupIngress operation: --port 와 --cidr 가 필요합니다",
+          "An error occurred (MissingParameter) when calling the AuthorizeSecurityGroupIngress operation: The request must contain the parameter ipPermissions",
           254,
         );
       }

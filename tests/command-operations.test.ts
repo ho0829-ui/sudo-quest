@@ -13,8 +13,7 @@ describe("aws 하위 명령 표", () => {
     for (const operation of operations) {
       it(`aws ${service} ${operation}는 구현되어 있다`, () => {
         const result = runCommand(awsAdmin(), `aws ${service} ${operation}`, { available: WITH_AWS });
-        expect(result.stderr).not.toContain("Unknown subcommand");
-        expect(result.stderr).not.toContain("Unknown service");
+        expect(result.stderr).not.toContain("Invalid choice");
       });
     }
   }
@@ -22,8 +21,10 @@ describe("aws 하위 명령 표", () => {
   it("표에 없는 하위 명령은 지원 목록과 함께 거부한다", () => {
     const result = runCommand(awsAdmin(), "aws elbv2 delete-load-balancer", { available: WITH_AWS });
     expect(result.exitCode).toBe(252);
-    expect(result.stderr).toContain(`지원: ${AWS_OPERATIONS.elbv2.join(", ")}`);
-    expect(runCommand(awsAdmin(), "aws sts whoami", { available: WITH_AWS }).stderr).toContain("Unknown subcommand: whoami");
+    expect(result.stderr).toContain("aws: error: argument operation: Invalid choice, valid choices are:");
+    for (const op of AWS_OPERATIONS.elbv2) expect(result.stderr).toContain(op);
+    expect(runCommand(awsAdmin(), "aws sts whoami", { available: WITH_AWS }).stderr).toContain("get-caller-identity");
+    expect(runCommand(awsAdmin(), "aws cloudwatch describe-alarms", { available: WITH_AWS }).stderr).toContain("argument command: Invalid choice");
   });
 });
 

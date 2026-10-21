@@ -51,16 +51,25 @@ export const sed: Command = {
   name: "sed",
   summary: "파일 내용을 치환한다 (-i 파일에 바로 반영)",
   usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>",
-  run({ state, tokens, user }: CommandContext) {
+  run({ state, tokens, user, stdin }: CommandContext) {
     const inPlace = hasFlag(tokens, "i", "in-place");
     const args = positionals(tokens);
     const [script, path] = args;
 
-    if (!script || !path) return fail(`sed: 사용법: ${sed.usage}`, 1);
+    if (!script) {
+      return fail("Usage: sed [OPTION]... {script-only-if-no-other-script} [input-file]...", 1);
+    }
 
     const substitution = parseScript(script);
     if (!substitution) {
       return fail(`sed: -e expression #1, char 1: unknown command: '${script[0]}'`, 1);
+    }
+
+    // 파일 없이 쓰면 파이프로 들어온 내용을 바꿔 출력한다(-i는 바꿀 파일이 있어야 한다).
+    if (!path) {
+      if (inPlace) return fail("sed: no input files", 1);
+      const piped = (stdin ?? "").replace(new RegExp(escapeRegex(substitution.pattern), substitution.global ? "g" : ""), substitution.replacement);
+      return ok(piped);
     }
 
     const { abs, node } = lookup(state, path);

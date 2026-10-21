@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flagValue, hasFlag, parse, positionals, tokenize } from "../src/engine/parser/parse";
+import { flagValue, hasFlag, parse, positionals, splitPipeline, tokenize } from "../src/engine/parser/parse";
 
 describe("tokenize", () => {
   it("공백으로 나눈다", () => {
@@ -66,5 +66,17 @@ describe("플래그 헬퍼", () => {
   it("플래그 값은 인자로 세지 않는다", () => {
     expect(positionals(["-n", "20", "/var/log/syslog"], ["n", "lines"])).toEqual(["/var/log/syslog"]);
     expect(positionals(["-sh", "/var/log"])).toEqual(["/var/log"]);
+  });
+});
+
+describe("splitPipeline", () => {
+  it("따옴표 밖의 | 로만 나눈다", () => {
+    expect(splitPipeline("journalctl -u nginx | grep 'a|b' | wc -l")).toEqual(["journalctl -u nginx", "grep 'a|b'", "wc -l"]);
+    expect(splitPipeline("ls")).toEqual(["ls"]);
+  });
+  it("빈 단계는 문법 오류(null)", () => {
+    expect(splitPipeline("ls |")).toBeNull();
+    expect(splitPipeline("| ls")).toBeNull();
+    expect(splitPipeline("ls || ls")).toBeNull();
   });
 });

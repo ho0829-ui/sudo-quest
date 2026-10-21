@@ -154,7 +154,7 @@ export const ufw: Command = {
     if (sub === "allow" || sub === "deny") {
       if (user !== "root") return fail("ERROR: You need to be root to run this script", 1);
       const spec = args[1];
-      if (!spec) return fail(`ERROR: Wrong number of arguments\n\n사용법: ${ufw.usage}`, 1);
+      if (!spec) return fail("ERROR: Wrong number of arguments", 1);
       const parsed = parsePortSpec(spec);
       if (!parsed) return fail(`ERROR: Bad port '${spec}'`, 1);
 
@@ -176,6 +176,6 @@ export const ufw: Command = {
       return ok(sub === "enable" ? "Firewall is active and enabled on system startup" : "Firewall stopped and disabled on system startup");
     }
 
-    return fail(`ERROR: Invalid syntax\n\n사용법: ${ufw.usage}`, 1);
+    return fail("ERROR: Invalid syntax", 1);
   },
 };

@@ -36,8 +36,8 @@ export function quickPrompts(session: Session): QuickPrompt[] {
   ];
 }
 
-// 가상 셸은 파이프·리다이렉션·명령 연결을 지원하지 않으므로, 그런 제안은 터미널로 옮기지 않는다.
-const SHELL_OPERATORS = /[|;&<>]/;
+// 가상 셸은 파이프(|)는 지원하지만 리다이렉션·명령 연결(; & < >)은 버튼으로 옮기지 않는다.
+const SHELL_OPERATORS = /[;&<>]/;
 const IN_BACKTICKS = /`([^`\n]+)`/g;
 
 /**
@@ -50,7 +50,8 @@ export function runnableCommands(check: string, available: string[]): string[] {
     const command = match[1].trim();
     if (!command || SHELL_OPERATORS.test(command)) continue;
     // aws처럼 하위 명령이 있으면 지원하는 하위 명령인지까지 본다(예: aws cloudwatch는 제외).
-    if (supportsInvocation(command, available) && !found.includes(command)) found.push(command);
+    const stages = command.split("|").map((stage) => stage.trim());
+    if (stages.every((stage) => stage && supportsInvocation(stage, available)) && !found.includes(command)) found.push(command);
   }
   return found;
 }

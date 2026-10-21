@@ -37,26 +37,31 @@ function blockingReason(state: SystemState, service: Service): string | null {
     if (availKB < service.requiresFreeKB) return "No space left on device";
   }
 
-  // 설정 파일 문법 검사. nginx -t 와 똑같은 함수를 쓰므로 결과가 어긋나지 않는다.
-  if (service.configPath && service.configValidator) {
-    const node = findNode(state.fs, service.configPath);
-    if (!node || node.kind !== "file") {
-      return `open() "${service.configPath}" failed (2: No such file or directory)`;
-    }
-    const check = configValidators[service.configValidator](node.content);
-    if (!check.ok && check.error) {
-      return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
-    }
-  }
+  return configProblem(state, service) ?? portProblem(state, service.listenPorts ?? [], service.mainPid);
+}
 
-  for (const listen of service.listenPorts ?? []) {
+/** 설정 파일 문법 검사. nginx -t 와 똑같은 함수를 쓰므로 결과가 어긋나지 않는다. */
+function configProblem(state: SystemState, service: Service): string | null {
+  if (!service.configPath || !service.configValidator) return null;
+  const node = findNode(state.fs, service.configPath);
+  if (!node || node.kind !== "file") {
+    return `open() "${service.configPath}" failed (2: No such file or directory)`;
+  }
+  const check = configValidators[service.configValidator](node.content);
+  if (!check.ok && check.error) {
+    return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
+  }
+  return null;
+}
+
+function portProblem(state: SystemState, ports: { addr: string; port: number }[], ownPid?: number): string | null {
+  for (const listen of ports) {
     const owner = portOwner(state, listen.addr, listen.port);
     // 자기 자신이 이미 쓰고 있는 건 충돌이 아니다
-    if (owner && owner.pid !== service.mainPid) {
+    if (owner && owner.pid !== ownPid) {
       return `bind() to ${listen.addr}:${listen.port} failed (98: Address already in use)`;
     }
   }
-
   return null;
 }
 
@@ -153,4 +158,36 @@ export function stopService(state: SystemState, name: string): boolean {
     message: `Stopped ${service.name}.service - ${service.description}.`,
   });
   return true;
+}
+
+export type ReloadOutcome = { ok: true } | { ok: false; why: "inactive" | "not-applicable" | "rejected"; reason?: string };
+
+/**
+ * reload: 실행 중인 서비스가 설정만 다시 읽는다.
+ * 새 설정이 잘못되면 거부하고 기존 프로세스를 그대로 둔다. 그래서 운영 중엔 restart보다 안전하다
+ * (restart는 일단 죽이고 새로 띄우므로 설정 오타가 곧 장애가 된다).
+ * 설정 파일이 없는 서비스는 실제 systemd처럼 reload를 지원하지 않는다.
+ */
+export function reloadService(state: SystemState, name: string): ReloadOutcome {
+  const service = findService(state, name);
+  if (!service || !service.configPath) return { ok: false, why: "not-applicable" };
+  if (service.state !== "active") return { ok: false, why: "inactive" };
+
+  addLog(state, { tag: "systemd", pid: 1, unit: service.name, message: `Reloading ${service.name}.service - ${service.description}...` });
+  const ports = effectiveListenPorts(state, service);
+  const reason = configProblem(state, service) ?? portProblem(state, ports, service.mainPid);
+  if (reason) {
+    addLog(state, { tag: service.name, unit: service.name, priority: "err", message: reason });
+    addLog(state, {
+      tag: "systemd", pid: 1, unit: service.name, priority: "err",
+      message: `${service.name}.service: Control process exited, code=exited, status=1/FAILURE`,
+    });
+    addLog(state, { tag: "systemd", pid: 1, unit: service.name, priority: "err", message: `Reload failed for ${service.name}.service - ${service.description}.` });
+    return { ok: false, why: "rejected", reason };
+  }
+
+  const process = state.processes.find((p) => p.pid === service.mainPid);
+  if (process) process.listenPorts = ports;
+  addLog(state, { tag: "systemd", pid: 1, unit: service.name, message: `Reloaded ${service.name}.service - ${service.description}.` });
+  return { ok: true };
 }

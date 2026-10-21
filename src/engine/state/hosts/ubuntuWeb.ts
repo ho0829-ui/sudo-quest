@@ -34,6 +34,11 @@ export function ubuntuWeb(): SystemState {
   home.group = "ubuntu";
 
   writeFile(root, "/etc/hostname", { content: "web-01\n", mtime: BASE_CLOCK - 86400_000 * 30 });
+  // 실제 서버라면 늘 있는 파일. 이름 해석 장애를 볼 때 resolv.conf와 함께 먼저 열어 본다.
+  writeFile(root, "/etc/hosts", {
+    content: "127.0.0.1 localhost\n127.0.1.1 web-01\n\n# The following lines are desirable for IPv6 capable hosts\n::1 ip6-localhost ip6-loopback\n",
+    mtime: BASE_CLOCK - 86400_000 * 30,
+  });
   writeFile(root, "/etc/resolv.conf", {
     content: "nameserver 10.0.0.2\nsearch ap-northeast-2.compute.internal\n",
     mtime: BASE_CLOCK - 86400_000 * 30,
