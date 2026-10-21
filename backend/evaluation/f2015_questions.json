@@ -1,0 +1,104 @@
+{
+  "written_at": "2026-10-21",
+  "note": "정답 기준(expected_facts)은 실행 전에 공식 문서 원문 절을 읽고 작성했다. 채점은 이 기준과 대조한다.",
+  "questions": [
+    {
+      "id": "Q1",
+      "item_id": "aws-alb-http-503-issues",
+      "question": "ALB 타깃 그룹의 타깃이 모두 unhealthy이면 ALB는 항상 503을 반환하나요?",
+      "expected_facts": [
+        "아니다. 모든 활성 가용 영역에서 모든 타깃이 헬스 체크에 실패하면 ALB는 fail-open하여 상태와 무관하게 모든 타깃으로 트래픽을 보낸다.",
+        "503의 가능한 원인으로 문서가 드는 것은 등록된 타깃이 없거나 모든 타깃이 unused 상태인 경우(및 target optimizer 거부)다."
+      ],
+      "sources": ["alb-health-overview", "alb-http-503-issues"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q2",
+      "item_id": "aws-alb-http-460-issues",
+      "question": "ALB 액세스 로그에 HTTP 460이 찍혔습니다. 무슨 뜻이고 무엇을 확인해야 하나요?",
+      "expected_facts": [
+        "클라이언트가 로드 밸런서 유휴 제한 시간이 지나기 전에 로드 밸런서와의 연결을 닫은 경우다.",
+        "클라이언트 제한 시간이 로드 밸런서 유휴 제한 시간보다 큰지 확인하고, 타깃이 클라이언트 제한 시간 전에 응답하게 하거나 클라이언트 제한 시간을 늘린다."
+      ],
+      "sources": ["alb-http-460-issues"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q3",
+      "item_id": "aws-alb-http-408-issues",
+      "question": "ALB에서 408 Request timeout이 납니다. TCP keep-alive를 켜면 막을 수 있나요?",
+      "expected_facts": [
+        "막을 수 없다. TCP keep-alive를 보내도 이 제한 시간은 방지되지 않는다.",
+        "각 유휴 제한 시간이 지나기 전에 최소 1바이트의 데이터를 보내거나 유휴 제한 시간을 늘린다."
+      ],
+      "sources": ["alb-http-408-issues"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q4",
+      "item_id": "aws-alb-http-504-issues",
+      "question": "ALB가 타깃과 연결을 맺는 데 기다리는 연결 제한 시간은 몇 초이고, 504의 다른 원인에는 무엇이 있나요?",
+      "expected_facts": [
+        "연결 제한 시간은 10초다(이 시간 안에 타깃과 연결하지 못하면 504).",
+        "연결 후 타깃이 유휴 제한 시간 안에 응답하지 않은 경우, 서브넷 네트워크 ACL이 임시 포트(1024-65535) 트래픽을 막은 경우 등이 문서에 있다."
+      ],
+      "sources": ["alb-http-504-issues"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q5",
+      "item_id": "curl-22",
+      "question": "curl이 404 응답을 받으면 항상 종료 코드 22로 끝나나요?",
+      "expected_facts": [
+        "아니다. 종료 코드 22는 --fail을 사용할 때만 나온다.",
+        "22는 요청 URL을 찾지 못했거나 HTTP 응답 코드가 400 이상인 오류를 받은 경우다."
+      ],
+      "sources": ["curl-exit-22"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q6",
+      "item_id": "curl-28",
+      "question": "curl --connect-timeout은 DNS 조회 시간도 포함하나요? --max-time과는 무엇이 다른가요?",
+      "expected_facts": [
+        "포함한다. 연결 단계는 DNS 조회와 요청된 TCP·TLS·QUIC 핸드셰이크가 끝나면 완료된 것으로 본다. --connect-timeout은 연결 단계만 제한한다.",
+        "--max-time은 전송 전체에 허용하는 최대 시간이다."
+      ],
+      "sources": ["curl-option-connect-timeout", "curl-option-max-time"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q7",
+      "item_id": "linux-errno-EMFILE",
+      "question": "EMFILE과 ENFILE은 각각 어떤 한도를 넘었을 때 나나요?",
+      "expected_facts": [
+        "EMFILE은 프로세스의 열린 파일 수 초과로, 흔히 RLIMIT_NOFILE 자원 제한을 넘을 때 생기며 /proc/sys/fs/nr_open 한도로도 생길 수 있다.",
+        "ENFILE은 시스템 전체 열린 파일 수 초과로, Linux에서는 /proc/sys/fs/file-max 한도에 걸린 결과일 가능성이 크다."
+      ],
+      "sources": ["linux-errno-EMFILE", "linux-errno-ENFILE"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q8",
+      "item_id": "linux-errno-ENOSPC",
+      "question": "write가 ENOSPC와 EDQUOT를 반환하는 조건은 각각 무엇인가요?",
+      "expected_facts": [
+        "ENOSPC: fd가 가리키는 파일이 있는 장치에 데이터를 쓸 공간이 없다.",
+        "EDQUOT: 그 파일이 있는 파일시스템에서 사용자의 디스크 블록 할당량이 소진됐다."
+      ],
+      "sources": ["linux-write-ENOSPC", "linux-write-EDQUOT"],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "Q9",
+      "item_id": "aws-alb-http-503-issues",
+      "question": "ALB 503 장애가 났을 때 AWS Business 지원 플랜의 최초 응답 시간은 몇 분인가요?",
+      "expected_facts": [
+        "색인한 문서(ALB 문제 해결·헬스체크)에는 지원 플랜 응답 시간이 없다. RAG 답변은 '문서에서 확인되지 않는다'고 보류해야 한다."
+      ],
+      "sources": [],
+      "kind": "out_of_corpus"
+    }
+  ]
+}
