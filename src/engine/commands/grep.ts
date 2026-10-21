@@ -1,6 +1,7 @@
 /**
  * grep: 패턴이 들어 있는 줄을 찾는다. 로그에서 오류를 거르는 가장 흔한 도구라 파이프와 함께 지원한다.
  * 지원: -i(대소문자 무시) -v(반대로) -n(줄 번호) -c(개수) -l(파일 이름만) -r(디렉터리 아래 전부) -E(확장 정규식)
+ *       -A/-B/-C N(찾은 줄 뒤·앞·양쪽 N줄. kubectl describe에서 Last State 아래 줄을 볼 때 흔히 쓴다)
  * 종료 코드는 실제 grep처럼 찾으면 0, 못 찾으면 1, 오류가 있으면 2다.
  */
 import { hasFlag, positionals } from "../parser/parse";
@@ -27,12 +28,36 @@ export function basicToJs(pattern: string): string {
   return out;
 }
 
+/**
+ * -A N / -A2 / --after-context=N 같은 문맥 옵션을 먼저 떼어 낸다.
+ * 값이 다음 토큰으로 오면(-A 2) 그 숫자가 패턴으로 잘못 읽히지 않게 함께 뺀다.
+ */
+function takeContext(tokens: string[]): { rest: string[]; before: number; after: number } | { error: string } {
+  const rest: string[] = [];
+  let before = 0;
+  let after = 0;
+  for (let i = 0; i < tokens.length; i++) {
+    const short = /^-([ABC])(.*)$/.exec(tokens[i]);
+    const long = /^--(after-context|before-context|context)=(.*)$/.exec(tokens[i]);
+    if (!short && !long) { rest.push(tokens[i]); continue; }
+    const kind = short ? short[1] : { "after-context": "A", "before-context": "B", context: "C" }[long![1]]!;
+    const value = short ? (short[2] || tokens[++i]) : long![2];
+    if (value === undefined || !/^\d+$/.test(value)) return { error: `grep: ${value ?? ""}: invalid context length argument` };
+    const n = Number(value);
+    if (kind !== "B") after = n;
+    if (kind !== "A") before = n;
+  }
+  return { rest, before, after };
+}
+
 export const grep: Command = {
   name: "grep",
-  summary: "패턴이 들어 있는 줄을 찾는다 (-i -v -n -c -l -r -E)",
-  usage: "grep [-ivnclrE] <패턴> [파일...]",
+  summary: "패턴이 들어 있는 줄을 찾는다 (-i -v -n -c -l -r -E -A -B -C)",
+  usage: "grep [-ivnclrE] [-A N] [-B N] [-C N] <패턴> [파일...]",
   run(ctx: CommandContext) {
-    const { tokens } = ctx;
+    const context = takeContext(ctx.tokens);
+    if ("error" in context) return { stdout: "", stderr: context.error, exitCode: 2 };
+    const tokens = context.rest;
     const [pattern, ...paths] = positionals(tokens);
     if (pattern === undefined) {
       return { stdout: "", stderr: "Usage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information.", exitCode: 2 };
@@ -60,11 +85,17 @@ export const grep: Command = {
     let matched = false;
 
     for (const source of sources) {
-      const hits = linesOf(source.text)
+      const all = linesOf(source.text);
+      const hits = all
         .map((line, index) => ({ line, number: index + 1 }))
         .filter(({ line }) => regex.test(line) !== invert);
       if (hits.length) matched = true;
       const prefix = showName && source.name ? `${source.name}:` : "";
+      if (!namesOnly && !countOnly && (context.before || context.after)) {
+        const name = showName ? source.name ?? undefined : undefined;
+        out.push(...withContext(all, new Set(hits.map(h => h.number - 1)), context, name, numbered));
+        continue;
+      }
       if (namesOnly) {
         if (hits.length) out.push(source.name ?? "(standard input)");
       } else if (countOnly) {
@@ -78,3 +109,18 @@ export const grep: Command = {
     return { stdout: out.join("\n"), stderr: errors.join("\n"), exitCode };
   },
 };
+
+/** 찾은 줄 앞뒤 문맥. 찾은 줄은 "번호:", 문맥 줄은 "번호-", 이어지지 않는 묶음 사이에는 "--". */
+function withContext(lines: string[], hits: Set<number>, ctx: { before: number; after: number }, name: string | undefined, numbered: boolean): string[] {
+  const show = new Set<number>();
+  for (const i of hits) for (let j = Math.max(0, i - ctx.before); j <= Math.min(lines.length - 1, i + ctx.after); j++) show.add(j);
+  const out: string[] = [];
+  let last = -2;
+  for (const i of [...show].sort((a, b) => a - b)) {
+    if (last >= 0 && i > last + 1) out.push("--");
+    const mark = hits.has(i) ? ":" : "-";
+    out.push(`${name ? name + mark : ""}${numbered ? `${i + 1}${mark}` : ""}${lines[i]}`);
+    last = i;
+  }
+  return out;
+}
