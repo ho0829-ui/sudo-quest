@@ -9,6 +9,7 @@ import { runCommand } from "../src/engine/run";
 import { buildInitialState } from "../src/engine/scenario/build";
 import { DEFAULT_COMMANDS, getCommand } from "../src/engine/commands";
 import { scenarios } from "../src/scenarios";
+import { isCategory } from "../src/engine";
 import type { SystemState } from "../src/engine/state/types";
 
 /** 모범 풀이에 절대 나오면 안 되는 실패 신호들. 오타나 잘못된 경로를 잡아낸다. */
@@ -50,6 +51,21 @@ describe("시나리오 데이터 스키마", () => {
 
   it.each(scenarios)("$id 의 포스트모템에 재발 방지책이 있다", (scenario) => {
     expect(scenario.postmortem.howToPrevent.length).toBeGreaterThan(20);
+  });
+
+  // "실제로 자주 일어나는 장애인가"를 데이터로 남긴다. 3자 블로그만으로는 부족하고 공식 문서나 공개 포스트모템이 있어야 한다.
+  it.each(scenarios)("$id 에 실제 근거 자료가 있다", (scenario) => {
+    expect(scenario.evidence.length).toBeGreaterThan(0);
+    for (const item of scenario.evidence) {
+      expect(["official-doc", "postmortem", "survey"]).toContain(item.kind);
+      expect(item.title.length).toBeGreaterThan(3);
+      expect(new URL(item.url).protocol, item.url).toBe("https:");
+    }
+    expect(scenario.evidence.some((item) => item.kind !== "survey"), "공식 문서나 포스트모템이 하나 이상 필요합니다").toBe(true);
+  });
+
+  it.each(scenarios)("$id 의 분류가 엔진 분류 목록에 있다", (scenario) => {
+    expect(isCategory(scenario.category), scenario.category).toBe(true);
   });
 
   it.each(scenarios)("$id 이 쓰는 명령어가 모두 등록되어 있다", (scenario) => {

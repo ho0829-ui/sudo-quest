@@ -335,6 +335,26 @@ button.primary {
   white-space: pre-wrap;
 }
 
+/* 새 탭으로 여는 바깥 링크. 어두운 배경에서 브라우저 기본 파란색은 읽기 어렵다. */
+.external-link {
+  color: var(--accent);
+}
+
+.evidence-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.evidence-kind {
+  display: inline-block;
+  min-width: 84px;
+  margin-right: 8px;
+  color: var(--muted);
+}
+
 .score-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

@@ -121,4 +121,9 @@ export const linuxPermission: Scenario = {
     realWorldNote:
       "HTTP 상태 코드는 범위를 좁히는 좋은 도구입니다. 403은 '서버는 살아 있고 권한 문제', 404는 '경로 문제', 502/504는 '뒤에 있는 애플리케이션 문제', 연결 거부나 타임아웃은 '웹 서버나 네트워크 문제'입니다. 이것만 알아도 조사 시작점이 달라집니다.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "open(2) — EACCES: 경로나 파일에 대한 권한 부족", url: "https://man7.org/linux/man-pages/man2/open.2.html" },
+    { kind: "postmortem", title: "danluu/post-mortems — Config Errors 모음(설정 실수로 인한 공개 장애 회고)", url: "https://raw.githubusercontent.com/danluu/post-mortems/master/README.md" },
+  ],
 };

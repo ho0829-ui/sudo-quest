@@ -1,6 +1,10 @@
 import { calculateScore, formatDuration } from "../../engine/session/score";
 import type { Session } from "../../engine/session/session";
+import type { EvidenceKind } from "../../engine/scenario/types";
 import { InvestigationReview } from "../components/InvestigationReview";
+import { ExternalLink } from "../components/ExternalLink";
+
+const EVIDENCE_LABEL: Record<EvidenceKind, string> = { "official-doc": "공식 문서", postmortem: "공개 포스트모템", survey: "업계 조사" };
 
 interface ReportScreenProps {
   session: Session;
@@ -65,6 +69,16 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
           <h3>이번 실습에서 익힌 것</h3>
           <ul className="objectives small">
             {session.scenario.learningObjectives.map((objective, index) => <li key={index}>{objective}</li>)}
+          </ul>
+        </div>
+        {/* 근거 자료의 제목에도 원인이 드러나므로 브리핑·코치 요청에는 넣지 않고 여기서만 보여 준다. */}
+        <div className="report-section">
+          <h3>참고 자료</h3>
+          <ul className="evidence-list small">
+            {scenario.evidence.map(item => <li key={item.url}>
+              <span className="evidence-kind">{EVIDENCE_LABEL[item.kind]}</span>
+              <ExternalLink href={item.url}>{item.title}</ExternalLink>
+            </li>)}
           </ul>
         </div>
       </div>

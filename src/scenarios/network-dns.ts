@@ -110,4 +110,10 @@ export const networkDns: Scenario = {
     realWorldNote:
       "'도메인으로는 안 되는데 IP로는 된다'는 DNS 문제의 교과서적인 신호입니다. 반대로 둘 다 안 되면 네트워크나 상대 서버 문제입니다. 이 한 번의 비교로 조사 범위가 절반으로 줄어드니, 외부 호출이 실패하면 가장 먼저 해보세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "resolv.conf(5) — 리졸버가 쓰는 nameserver 설정", url: "https://man7.org/linux/man-pages/man5/resolv.conf.5.html" },
+    { kind: "postmortem", title: "danluu/post-mortems — Config Errors 모음(설정 실수로 인한 공개 장애 회고)", url: "https://raw.githubusercontent.com/danluu/post-mortems/master/README.md" },
+    { kind: "survey", title: "Uptime Institute, Annual Outage Analysis 2024 (네트워크·연결성이 IT 서비스 장애 1위)", url: "https://uptimeinstitute.com/resources/research-and-reports/annual-outage-analysis-2024" },
+  ],
 };

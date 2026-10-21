@@ -146,4 +146,9 @@ export const linuxDiskFull: Scenario = {
     realWorldNote:
       "실무에서 가장 흔한 함정은 `rm` 으로 파일을 지웠는데도 `df` 사용량이 그대로인 경우입니다. 프로세스가 그 파일을 아직 열고 있으면 공간이 반환되지 않기 때문입니다. 이때는 `lsof +L1` 로 확인하고, 해당 프로세스를 재시작하거나 `truncate -s 0` 로 파일을 비워야 합니다.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "errno(3) — ENOSPC: No space left on device", url: "https://man7.org/linux/man-pages/man3/errno.3.html" },
+    { kind: "official-doc", title: "write(2) — ENOSPC: 장치에 데이터를 쓸 공간이 없음", url: "https://man7.org/linux/man-pages/man2/write.2.html" },
+  ],
 };
