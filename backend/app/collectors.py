@@ -3,6 +3,7 @@ import json
 import re
 import time
 from datetime import datetime, timezone
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -10,7 +11,7 @@ from urllib.robotparser import RobotFileParser
 
 import requests
 
-from app.catalog import CURL, DOCUMENTS
+from app.catalog import DOCUMENTS
 
 AGENT = "InfraCoachLearning/0.1"
 
@@ -51,9 +52,31 @@ class TextParser(HTMLParser):
             self.parts.append(data)
 
 
+def extract_man_entry(html: str, section: str) -> str:
+    """man7.org 페이지에서 'h2 절/오류 이름' 단락만 뽑는다. 예: ERRORS/ECONNREFUSED."""
+    heading, name = section.split("/", 1)
+    # 제목 텍스트가 첫 단락에 섞이지 않도록 </h2> 뒤부터 읽는다.
+    start = re.search(r'<h2><a id="' + re.escape(heading) + r'".*?</h2>', html, re.S)
+    if not start:
+        raise ValueError("source_section_missing")
+    end = re.search(r"<h2>", html[start.end():])
+    fragment = html[start.end():start.end() + end.start()] if end else html[start.end():]
+    text = unescape(re.sub(r"<[^>]+>", "", fragment))
+    # 단락은 빈 줄로 나뉜다. 같은 오류 이름이 조건별로 여러 번 나오므로 모두 모은다.
+    blocks = [block.strip() for block in re.split(r"\n\s*\n", text)]
+    hits = [re.sub(r"\s+", " ", b) for b in blocks if re.match(re.escape(name) + r"(?![A-Z0-9_])", b)]
+    if not hits:
+        raise ValueError("source_section_missing")
+    return "\n".join(hits)
+
+
 def extract_section(html: str, url: str, section: str) -> str:
-    # curl은 단락 앵커, AWS는 제목 경계를 사용한다. 절이 없으면 전체 본문으로 대체하지 않는다.
-    if url == CURL:
+    # curl은 단락 앵커, man7은 오류 이름 단락, AWS는 제목 경계를 사용한다.
+    # 절이 없으면 전체 본문으로 대체하지 않는다.
+    host = urlsplit(url).hostname
+    if host == "man7.org":
+        return extract_man_entry(html, section)
+    if host == "curl.se":
         pattern = r'<p class="level0">(?:(?!</p>).)*<a name="' + re.escape(section) + r'"'
         start = re.search(pattern, html, re.S)
         if not start:
@@ -73,12 +96,21 @@ def extract_section(html: str, url: str, section: str) -> str:
     return text
 
 
+def product_version(html: str) -> str:
+    for pattern in (r"This man page describes curl ([\d.]+)", r"Linux man-pages ([\d.]+)"):
+        found = re.search(pattern, html)
+        if found:
+            return found.group(1).rstrip(".")
+    return "rolling snapshot"
+
+
 class Collector:
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, documents: dict | None = None):
+        documents = DOCUMENTS if documents is None else documents
         self.root = root
         self.requests = 0
         self.last_request = 0.0
-        self.allowed = {d["canonical_url"] for d in DOCUMENTS.values()} | {d["usage_terms_url"] for d in DOCUMENTS.values()}
+        self.allowed = {d["canonical_url"] for d in documents.values()} | {d["usage_terms_url"] for d in documents.values()}
 
     def _request(self, url):
         time.sleep(max(0, 1 - (time.monotonic() - self.last_request)))
@@ -116,18 +148,20 @@ class Collector:
         r = self._request(url)
         if r.status_code != 200:
             raise ValueError("source_http_error")
+        if "charset" not in r.headers.get("Content-Type", "").lower():
+            # 헤더에 charset이 없으면 requests가 ISO-8859-1로 해석해 한글·대시가 깨진다.
+            r.encoding = "utf-8"
         value = {"url": url, "html": r.text, "content_hash": digest(r.text),
                  "fetched_at": datetime.now(timezone.utc).isoformat(), "etag": r.headers.get("ETag", "")}
         save_json(path, value)
         return value
 
-    def document(self, doc_id):
-        definition = DOCUMENTS[doc_id]
+    def document(self, doc_id, documents: dict | None = None):
+        definition = (DOCUMENTS if documents is None else documents)[doc_id]
         raw = self.fetch(definition["canonical_url"])
         text = extract_section(raw["html"], definition["canonical_url"], definition["section"])
-        version = re.search(r'This man page describes curl ([\d.]+)', raw["html"])
         return {**definition, "text": text, "content_hash": digest(text),
                 "source_url": definition["canonical_url"] + "#" + definition["section"],
                 "fetched_at": raw["fetched_at"], "raw_hash": raw["content_hash"],
-                "product_version": version.group(1).rstrip(".") if version else "rolling snapshot",
+                "product_version": product_version(raw["html"]),
                 "language": "en", "changes": "HTML 본문 절 추출·공백 정규화"}

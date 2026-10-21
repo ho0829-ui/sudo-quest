@@ -1,0 +1,1892 @@
+{
+  "curl-exit-1": {
+    "doc_id": "curl-exit-1",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "1",
+    "title": "curl exit 1: Unsupported protocol",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-1": {
+    "doc_id": "libcurl-1",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEUNSUPPORTEDPROTOCOL",
+    "title": "libcurl CURLE_UNSUPPORTED_PROTOCOL (1)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-3": {
+    "doc_id": "curl-exit-3",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "3",
+    "title": "curl exit 3: URL malformed",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-3": {
+    "doc_id": "libcurl-3",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEURLMALFORMAT",
+    "title": "libcurl CURLE_URL_MALFORMAT (3)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-4": {
+    "doc_id": "curl-exit-4",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "4",
+    "title": "curl exit 4: A feature or option that was needed to perform the desired request was not enabled or was explicitly disabled at build-time",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-4": {
+    "doc_id": "libcurl-4",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLENOTBUILTIN",
+    "title": "libcurl CURLE_NOT_BUILT_IN (4)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-5": {
+    "doc_id": "curl-exit-5",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "5",
+    "title": "curl exit 5: Could not resolve proxy",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-5": {
+    "doc_id": "libcurl-5",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLECOULDNTRESOLVEPROXY",
+    "title": "libcurl CURLE_COULDNT_RESOLVE_PROXY (5)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-6": {
+    "doc_id": "curl-exit-6",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "6",
+    "title": "curl exit 6: Could not resolve host",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-6": {
+    "doc_id": "libcurl-6",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLECOULDNTRESOLVEHOST",
+    "title": "libcurl CURLE_COULDNT_RESOLVE_HOST (6)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-resolve": {
+    "doc_id": "curl-option-resolve",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--resolve",
+    "title": "curl --resolve",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-7": {
+    "doc_id": "curl-exit-7",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "7",
+    "title": "curl exit 7: Failed to connect to host",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-7": {
+    "doc_id": "libcurl-7",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLECOULDNTCONNECT",
+    "title": "libcurl CURLE_COULDNT_CONNECT (7)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-connect-timeout": {
+    "doc_id": "curl-option-connect-timeout",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--connect-timeout",
+    "title": "curl --connect-timeout",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-verbose": {
+    "doc_id": "curl-option-verbose",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--verbose",
+    "title": "curl --verbose",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-8": {
+    "doc_id": "curl-exit-8",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "8",
+    "title": "curl exit 8: Weird server reply",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-8": {
+    "doc_id": "libcurl-8",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEWEIRDSERVERREPLY",
+    "title": "libcurl CURLE_WEIRD_SERVER_REPLY (8)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-16": {
+    "doc_id": "curl-exit-16",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "16",
+    "title": "curl exit 16: HTTP/2 error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-16": {
+    "doc_id": "libcurl-16",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEHTTP2",
+    "title": "libcurl CURLE_HTTP2 (16)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-18": {
+    "doc_id": "curl-exit-18",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "18",
+    "title": "curl exit 18: Partial file",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-18": {
+    "doc_id": "libcurl-18",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEPARTIALFILE",
+    "title": "libcurl CURLE_PARTIAL_FILE (18)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-22": {
+    "doc_id": "curl-exit-22",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "22",
+    "title": "curl exit 22: HTTP page not retrieved",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-22": {
+    "doc_id": "libcurl-22",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEHTTPRETURNEDERROR",
+    "title": "libcurl CURLE_HTTP_RETURNED_ERROR (22)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-23": {
+    "doc_id": "curl-exit-23",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "23",
+    "title": "curl exit 23: Write error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-23": {
+    "doc_id": "libcurl-23",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEWRITEERROR",
+    "title": "libcurl CURLE_WRITE_ERROR (23)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-output": {
+    "doc_id": "curl-option-output",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--output",
+    "title": "curl --output",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-26": {
+    "doc_id": "curl-exit-26",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "26",
+    "title": "curl exit 26: Read error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-26": {
+    "doc_id": "libcurl-26",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEREADERROR",
+    "title": "libcurl CURLE_READ_ERROR (26)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-27": {
+    "doc_id": "curl-exit-27",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "27",
+    "title": "curl exit 27: Out of memory",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-27": {
+    "doc_id": "libcurl-27",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEOUTOFMEMORY",
+    "title": "libcurl CURLE_OUT_OF_MEMORY (27)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-28": {
+    "doc_id": "curl-exit-28",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "28",
+    "title": "curl exit 28: Operation timeout",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-28": {
+    "doc_id": "libcurl-28",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEOPERATIONTIMEDOUT",
+    "title": "libcurl CURLE_OPERATION_TIMEDOUT (28)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-max-time": {
+    "doc_id": "curl-option-max-time",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--max-time",
+    "title": "curl --max-time",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-33": {
+    "doc_id": "curl-exit-33",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "33",
+    "title": "curl exit 33: HTTP range error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-33": {
+    "doc_id": "libcurl-33",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLERANGEERROR",
+    "title": "libcurl CURLE_RANGE_ERROR (33)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-34": {
+    "doc_id": "curl-exit-34",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "34",
+    "title": "curl exit 34: HTTP post error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-35": {
+    "doc_id": "curl-exit-35",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "35",
+    "title": "curl exit 35: SSL connect error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-35": {
+    "doc_id": "libcurl-35",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCONNECTERROR",
+    "title": "libcurl CURLE_SSL_CONNECT_ERROR (35)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-36": {
+    "doc_id": "curl-exit-36",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "36",
+    "title": "curl exit 36: Bad download resume",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-36": {
+    "doc_id": "libcurl-36",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEBADDOWNLOADRESUME",
+    "title": "libcurl CURLE_BAD_DOWNLOAD_RESUME (36)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-37": {
+    "doc_id": "curl-exit-37",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "37",
+    "title": "curl exit 37: FILE could not read file",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-37": {
+    "doc_id": "libcurl-37",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEFILECOULDNTREADFILE",
+    "title": "libcurl CURLE_FILE_COULDNT_READ_FILE (37)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-45": {
+    "doc_id": "curl-exit-45",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "45",
+    "title": "curl exit 45: Interface error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-45": {
+    "doc_id": "libcurl-45",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEINTERFACEFAILED",
+    "title": "libcurl CURLE_INTERFACE_FAILED (45)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-47": {
+    "doc_id": "curl-exit-47",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "47",
+    "title": "curl exit 47: Too many redirects",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-47": {
+    "doc_id": "libcurl-47",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLETOOMANYREDIRECTS",
+    "title": "libcurl CURLE_TOO_MANY_REDIRECTS (47)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-52": {
+    "doc_id": "curl-exit-52",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "52",
+    "title": "curl exit 52: The server did not reply anything, which here is considered an error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-52": {
+    "doc_id": "libcurl-52",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEGOTNOTHING",
+    "title": "libcurl CURLE_GOT_NOTHING (52)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-55": {
+    "doc_id": "curl-exit-55",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "55",
+    "title": "curl exit 55: Failed sending network data",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-55": {
+    "doc_id": "libcurl-55",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESENDERROR",
+    "title": "libcurl CURLE_SEND_ERROR (55)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-56": {
+    "doc_id": "curl-exit-56",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "56",
+    "title": "curl exit 56: Failure in receiving network data",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-56": {
+    "doc_id": "libcurl-56",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLERECVERROR",
+    "title": "libcurl CURLE_RECV_ERROR (56)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-58": {
+    "doc_id": "curl-exit-58",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "58",
+    "title": "curl exit 58: Problem with the local certificate",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-58": {
+    "doc_id": "libcurl-58",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCERTPROBLEM",
+    "title": "libcurl CURLE_SSL_CERTPROBLEM (58)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-59": {
+    "doc_id": "curl-exit-59",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "59",
+    "title": "curl exit 59: Could not use specified SSL cipher",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-59": {
+    "doc_id": "libcurl-59",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCIPHER",
+    "title": "libcurl CURLE_SSL_CIPHER (59)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-60": {
+    "doc_id": "curl-exit-60",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "60",
+    "title": "curl exit 60: Peer certificate cannot be authenticated with known CA certificates",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-60": {
+    "doc_id": "libcurl-60",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEPEERFAILEDVERIFICATION",
+    "title": "libcurl CURLE_PEER_FAILED_VERIFICATION (60)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-option-cacert": {
+    "doc_id": "curl-option-cacert",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "--cacert",
+    "title": "curl --cacert",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-61": {
+    "doc_id": "curl-exit-61",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "61",
+    "title": "curl exit 61: Unrecognized transfer encoding",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-61": {
+    "doc_id": "libcurl-61",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEBADCONTENTENCODING",
+    "title": "libcurl CURLE_BAD_CONTENT_ENCODING (61)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-63": {
+    "doc_id": "curl-exit-63",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "63",
+    "title": "curl exit 63: Maximum file size exceeded",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-63": {
+    "doc_id": "libcurl-63",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEFILESIZEEXCEEDED",
+    "title": "libcurl CURLE_FILESIZE_EXCEEDED (63)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-67": {
+    "doc_id": "curl-exit-67",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "67",
+    "title": "curl exit 67: The username, password, or similar was not accepted and curl failed to log in",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-67": {
+    "doc_id": "libcurl-67",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLELOGINDENIED",
+    "title": "libcurl CURLE_LOGIN_DENIED (67)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-77": {
+    "doc_id": "curl-exit-77",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "77",
+    "title": "curl exit 77: Problem reading the SSL CA cert (path? access rights?)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-77": {
+    "doc_id": "libcurl-77",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCACERTBADFILE",
+    "title": "libcurl CURLE_SSL_CACERT_BADFILE (77)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-78": {
+    "doc_id": "curl-exit-78",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "78",
+    "title": "curl exit 78: The resource referenced in the URL does not exist",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-78": {
+    "doc_id": "libcurl-78",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEREMOTEFILENOTFOUND",
+    "title": "libcurl CURLE_REMOTE_FILE_NOT_FOUND (78)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-82": {
+    "doc_id": "curl-exit-82",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "82",
+    "title": "curl exit 82: Could not load CRL file, missing or wrong format",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-82": {
+    "doc_id": "libcurl-82",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCRLBADFILE",
+    "title": "libcurl CURLE_SSL_CRL_BADFILE (82)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-90": {
+    "doc_id": "curl-exit-90",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "90",
+    "title": "curl exit 90: SSL public key does not match pinned public key",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-90": {
+    "doc_id": "libcurl-90",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLPINNEDPUBKEYNOTMATCH",
+    "title": "libcurl CURLE_SSL_PINNEDPUBKEYNOTMATCH (90)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-91": {
+    "doc_id": "curl-exit-91",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "91",
+    "title": "curl exit 91: Invalid SSL certificate status",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-91": {
+    "doc_id": "libcurl-91",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLINVALIDCERTSTATUS",
+    "title": "libcurl CURLE_SSL_INVALIDCERTSTATUS (91)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-92": {
+    "doc_id": "curl-exit-92",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "92",
+    "title": "curl exit 92: Stream error in HTTP/2 framing layer",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-92": {
+    "doc_id": "libcurl-92",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEHTTP2STREAM",
+    "title": "libcurl CURLE_HTTP2_STREAM (92)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-95": {
+    "doc_id": "curl-exit-95",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "95",
+    "title": "curl exit 95: A problem was detected in the HTTP/3 layer",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-95": {
+    "doc_id": "libcurl-95",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEHTTP3",
+    "title": "libcurl CURLE_HTTP3 (95)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-96": {
+    "doc_id": "curl-exit-96",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "96",
+    "title": "curl exit 96: QUIC connection error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-96": {
+    "doc_id": "libcurl-96",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEQUICCONNECTERROR",
+    "title": "libcurl CURLE_QUIC_CONNECT_ERROR (96)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-97": {
+    "doc_id": "curl-exit-97",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "97",
+    "title": "curl exit 97: Proxy handshake error",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-97": {
+    "doc_id": "libcurl-97",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLEPROXY",
+    "title": "libcurl CURLE_PROXY (97)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "curl-exit-98": {
+    "doc_id": "curl-exit-98",
+    "canonical_url": "https://curl.se/docs/manpage.html",
+    "section": "98",
+    "title": "curl exit 98: A client-side certificate is required to complete the TLS handshake",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-98": {
+    "doc_id": "libcurl-98",
+    "canonical_url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "section": "CURLESSLCLIENTCERT",
+    "title": "libcurl CURLE_SSL_CLIENTCERT (98)",
+    "product": "curl",
+    "publisher": "curl contributors",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "linux-errno-EACCES": {
+    "doc_id": "linux-errno-EACCES",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EACCES",
+    "title": "errno(3): EACCES",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EACCES": {
+    "doc_id": "linux-connect-EACCES",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EACCES",
+    "title": "connect(2) ERRORS: EACCES",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EACCES": {
+    "doc_id": "linux-open-EACCES",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EACCES",
+    "title": "open(2) ERRORS: EACCES",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EADDRINUSE": {
+    "doc_id": "linux-errno-EADDRINUSE",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EADDRINUSE",
+    "title": "errno(3): EADDRINUSE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EADDRINUSE": {
+    "doc_id": "linux-connect-EADDRINUSE",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EADDRINUSE",
+    "title": "connect(2) ERRORS: EADDRINUSE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EADDRNOTAVAIL": {
+    "doc_id": "linux-errno-EADDRNOTAVAIL",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EADDRNOTAVAIL",
+    "title": "errno(3): EADDRNOTAVAIL",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EADDRNOTAVAIL": {
+    "doc_id": "linux-connect-EADDRNOTAVAIL",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EADDRNOTAVAIL",
+    "title": "connect(2) ERRORS: EADDRNOTAVAIL",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EAGAIN": {
+    "doc_id": "linux-errno-EAGAIN",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EAGAIN",
+    "title": "errno(3): EAGAIN",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EAGAIN": {
+    "doc_id": "linux-connect-EAGAIN",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EAGAIN",
+    "title": "connect(2) ERRORS: EAGAIN",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EAGAIN": {
+    "doc_id": "linux-write-EAGAIN",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EAGAIN",
+    "title": "write(2) ERRORS: EAGAIN",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EALREADY": {
+    "doc_id": "linux-errno-EALREADY",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EALREADY",
+    "title": "errno(3): EALREADY",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EALREADY": {
+    "doc_id": "linux-connect-EALREADY",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EALREADY",
+    "title": "connect(2) ERRORS: EALREADY",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EBADF": {
+    "doc_id": "linux-errno-EBADF",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EBADF",
+    "title": "errno(3): EBADF",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EBADF": {
+    "doc_id": "linux-connect-EBADF",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EBADF",
+    "title": "connect(2) ERRORS: EBADF",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EBADF": {
+    "doc_id": "linux-open-EBADF",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EBADF",
+    "title": "open(2) ERRORS: EBADF",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EBADF": {
+    "doc_id": "linux-write-EBADF",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EBADF",
+    "title": "write(2) ERRORS: EBADF",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EBUSY": {
+    "doc_id": "linux-errno-EBUSY",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EBUSY",
+    "title": "errno(3): EBUSY",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EBUSY": {
+    "doc_id": "linux-open-EBUSY",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EBUSY",
+    "title": "open(2) ERRORS: EBUSY",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ECONNABORTED": {
+    "doc_id": "linux-errno-ECONNABORTED",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ECONNABORTED",
+    "title": "errno(3): ECONNABORTED",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ECONNREFUSED": {
+    "doc_id": "linux-errno-ECONNREFUSED",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ECONNREFUSED",
+    "title": "errno(3): ECONNREFUSED",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-ECONNREFUSED": {
+    "doc_id": "linux-connect-ECONNREFUSED",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/ECONNREFUSED",
+    "title": "connect(2) ERRORS: ECONNREFUSED",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ECONNRESET": {
+    "doc_id": "linux-errno-ECONNRESET",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ECONNRESET",
+    "title": "errno(3): ECONNRESET",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EDQUOT": {
+    "doc_id": "linux-errno-EDQUOT",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EDQUOT",
+    "title": "errno(3): EDQUOT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EDQUOT": {
+    "doc_id": "linux-open-EDQUOT",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EDQUOT",
+    "title": "open(2) ERRORS: EDQUOT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EDQUOT": {
+    "doc_id": "linux-write-EDQUOT",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EDQUOT",
+    "title": "write(2) ERRORS: EDQUOT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EEXIST": {
+    "doc_id": "linux-errno-EEXIST",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EEXIST",
+    "title": "errno(3): EEXIST",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EEXIST": {
+    "doc_id": "linux-open-EEXIST",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EEXIST",
+    "title": "open(2) ERRORS: EEXIST",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EFBIG": {
+    "doc_id": "linux-errno-EFBIG",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EFBIG",
+    "title": "errno(3): EFBIG",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EFBIG": {
+    "doc_id": "linux-open-EFBIG",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EFBIG",
+    "title": "open(2) ERRORS: EFBIG",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EFBIG": {
+    "doc_id": "linux-write-EFBIG",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EFBIG",
+    "title": "write(2) ERRORS: EFBIG",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EHOSTUNREACH": {
+    "doc_id": "linux-errno-EHOSTUNREACH",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EHOSTUNREACH",
+    "title": "errno(3): EHOSTUNREACH",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EINPROGRESS": {
+    "doc_id": "linux-errno-EINPROGRESS",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EINPROGRESS",
+    "title": "errno(3): EINPROGRESS",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EINPROGRESS": {
+    "doc_id": "linux-connect-EINPROGRESS",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EINPROGRESS",
+    "title": "connect(2) ERRORS: EINPROGRESS",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EINTR": {
+    "doc_id": "linux-errno-EINTR",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EINTR",
+    "title": "errno(3): EINTR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-EINTR": {
+    "doc_id": "linux-connect-EINTR",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/EINTR",
+    "title": "connect(2) ERRORS: EINTR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EINTR": {
+    "doc_id": "linux-open-EINTR",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EINTR",
+    "title": "open(2) ERRORS: EINTR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EINTR": {
+    "doc_id": "linux-write-EINTR",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EINTR",
+    "title": "write(2) ERRORS: EINTR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EINVAL": {
+    "doc_id": "linux-errno-EINVAL",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EINVAL",
+    "title": "errno(3): EINVAL",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EINVAL": {
+    "doc_id": "linux-open-EINVAL",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EINVAL",
+    "title": "open(2) ERRORS: EINVAL",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EINVAL": {
+    "doc_id": "linux-write-EINVAL",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EINVAL",
+    "title": "write(2) ERRORS: EINVAL",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EIO": {
+    "doc_id": "linux-errno-EIO",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EIO",
+    "title": "errno(3): EIO",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EIO": {
+    "doc_id": "linux-write-EIO",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EIO",
+    "title": "write(2) ERRORS: EIO",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EISDIR": {
+    "doc_id": "linux-errno-EISDIR",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EISDIR",
+    "title": "errno(3): EISDIR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EISDIR": {
+    "doc_id": "linux-open-EISDIR",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EISDIR",
+    "title": "open(2) ERRORS: EISDIR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ELOOP": {
+    "doc_id": "linux-errno-ELOOP",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ELOOP",
+    "title": "errno(3): ELOOP",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ELOOP": {
+    "doc_id": "linux-open-ELOOP",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ELOOP",
+    "title": "open(2) ERRORS: ELOOP",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EMFILE": {
+    "doc_id": "linux-errno-EMFILE",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EMFILE",
+    "title": "errno(3): EMFILE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EMFILE": {
+    "doc_id": "linux-open-EMFILE",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EMFILE",
+    "title": "open(2) ERRORS: EMFILE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENAMETOOLONG": {
+    "doc_id": "linux-errno-ENAMETOOLONG",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENAMETOOLONG",
+    "title": "errno(3): ENAMETOOLONG",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENAMETOOLONG": {
+    "doc_id": "linux-open-ENAMETOOLONG",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENAMETOOLONG",
+    "title": "open(2) ERRORS: ENAMETOOLONG",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENETDOWN": {
+    "doc_id": "linux-errno-ENETDOWN",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENETDOWN",
+    "title": "errno(3): ENETDOWN",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENETUNREACH": {
+    "doc_id": "linux-errno-ENETUNREACH",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENETUNREACH",
+    "title": "errno(3): ENETUNREACH",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-ENETUNREACH": {
+    "doc_id": "linux-connect-ENETUNREACH",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/ENETUNREACH",
+    "title": "connect(2) ERRORS: ENETUNREACH",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENFILE": {
+    "doc_id": "linux-errno-ENFILE",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENFILE",
+    "title": "errno(3): ENFILE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENFILE": {
+    "doc_id": "linux-open-ENFILE",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENFILE",
+    "title": "open(2) ERRORS: ENFILE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOBUFS": {
+    "doc_id": "linux-errno-ENOBUFS",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOBUFS",
+    "title": "errno(3): ENOBUFS",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENODEV": {
+    "doc_id": "linux-errno-ENODEV",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENODEV",
+    "title": "errno(3): ENODEV",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENODEV": {
+    "doc_id": "linux-open-ENODEV",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENODEV",
+    "title": "open(2) ERRORS: ENODEV",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOENT": {
+    "doc_id": "linux-errno-ENOENT",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOENT",
+    "title": "errno(3): ENOENT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENOENT": {
+    "doc_id": "linux-open-ENOENT",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENOENT",
+    "title": "open(2) ERRORS: ENOENT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOEXEC": {
+    "doc_id": "linux-errno-ENOEXEC",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOEXEC",
+    "title": "errno(3): ENOEXEC",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOMEM": {
+    "doc_id": "linux-errno-ENOMEM",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOMEM",
+    "title": "errno(3): ENOMEM",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENOMEM": {
+    "doc_id": "linux-open-ENOMEM",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENOMEM",
+    "title": "open(2) ERRORS: ENOMEM",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOSPC": {
+    "doc_id": "linux-errno-ENOSPC",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOSPC",
+    "title": "errno(3): ENOSPC",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENOSPC": {
+    "doc_id": "linux-open-ENOSPC",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENOSPC",
+    "title": "open(2) ERRORS: ENOSPC",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-ENOSPC": {
+    "doc_id": "linux-write-ENOSPC",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/ENOSPC",
+    "title": "write(2) ERRORS: ENOSPC",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOTCONN": {
+    "doc_id": "linux-errno-ENOTCONN",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOTCONN",
+    "title": "errno(3): ENOTCONN",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOTDIR": {
+    "doc_id": "linux-errno-ENOTDIR",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOTDIR",
+    "title": "errno(3): ENOTDIR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-ENOTDIR": {
+    "doc_id": "linux-open-ENOTDIR",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/ENOTDIR",
+    "title": "open(2) ERRORS: ENOTDIR",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOTEMPTY": {
+    "doc_id": "linux-errno-ENOTEMPTY",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOTEMPTY",
+    "title": "errno(3): ENOTEMPTY",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ENOTSOCK": {
+    "doc_id": "linux-errno-ENOTSOCK",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ENOTSOCK",
+    "title": "errno(3): ENOTSOCK",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-ENOTSOCK": {
+    "doc_id": "linux-connect-ENOTSOCK",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/ENOTSOCK",
+    "title": "connect(2) ERRORS: ENOTSOCK",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EPERM": {
+    "doc_id": "linux-errno-EPERM",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EPERM",
+    "title": "errno(3): EPERM",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EPERM": {
+    "doc_id": "linux-open-EPERM",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EPERM",
+    "title": "open(2) ERRORS: EPERM",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EPERM": {
+    "doc_id": "linux-write-EPERM",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EPERM",
+    "title": "write(2) ERRORS: EPERM",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EPIPE": {
+    "doc_id": "linux-errno-EPIPE",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EPIPE",
+    "title": "errno(3): EPIPE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-write-EPIPE": {
+    "doc_id": "linux-write-EPIPE",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "section": "ERRORS/EPIPE",
+    "title": "write(2) ERRORS: EPIPE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-EROFS": {
+    "doc_id": "linux-errno-EROFS",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/EROFS",
+    "title": "errno(3): EROFS",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-open-EROFS": {
+    "doc_id": "linux-open-EROFS",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "section": "ERRORS/EROFS",
+    "title": "open(2) ERRORS: EROFS",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ESRCH": {
+    "doc_id": "linux-errno-ESRCH",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ESRCH",
+    "title": "errno(3): ESRCH",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-errno-ETIMEDOUT": {
+    "doc_id": "linux-errno-ETIMEDOUT",
+    "canonical_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "section": "DESCRIPTION/ETIMEDOUT",
+    "title": "errno(3): ETIMEDOUT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-connect-ETIMEDOUT": {
+    "doc_id": "linux-connect-ETIMEDOUT",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "section": "ERRORS/ETIMEDOUT",
+    "title": "connect(2) ERRORS: ETIMEDOUT",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "alb-target-not-inservice": {
+    "doc_id": "alb-target-not-inservice",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "target-not-inservice",
+    "title": "A registered target is not in service",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-health-overview": {
+    "doc_id": "alb-health-overview",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+    "section": "target-group-health-checks",
+    "title": "ALB health checks and fail-open",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-health-states": {
+    "doc_id": "alb-health-states",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+    "section": "target-health-states",
+    "title": "ALB target health status",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-client-cannot-connect": {
+    "doc_id": "alb-client-cannot-connect",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "client-cannot-connect",
+    "title": "Clients cannot connect to an internet-facing load balancer",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-custom-domain-request": {
+    "doc_id": "alb-custom-domain-request",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "custom-domain-request",
+    "title": "Requests sent to a custom domain aren't received by the load balancer",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-https-cert-invalid": {
+    "doc_id": "alb-https-cert-invalid",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "https-cert-invalid",
+    "title": "HTTPS requests sent to the load balancer return \"NET::ERR_CERT_COMMON_NAME_INVALID\"",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-elevated-processing-time": {
+    "doc_id": "alb-elevated-processing-time",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "elevated-processing-time",
+    "title": "Load balancer shows elevated processing times",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-400-issues": {
+    "doc_id": "alb-http-400-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-400-issues",
+    "title": "HTTP 400: Bad request",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-401-issues": {
+    "doc_id": "alb-http-401-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-401-issues",
+    "title": "HTTP 401: Unauthorized",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-403-issues": {
+    "doc_id": "alb-http-403-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-403-issues",
+    "title": "HTTP 403: Forbidden",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-405-issues": {
+    "doc_id": "alb-http-405-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-405-issues",
+    "title": "HTTP 405: Method not allowed",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-408-issues": {
+    "doc_id": "alb-http-408-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-408-issues",
+    "title": "HTTP 408: Request timeout",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-413-issues": {
+    "doc_id": "alb-http-413-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-413-issues",
+    "title": "HTTP 413: Payload too large",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-414-issues": {
+    "doc_id": "alb-http-414-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-414-issues",
+    "title": "HTTP 414: URI too long",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-460-issues": {
+    "doc_id": "alb-http-460-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-460-issues",
+    "title": "HTTP 460",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-464-issues": {
+    "doc_id": "alb-http-464-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-464-issues",
+    "title": "HTTP 464",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-500-issues": {
+    "doc_id": "alb-http-500-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-500-issues",
+    "title": "HTTP 500: Internal server error",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-502-issues": {
+    "doc_id": "alb-http-502-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-502-issues",
+    "title": "HTTP 502: Bad gateway",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-503-issues": {
+    "doc_id": "alb-http-503-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-503-issues",
+    "title": "HTTP 503: Service unavailable",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-http-504-issues": {
+    "doc_id": "alb-http-504-issues",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "http-504-issues",
+    "title": "HTTP 504: Gateway timeout",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-target-http-errors": {
+    "doc_id": "alb-target-http-errors",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "target-http-errors",
+    "title": "A target generates an HTTP error",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-acm-cert-unavailable": {
+    "doc_id": "alb-acm-cert-unavailable",
+    "canonical_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "section": "acm-cert-unavailable",
+    "title": "An AWS Certificate Manager certificate is not available for use",
+    "product": "AWS ALB",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  }
+}

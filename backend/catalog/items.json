@@ -1,0 +1,2507 @@
+[
+  {
+    "item_id": "curl-1",
+    "title_ko": "지원하지 않는 프로토콜",
+    "title_original": "curl exit 1: Unsupported protocol",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "1"
+    ],
+    "symptoms": [
+      "Unsupported protocol",
+      "URL의 프로토콜을 처리하지 못함"
+    ],
+    "summary": "현재 curl 빌드가 해당 프로토콜을 지원하지 않는다는 오류다. 원문은 빌드 지원 여부를 원인으로 설명한다.",
+    "source_excerpt": "1\nUnsupported protocol. This build of curl has no support for this protocol.",
+    "primary_doc_id": "curl-exit-1",
+    "document_ids": [
+      "curl-exit-1",
+      "libcurl-1"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#1",
+    "source_section": "1",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-3",
+    "title_ko": "잘못된 URL 형식",
+    "title_original": "curl exit 3: URL malformed",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "3"
+    ],
+    "symptoms": [
+      "URL malformed",
+      "URL 문법 오류"
+    ],
+    "summary": "URL 문법이 올바르지 않을 때 나는 오류다. 원문은 문법 오류라는 사실만 설명한다.",
+    "source_excerpt": "3\nURL malformed. The syntax was not correct.",
+    "primary_doc_id": "curl-exit-3",
+    "document_ids": [
+      "curl-exit-3",
+      "libcurl-3"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#3",
+    "source_section": "3",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-4",
+    "title_ko": "빌드에서 비활성화된 기능 필요",
+    "title_original": "curl exit 4: A feature or option that was needed to perform the desired request was not enabled or was explicitly disabled at build-time",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "4"
+    ],
+    "symptoms": [
+      "필요한 기능·옵션이 빌드에서 비활성화됨"
+    ],
+    "summary": "요청에 필요한 기능이나 옵션이 빌드 시점에 켜지지 않았거나 명시적으로 꺼진 경우다. 원문은 다른 libcurl 빌드가 필요할 수 있다고 안내한다.",
+    "source_excerpt": "4\nA feature or option that was needed to perform the desired request was not enabled or was explicitly disabled at build-time. To make curl able to do this, you probably need another build of libcurl.",
+    "primary_doc_id": "curl-exit-4",
+    "document_ids": [
+      "curl-exit-4",
+      "libcurl-4"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#4",
+    "source_section": "4",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-5",
+    "title_ko": "프록시 호스트 이름 해석 실패",
+    "title_original": "curl exit 5: Could not resolve proxy",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "5"
+    ],
+    "symptoms": [
+      "Could not resolve proxy"
+    ],
+    "summary": "지정한 프록시 호스트 이름을 해석하지 못한 오류다. 원격 대상 호스트 해석 실패(코드 6)와 대상이 다르다.",
+    "source_excerpt": "5\nCould not resolve proxy. The given proxy host could not be resolved.",
+    "primary_doc_id": "curl-exit-5",
+    "document_ids": [
+      "curl-exit-5",
+      "libcurl-5"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#5",
+    "source_section": "5",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-6",
+    "title_ko": "호스트 이름 해석 실패",
+    "title_original": "curl exit 6: Could not resolve host",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "6"
+    ],
+    "symptoms": [
+      "Could not resolve host"
+    ],
+    "summary": "원격 호스트 이름을 해석하지 못한 오류다. 연결 실패 코드 7과 구분한다.",
+    "source_excerpt": "6\nCould not resolve host. The given remote host could not be resolved.",
+    "primary_doc_id": "curl-exit-6",
+    "document_ids": [
+      "curl-exit-6",
+      "libcurl-6",
+      "curl-option-resolve"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#6",
+    "source_section": "6",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-7",
+    "title_ko": "호스트 연결 실패",
+    "title_original": "curl exit 7: Failed to connect to host",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "7"
+    ],
+    "symptoms": [
+      "Failed to connect to host"
+    ],
+    "summary": "호스트에 연결하지 못한 오류다. 원문은 원인을 특정하지 않으므로 코드만으로 방화벽·서비스 중단을 확정하지 않는다.",
+    "source_excerpt": "7\nFailed to connect to host.",
+    "primary_doc_id": "curl-exit-7",
+    "document_ids": [
+      "curl-exit-7",
+      "libcurl-7",
+      "curl-option-connect-timeout",
+      "curl-option-verbose"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#7",
+    "source_section": "7",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-8",
+    "title_ko": "해석할 수 없는 서버 응답",
+    "title_original": "curl exit 8: Weird server reply",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "8"
+    ],
+    "symptoms": [
+      "Weird server reply"
+    ],
+    "summary": "서버가 보낸 데이터를 curl이 해석하지 못한 경우다.",
+    "source_excerpt": "8\nWeird server reply. The server sent data curl could not parse.",
+    "primary_doc_id": "curl-exit-8",
+    "document_ids": [
+      "curl-exit-8",
+      "libcurl-8"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#8",
+    "source_section": "8",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-16",
+    "title_ko": "HTTP/2 프레이밍 계층 오류",
+    "title_original": "curl exit 16: HTTP/2 error",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "16"
+    ],
+    "symptoms": [
+      "HTTP/2 error"
+    ],
+    "summary": "HTTP/2 프레이밍 계층에서 문제가 감지된 오류다. 원문은 여러 문제 중 하나일 수 있는 일반 오류이므로 오류 메시지 세부 내용을 확인하라고 한다.",
+    "source_excerpt": "16\nHTTP/2 error. A problem was detected in the HTTP2 framing layer. This is somewhat generic and can be one out of several problems, see the error message for details.",
+    "primary_doc_id": "curl-exit-16",
+    "document_ids": [
+      "curl-exit-16",
+      "libcurl-16"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#16",
+    "source_section": "16",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-18",
+    "title_ko": "파일 일부만 전송됨",
+    "title_original": "curl exit 18: Partial file",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "18"
+    ],
+    "symptoms": [
+      "Partial file"
+    ],
+    "summary": "파일의 일부만 전송된 경우다.",
+    "source_excerpt": "18\nPartial file. Only a part of the file was transferred.",
+    "primary_doc_id": "curl-exit-18",
+    "document_ids": [
+      "curl-exit-18",
+      "libcurl-18"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#18",
+    "source_section": "18",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-22",
+    "title_ko": "HTTP 응답 코드 400 이상 (--fail)",
+    "title_original": "curl exit 22: HTTP page not retrieved",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "22"
+    ],
+    "symptoms": [
+      "HTTP page not retrieved",
+      "HTTP 400 이상 응답"
+    ],
+    "summary": "요청한 URL이 없거나 HTTP 응답 코드가 400 이상인 오류를 반환한 경우다. 원문에 따르면 --fail을 사용할 때만 이 종료 코드가 나온다.",
+    "source_excerpt": "22\nHTTP page not retrieved. The requested URL was not found or returned another error with the HTTP error code being 400 or above. This return code only appears if --fail is used.",
+    "primary_doc_id": "curl-exit-22",
+    "document_ids": [
+      "curl-exit-22",
+      "libcurl-22"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#22",
+    "source_section": "22",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-23",
+    "title_ko": "로컬 출력 쓰기 실패",
+    "title_original": "curl exit 23: Write error",
+    "category": "filesystem",
+    "product": "curl",
+    "error_codes": [
+      "23"
+    ],
+    "symptoms": [
+      "Write error"
+    ],
+    "summary": "로컬 파일 시스템 또는 유사한 출력 대상으로 데이터를 쓰지 못한 오류다. 원문은 원인을 특정하지 않으므로 디스크 부족으로만 단정하지 않는다.",
+    "source_excerpt": "23\nWrite error. curl could not write data to a local file system or similar.",
+    "primary_doc_id": "curl-exit-23",
+    "document_ids": [
+      "curl-exit-23",
+      "libcurl-23",
+      "curl-option-output"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#23",
+    "source_section": "23",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-26",
+    "title_ko": "읽기 오류",
+    "title_original": "curl exit 26: Read error",
+    "category": "filesystem",
+    "product": "curl",
+    "error_codes": [
+      "26"
+    ],
+    "symptoms": [
+      "Read error"
+    ],
+    "summary": "여러 종류의 읽기 문제를 묶은 오류다. 원문은 구체 원인을 나누어 설명하지 않는다.",
+    "source_excerpt": "26\nRead error. Various reading problems.",
+    "primary_doc_id": "curl-exit-26",
+    "document_ids": [
+      "curl-exit-26",
+      "libcurl-26"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#26",
+    "source_section": "26",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-27",
+    "title_ko": "메모리 할당 실패",
+    "title_original": "curl exit 27: Out of memory",
+    "category": "resource",
+    "product": "curl",
+    "error_codes": [
+      "27"
+    ],
+    "symptoms": [
+      "Out of memory"
+    ],
+    "summary": "메모리 할당 요청이 실패한 경우다.",
+    "source_excerpt": "27\nOut of memory. A memory allocation request failed.",
+    "primary_doc_id": "curl-exit-27",
+    "document_ids": [
+      "curl-exit-27",
+      "libcurl-27"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#27",
+    "source_section": "27",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-28",
+    "title_ko": "작업 시간 제한 초과",
+    "title_original": "curl exit 28: Operation timeout",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "28"
+    ],
+    "symptoms": [
+      "Operation timeout"
+    ],
+    "summary": "설정된 조건의 시간 제한에 도달했다. 연결 시간 제한과 전체 전송 시간 제한을 구분한다.",
+    "source_excerpt": "28\nOperation timeout. The specified time-out period was reached according to the conditions.",
+    "primary_doc_id": "curl-exit-28",
+    "document_ids": [
+      "curl-exit-28",
+      "libcurl-28",
+      "curl-option-connect-timeout",
+      "curl-option-max-time"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#28",
+    "source_section": "28",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-33",
+    "title_ko": "HTTP 범위 요청 실패",
+    "title_original": "curl exit 33: HTTP range error",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "33"
+    ],
+    "symptoms": [
+      "HTTP range error"
+    ],
+    "summary": "범위(range) 요청이 동작하지 않은 경우다.",
+    "source_excerpt": "33\nHTTP range error. The range \"command\" did not work.",
+    "primary_doc_id": "curl-exit-33",
+    "document_ids": [
+      "curl-exit-33",
+      "libcurl-33"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#33",
+    "source_section": "33",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-34",
+    "title_ko": "HTTP POST 요청 생성 오류",
+    "title_original": "curl exit 34: HTTP post error",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "34"
+    ],
+    "symptoms": [
+      "HTTP post error"
+    ],
+    "summary": "POST 요청을 만드는 과정의 내부 오류다.",
+    "source_excerpt": "34\nHTTP post error. Internal post-request generation error.",
+    "primary_doc_id": "curl-exit-34",
+    "document_ids": [
+      "curl-exit-34"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#34",
+    "source_section": "34",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-35",
+    "title_ko": "TLS 연결 오류",
+    "title_original": "curl exit 35: SSL connect error",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "35"
+    ],
+    "symptoms": [
+      "SSL connect error"
+    ],
+    "summary": "SSL/TLS 핸드셰이크가 실패한 오류다. 자세한 오류 메시지와 연결 맥락을 확인해야 한다.",
+    "source_excerpt": "35\nSSL connect error. The SSL handshaking failed.",
+    "primary_doc_id": "curl-exit-35",
+    "document_ids": [
+      "curl-exit-35",
+      "libcurl-35",
+      "curl-option-verbose"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#35",
+    "source_section": "35",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-36",
+    "title_ko": "다운로드 이어받기 실패",
+    "title_original": "curl exit 36: Bad download resume",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "36"
+    ],
+    "symptoms": [
+      "Bad download resume"
+    ],
+    "summary": "이전에 중단된 다운로드를 이어서 진행하지 못한 경우다.",
+    "source_excerpt": "36\nBad download resume. Could not continue an earlier aborted download.",
+    "primary_doc_id": "curl-exit-36",
+    "document_ids": [
+      "curl-exit-36",
+      "libcurl-36"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#36",
+    "source_section": "36",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-37",
+    "title_ko": "FILE 프로토콜 파일 읽기 실패",
+    "title_original": "curl exit 37: FILE could not read file",
+    "category": "filesystem",
+    "product": "curl",
+    "error_codes": [
+      "37"
+    ],
+    "symptoms": [
+      "FILE could not read file"
+    ],
+    "summary": "파일을 열지 못한 오류다. 원문은 권한 문제 가능성을 질문 형태로만 언급하므로 권한 문제로 확정하지 않는다.",
+    "source_excerpt": "37\nFILE could not read file. Failed to open the file. Permissions?",
+    "primary_doc_id": "curl-exit-37",
+    "document_ids": [
+      "curl-exit-37",
+      "libcurl-37"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#37",
+    "source_section": "37",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-45",
+    "title_ko": "지정한 송신 인터페이스 사용 불가",
+    "title_original": "curl exit 45: Interface error",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "45"
+    ],
+    "symptoms": [
+      "Interface error"
+    ],
+    "summary": "지정한 외부 송신 인터페이스를 사용할 수 없는 경우다.",
+    "source_excerpt": "45\nInterface error. A specified outgoing interface could not be used.",
+    "primary_doc_id": "curl-exit-45",
+    "document_ids": [
+      "curl-exit-45",
+      "libcurl-45"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#45",
+    "source_section": "45",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-47",
+    "title_ko": "리다이렉트 횟수 초과",
+    "title_original": "curl exit 47: Too many redirects",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "47"
+    ],
+    "symptoms": [
+      "Too many redirects"
+    ],
+    "summary": "리다이렉트를 따라가다가 최대 횟수에 도달한 경우다.",
+    "source_excerpt": "47\nToo many redirects. When following redirects, curl hit the maximum amount.",
+    "primary_doc_id": "curl-exit-47",
+    "document_ids": [
+      "curl-exit-47",
+      "libcurl-47"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#47",
+    "source_section": "47",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-52",
+    "title_ko": "서버 무응답",
+    "title_original": "curl exit 52: The server did not reply anything, which here is considered an error",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "52"
+    ],
+    "symptoms": [
+      "The server did not reply anything",
+      "서버가 아무 응답도 보내지 않음"
+    ],
+    "summary": "서버가 아무것도 응답하지 않은 경우로, curl은 이를 오류로 본다.",
+    "source_excerpt": "52\nThe server did not reply anything, which here is considered an error.",
+    "primary_doc_id": "curl-exit-52",
+    "document_ids": [
+      "curl-exit-52",
+      "libcurl-52"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#52",
+    "source_section": "52",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-55",
+    "title_ko": "네트워크 데이터 송신 실패",
+    "title_original": "curl exit 55: Failed sending network data",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "55"
+    ],
+    "symptoms": [
+      "Failed sending network data"
+    ],
+    "summary": "네트워크로 데이터를 보내지 못한 오류다. 원문은 원인을 특정하지 않는다.",
+    "source_excerpt": "55\nFailed sending network data.",
+    "primary_doc_id": "curl-exit-55",
+    "document_ids": [
+      "curl-exit-55",
+      "libcurl-55"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#55",
+    "source_section": "55",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-56",
+    "title_ko": "네트워크 데이터 수신 실패",
+    "title_original": "curl exit 56: Failure in receiving network data",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "56"
+    ],
+    "symptoms": [
+      "Failure in receiving network data"
+    ],
+    "summary": "네트워크에서 데이터를 받지 못한 오류다. 원문은 원인을 특정하지 않는다.",
+    "source_excerpt": "56\nFailure in receiving network data.",
+    "primary_doc_id": "curl-exit-56",
+    "document_ids": [
+      "curl-exit-56",
+      "libcurl-56"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#56",
+    "source_section": "56",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-58",
+    "title_ko": "로컬 클라이언트 인증서 문제",
+    "title_original": "curl exit 58: Problem with the local certificate",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "58"
+    ],
+    "symptoms": [
+      "Problem with the local certificate"
+    ],
+    "summary": "로컬 인증서에 문제가 있는 경우다. 서버 인증서 검증 실패(코드 60)와 대상이 다르다.",
+    "source_excerpt": "58\nProblem with the local certificate.",
+    "primary_doc_id": "curl-exit-58",
+    "document_ids": [
+      "curl-exit-58",
+      "libcurl-58"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#58",
+    "source_section": "58",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-59",
+    "title_ko": "지정한 SSL 암호 사용 불가",
+    "title_original": "curl exit 59: Could not use specified SSL cipher",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "59"
+    ],
+    "symptoms": [
+      "Could not use specified SSL cipher"
+    ],
+    "summary": "지정한 SSL 암호(cipher)를 사용할 수 없는 경우다.",
+    "source_excerpt": "59\nCould not use specified SSL cipher.",
+    "primary_doc_id": "curl-exit-59",
+    "document_ids": [
+      "curl-exit-59",
+      "libcurl-59"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#59",
+    "source_section": "59",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-60",
+    "title_ko": "서버 인증서 검증 실패",
+    "title_original": "curl exit 60: Peer certificate cannot be authenticated with known CA certificates",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "60"
+    ],
+    "symptoms": [
+      "Peer certificate cannot be authenticated with known CA certificates"
+    ],
+    "summary": "알려진 CA 인증서로 상대 인증서를 인증할 수 없는 오류다. 만료만을 의미하지 않는다.",
+    "source_excerpt": "60\nPeer certificate cannot be authenticated with known CA certificates.",
+    "primary_doc_id": "curl-exit-60",
+    "document_ids": [
+      "curl-exit-60",
+      "libcurl-60",
+      "curl-option-cacert"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#60",
+    "source_section": "60",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-61",
+    "title_ko": "알 수 없는 전송 인코딩",
+    "title_original": "curl exit 61: Unrecognized transfer encoding",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "61"
+    ],
+    "symptoms": [
+      "Unrecognized transfer encoding"
+    ],
+    "summary": "인식할 수 없는 전송 인코딩을 받은 경우다.",
+    "source_excerpt": "61\nUnrecognized transfer encoding.",
+    "primary_doc_id": "curl-exit-61",
+    "document_ids": [
+      "curl-exit-61",
+      "libcurl-61"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#61",
+    "source_section": "61",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-63",
+    "title_ko": "최대 파일 크기 초과",
+    "title_original": "curl exit 63: Maximum file size exceeded",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "63"
+    ],
+    "symptoms": [
+      "Maximum file size exceeded"
+    ],
+    "summary": "최대 파일 크기를 넘은 경우다.",
+    "source_excerpt": "63\nMaximum file size exceeded.",
+    "primary_doc_id": "curl-exit-63",
+    "document_ids": [
+      "curl-exit-63",
+      "libcurl-63"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#63",
+    "source_section": "63",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-67",
+    "title_ko": "로그인 자격 증명 거부",
+    "title_original": "curl exit 67: The username, password, or similar was not accepted and curl failed to log in",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "67"
+    ],
+    "symptoms": [
+      "Login denied",
+      "사용자 이름·비밀번호 등이 거부됨"
+    ],
+    "summary": "사용자 이름, 비밀번호 또는 유사한 자격 정보가 받아들여지지 않아 로그인에 실패한 경우다.",
+    "source_excerpt": "67\nThe username, password, or similar was not accepted and curl failed to log in.",
+    "primary_doc_id": "curl-exit-67",
+    "document_ids": [
+      "curl-exit-67",
+      "libcurl-67"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#67",
+    "source_section": "67",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-77",
+    "title_ko": "CA 인증서 파일 읽기 실패",
+    "title_original": "curl exit 77: Problem reading the SSL CA cert (path? access rights?)",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "77"
+    ],
+    "symptoms": [
+      "Problem reading the SSL CA cert"
+    ],
+    "summary": "SSL CA 인증서를 읽는 데 문제가 있는 경우다. 원문은 경로나 접근 권한을 확인 대상으로 질문 형태로 언급한다.",
+    "source_excerpt": "77\nProblem reading the SSL CA cert (path? access rights?).",
+    "primary_doc_id": "curl-exit-77",
+    "document_ids": [
+      "curl-exit-77",
+      "libcurl-77"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#77",
+    "source_section": "77",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-78",
+    "title_ko": "URL이 가리키는 리소스 없음",
+    "title_original": "curl exit 78: The resource referenced in the URL does not exist",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "78"
+    ],
+    "symptoms": [
+      "Remote file not found",
+      "URL의 리소스가 존재하지 않음"
+    ],
+    "summary": "URL이 가리키는 리소스가 존재하지 않는 경우다.",
+    "source_excerpt": "78\nThe resource referenced in the URL does not exist.",
+    "primary_doc_id": "curl-exit-78",
+    "document_ids": [
+      "curl-exit-78",
+      "libcurl-78"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#78",
+    "source_section": "78",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-82",
+    "title_ko": "CRL 파일 로드 실패",
+    "title_original": "curl exit 82: Could not load CRL file, missing or wrong format",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "82"
+    ],
+    "symptoms": [
+      "Could not load CRL file"
+    ],
+    "summary": "CRL 파일이 없거나 형식이 잘못되어 불러오지 못한 경우다.",
+    "source_excerpt": "82\nCould not load CRL file, missing or wrong format.",
+    "primary_doc_id": "curl-exit-82",
+    "document_ids": [
+      "curl-exit-82",
+      "libcurl-82"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#82",
+    "source_section": "82",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-90",
+    "title_ko": "고정(pinned) 공개 키 불일치",
+    "title_original": "curl exit 90: SSL public key does not match pinned public key",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "90"
+    ],
+    "symptoms": [
+      "SSL public key does not match pinned public key"
+    ],
+    "summary": "SSL 공개 키가 고정해 둔 공개 키와 일치하지 않는 경우다.",
+    "source_excerpt": "90\nSSL public key does not match pinned public key.",
+    "primary_doc_id": "curl-exit-90",
+    "document_ids": [
+      "curl-exit-90",
+      "libcurl-90"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#90",
+    "source_section": "90",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-91",
+    "title_ko": "SSL 인증서 상태 무효",
+    "title_original": "curl exit 91: Invalid SSL certificate status",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "91"
+    ],
+    "symptoms": [
+      "Invalid SSL certificate status"
+    ],
+    "summary": "SSL 인증서 상태가 유효하지 않은 경우다.",
+    "source_excerpt": "91\nInvalid SSL certificate status.",
+    "primary_doc_id": "curl-exit-91",
+    "document_ids": [
+      "curl-exit-91",
+      "libcurl-91"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#91",
+    "source_section": "91",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-92",
+    "title_ko": "HTTP/2 스트림 오류",
+    "title_original": "curl exit 92: Stream error in HTTP/2 framing layer",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "92"
+    ],
+    "symptoms": [
+      "Stream error in HTTP/2 framing layer"
+    ],
+    "summary": "HTTP/2 프레이밍 계층의 스트림 오류다. 일반 HTTP/2 오류(코드 16)와 구분한다.",
+    "source_excerpt": "92\nStream error in HTTP/2 framing layer.",
+    "primary_doc_id": "curl-exit-92",
+    "document_ids": [
+      "curl-exit-92",
+      "libcurl-92"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#92",
+    "source_section": "92",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-95",
+    "title_ko": "HTTP/3 계층 오류",
+    "title_original": "curl exit 95: A problem was detected in the HTTP/3 layer",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "95"
+    ],
+    "symptoms": [
+      "HTTP/3 layer error"
+    ],
+    "summary": "HTTP/3 계층에서 문제가 감지된 일반 오류다. 원문은 오류 메시지 세부 내용을 확인하라고 한다.",
+    "source_excerpt": "95\nA problem was detected in the HTTP/3 layer. This is somewhat generic and can be one out of several problems, see the error message for details.",
+    "primary_doc_id": "curl-exit-95",
+    "document_ids": [
+      "curl-exit-95",
+      "libcurl-95"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#95",
+    "source_section": "95",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-96",
+    "title_ko": "QUIC 연결 오류",
+    "title_original": "curl exit 96: QUIC connection error",
+    "category": "http",
+    "product": "curl",
+    "error_codes": [
+      "96"
+    ],
+    "symptoms": [
+      "QUIC connection error"
+    ],
+    "summary": "QUIC 연결 오류다. 원문은 SSL 라이브러리 오류로 생길 수도 있다고 하며, QUIC은 HTTP/3 전송에 쓰이는 프로토콜이라고 설명한다.",
+    "source_excerpt": "96\nQUIC connection error. This error may be caused by an SSL library error. QUIC is the protocol used for HTTP/3 transfers.",
+    "primary_doc_id": "curl-exit-96",
+    "document_ids": [
+      "curl-exit-96",
+      "libcurl-96"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#96",
+    "source_section": "96",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-97",
+    "title_ko": "프록시 핸드셰이크 오류",
+    "title_original": "curl exit 97: Proxy handshake error",
+    "category": "network",
+    "product": "curl",
+    "error_codes": [
+      "97"
+    ],
+    "symptoms": [
+      "Proxy handshake error"
+    ],
+    "summary": "프록시와의 핸드셰이크에서 오류가 난 경우다.",
+    "source_excerpt": "97\nProxy handshake error.",
+    "primary_doc_id": "curl-exit-97",
+    "document_ids": [
+      "curl-exit-97",
+      "libcurl-97"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#97",
+    "source_section": "97",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "curl-98",
+    "title_ko": "클라이언트 인증서 요구",
+    "title_original": "curl exit 98: A client-side certificate is required to complete the TLS handshake",
+    "category": "tls",
+    "product": "curl",
+    "error_codes": [
+      "98"
+    ],
+    "symptoms": [
+      "A client-side certificate is required"
+    ],
+    "summary": "TLS 핸드셰이크를 마치려면 클라이언트 측 인증서가 필요한 경우다.",
+    "source_excerpt": "98\nA client-side certificate is required to complete the TLS handshake.",
+    "primary_doc_id": "curl-exit-98",
+    "document_ids": [
+      "curl-exit-98",
+      "libcurl-98"
+    ],
+    "source_url": "https://curl.se/docs/manpage.html#98",
+    "source_section": "98",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EACCES",
+    "title_ko": "권한 거부 (EACCES)",
+    "title_original": "EACCES: Permission denied (POSIX.1-2001)",
+    "category": "permission",
+    "product": "Linux",
+    "error_codes": [
+      "EACCES"
+    ],
+    "symptoms": [
+      "Permission denied"
+    ],
+    "summary": "접근 권한이 거부되었다는 errno다. 어떤 호출에서 어떤 조건으로 나는지는 open(2)·connect(2)의 ERRORS 절을 함께 봐야 한다. EPERM과 구분한다.",
+    "source_excerpt": "EACCES Permission denied (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EACCES",
+    "document_ids": [
+      "linux-errno-EACCES",
+      "linux-connect-EACCES",
+      "linux-open-EACCES"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EACCES",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EADDRINUSE",
+    "title_ko": "주소 이미 사용 중 (EADDRINUSE)",
+    "title_original": "EADDRINUSE: Address already in use (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "EADDRINUSE"
+    ],
+    "symptoms": [
+      "Address already in use"
+    ],
+    "summary": "주소가 이미 사용 중이라는 errno다. connect(2) ERRORS 절의 조건을 함께 확인한다.",
+    "source_excerpt": "EADDRINUSE Address already in use (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EADDRINUSE",
+    "document_ids": [
+      "linux-errno-EADDRINUSE",
+      "linux-connect-EADDRINUSE"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EADDRINUSE",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EADDRNOTAVAIL",
+    "title_ko": "주소 사용 불가 (EADDRNOTAVAIL)",
+    "title_original": "EADDRNOTAVAIL: Address not available (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "EADDRNOTAVAIL"
+    ],
+    "symptoms": [
+      "Address not available"
+    ],
+    "summary": "요청한 주소를 사용할 수 없다는 errno다. EADDRINUSE와 구분한다.",
+    "source_excerpt": "EADDRNOTAVAIL Address not available (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EADDRNOTAVAIL",
+    "document_ids": [
+      "linux-errno-EADDRNOTAVAIL",
+      "linux-connect-EADDRNOTAVAIL"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EADDRNOTAVAIL",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EAGAIN",
+    "title_ko": "자원 일시적 사용 불가 (EAGAIN)",
+    "title_original": "EAGAIN: Resource temporarily unavailable (may be the same value as EWOULDBLOCK ) (POSIX.1-2001)",
+    "category": "resource",
+    "product": "Linux",
+    "error_codes": [
+      "EAGAIN"
+    ],
+    "symptoms": [
+      "Resource temporarily unavailable"
+    ],
+    "summary": "자원을 일시적으로 사용할 수 없다는 errno이며 EWOULDBLOCK과 같은 값일 수 있다. 호출별 조건은 connect(2)·write(2) ERRORS 절을 본다.",
+    "source_excerpt": "EAGAIN Resource temporarily unavailable (may be the same value as EWOULDBLOCK) (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EAGAIN",
+    "document_ids": [
+      "linux-errno-EAGAIN",
+      "linux-connect-EAGAIN",
+      "linux-write-EAGAIN"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EAGAIN",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EALREADY",
+    "title_ko": "연결 이미 진행 중 (EALREADY)",
+    "title_original": "EALREADY: Connection already in progress (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "EALREADY"
+    ],
+    "symptoms": [
+      "Connection already in progress"
+    ],
+    "summary": "연결이 이미 진행 중이라는 errno다. EINPROGRESS와 구분한다.",
+    "source_excerpt": "EALREADY Connection already in progress (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EALREADY",
+    "document_ids": [
+      "linux-errno-EALREADY",
+      "linux-connect-EALREADY"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EALREADY",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EBADF",
+    "title_ko": "잘못된 파일 디스크립터 (EBADF)",
+    "title_original": "EBADF: Bad file descriptor (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EBADF"
+    ],
+    "symptoms": [
+      "Bad file descriptor"
+    ],
+    "summary": "잘못된 파일 디스크립터라는 errno다. 호출별 조건은 connect·open·write의 ERRORS 절을 본다.",
+    "source_excerpt": "EBADF Bad file descriptor (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EBADF",
+    "document_ids": [
+      "linux-errno-EBADF",
+      "linux-connect-EBADF",
+      "linux-open-EBADF",
+      "linux-write-EBADF"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EBADF",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EBUSY",
+    "title_ko": "장치·자원 사용 중 (EBUSY)",
+    "title_original": "EBUSY: Device or resource busy (POSIX.1-2001)",
+    "category": "resource",
+    "product": "Linux",
+    "error_codes": [
+      "EBUSY"
+    ],
+    "symptoms": [
+      "Device or resource busy"
+    ],
+    "summary": "장치나 자원이 사용 중이라는 errno다.",
+    "source_excerpt": "EBUSY Device or resource busy (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EBUSY",
+    "document_ids": [
+      "linux-errno-EBUSY",
+      "linux-open-EBUSY"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EBUSY",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ECONNABORTED",
+    "title_ko": "연결 중단 (ECONNABORTED)",
+    "title_original": "ECONNABORTED: Connection aborted (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ECONNABORTED"
+    ],
+    "symptoms": [
+      "Connection aborted"
+    ],
+    "summary": "연결이 중단되었다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ECONNABORTED Connection aborted (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ECONNABORTED",
+    "document_ids": [
+      "linux-errno-ECONNABORTED"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ECONNABORTED",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ECONNREFUSED",
+    "title_ko": "연결 거부 (ECONNREFUSED)",
+    "title_original": "ECONNREFUSED: Connection refused (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ECONNREFUSED"
+    ],
+    "symptoms": [
+      "Connection refused"
+    ],
+    "summary": "연결이 거부되었다는 errno다. connect(2)는 스트림 소켓에서 원격 주소에 수신 대기 중인 상대가 없을 때를 설명한다.",
+    "source_excerpt": "ECONNREFUSED Connection refused (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ECONNREFUSED",
+    "document_ids": [
+      "linux-errno-ECONNREFUSED",
+      "linux-connect-ECONNREFUSED"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ECONNREFUSED",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ECONNRESET",
+    "title_ko": "연결 재설정 (ECONNRESET)",
+    "title_original": "ECONNRESET: Connection reset (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ECONNRESET"
+    ],
+    "symptoms": [
+      "Connection reset"
+    ],
+    "summary": "연결이 재설정(reset)되었다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ECONNRESET Connection reset (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ECONNRESET",
+    "document_ids": [
+      "linux-errno-ECONNRESET"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ECONNRESET",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EDQUOT",
+    "title_ko": "디스크 할당량 초과 (EDQUOT)",
+    "title_original": "EDQUOT: Disk quota exceeded (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EDQUOT"
+    ],
+    "symptoms": [
+      "Disk quota exceeded"
+    ],
+    "summary": "디스크 할당량(quota)을 초과했다는 errno다. 장치 공간 부족(ENOSPC)과 구분한다.",
+    "source_excerpt": "EDQUOT Disk quota exceeded (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EDQUOT",
+    "document_ids": [
+      "linux-errno-EDQUOT",
+      "linux-open-EDQUOT",
+      "linux-write-EDQUOT"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EDQUOT",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EEXIST",
+    "title_ko": "파일이 이미 존재 (EEXIST)",
+    "title_original": "EEXIST: File exists (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EEXIST"
+    ],
+    "symptoms": [
+      "File exists"
+    ],
+    "summary": "파일이 이미 존재한다는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EEXIST File exists (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EEXIST",
+    "document_ids": [
+      "linux-errno-EEXIST",
+      "linux-open-EEXIST"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EEXIST",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EFBIG",
+    "title_ko": "파일이 너무 큼 (EFBIG)",
+    "title_original": "EFBIG: File too large (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EFBIG"
+    ],
+    "symptoms": [
+      "File too large"
+    ],
+    "summary": "파일이 너무 크다는 errno다. open(2)·write(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EFBIG File too large (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EFBIG",
+    "document_ids": [
+      "linux-errno-EFBIG",
+      "linux-open-EFBIG",
+      "linux-write-EFBIG"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EFBIG",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EHOSTUNREACH",
+    "title_ko": "호스트 도달 불가 (EHOSTUNREACH)",
+    "title_original": "EHOSTUNREACH: Host is unreachable (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "EHOSTUNREACH"
+    ],
+    "symptoms": [
+      "Host is unreachable"
+    ],
+    "summary": "호스트에 도달할 수 없다는 errno다. 네트워크 도달 불가(ENETUNREACH)와 구분한다.",
+    "source_excerpt": "EHOSTUNREACH Host is unreachable (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EHOSTUNREACH",
+    "document_ids": [
+      "linux-errno-EHOSTUNREACH"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EHOSTUNREACH",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EINPROGRESS",
+    "title_ko": "작업 진행 중 (EINPROGRESS)",
+    "title_original": "EINPROGRESS: Operation in progress (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "EINPROGRESS"
+    ],
+    "symptoms": [
+      "Operation in progress"
+    ],
+    "summary": "작업이 진행 중이라는 errno다. connect(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EINPROGRESS Operation in progress (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EINPROGRESS",
+    "document_ids": [
+      "linux-errno-EINPROGRESS",
+      "linux-connect-EINPROGRESS"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EINPROGRESS",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EINTR",
+    "title_ko": "시그널로 함수 호출 중단 (EINTR)",
+    "title_original": "EINTR: Interrupted function call (POSIX.1-2001); see signal(7) ",
+    "category": "process",
+    "product": "Linux",
+    "error_codes": [
+      "EINTR"
+    ],
+    "symptoms": [
+      "Interrupted function call"
+    ],
+    "summary": "함수 호출이 중단되었다는 errno다. 원문은 signal(7)을 참고하라고 한다.",
+    "source_excerpt": "EINTR Interrupted function call (POSIX.1-2001); see signal(7).",
+    "primary_doc_id": "linux-errno-EINTR",
+    "document_ids": [
+      "linux-errno-EINTR",
+      "linux-connect-EINTR",
+      "linux-open-EINTR",
+      "linux-write-EINTR"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EINTR",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EINVAL",
+    "title_ko": "잘못된 인자 (EINVAL)",
+    "title_original": "EINVAL: Invalid argument (POSIX.1-2001)",
+    "category": "process",
+    "product": "Linux",
+    "error_codes": [
+      "EINVAL"
+    ],
+    "symptoms": [
+      "Invalid argument"
+    ],
+    "summary": "인자가 잘못되었다는 errno다. 호출별 조건은 open(2)·write(2) ERRORS 절을 본다.",
+    "source_excerpt": "EINVAL Invalid argument (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EINVAL",
+    "document_ids": [
+      "linux-errno-EINVAL",
+      "linux-open-EINVAL",
+      "linux-write-EINVAL"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EINVAL",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EIO",
+    "title_ko": "입출력 오류 (EIO)",
+    "title_original": "EIO: Input/output error (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EIO"
+    ],
+    "symptoms": [
+      "Input/output error"
+    ],
+    "summary": "입출력 오류라는 errno다. write(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EIO Input/output error (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EIO",
+    "document_ids": [
+      "linux-errno-EIO",
+      "linux-write-EIO"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EIO",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EISDIR",
+    "title_ko": "디렉터리임 (EISDIR)",
+    "title_original": "EISDIR: Is a directory (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EISDIR"
+    ],
+    "symptoms": [
+      "Is a directory"
+    ],
+    "summary": "대상이 디렉터리라는 errno다. ENOTDIR와 반대 상황이다.",
+    "source_excerpt": "EISDIR Is a directory (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EISDIR",
+    "document_ids": [
+      "linux-errno-EISDIR",
+      "linux-open-EISDIR"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EISDIR",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ELOOP",
+    "title_ko": "심볼릭 링크 단계 과다 (ELOOP)",
+    "title_original": "ELOOP: Too many levels of symbolic links (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ELOOP"
+    ],
+    "symptoms": [
+      "Too many levels of symbolic links"
+    ],
+    "summary": "심볼릭 링크 단계가 너무 많다는 errno다.",
+    "source_excerpt": "ELOOP Too many levels of symbolic links (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ELOOP",
+    "document_ids": [
+      "linux-errno-ELOOP",
+      "linux-open-ELOOP"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ELOOP",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EMFILE",
+    "title_ko": "프로세스의 열린 파일 수 초과 (EMFILE)",
+    "title_original": "EMFILE: Too many open files (POSIX.1-2001)",
+    "category": "resource",
+    "product": "Linux",
+    "error_codes": [
+      "EMFILE"
+    ],
+    "symptoms": [
+      "Too many open files"
+    ],
+    "summary": "열린 파일이 너무 많다는 errno다. 원문은 흔히 RLIMIT_NOFILE 자원 제한 초과로 생기며 /proc/sys/fs/nr_open 제한으로도 생길 수 있다고 설명한다. 시스템 전체 제한(ENFILE)과 구분한다.",
+    "source_excerpt": "EMFILE Too many open files (POSIX.1-2001). Commonly caused by exceeding the RLIMIT_NOFILE resource limit described in getrlimit(2). Can also be caused by exceeding the limit specified in /proc/sys/fs/nr_open.",
+    "primary_doc_id": "linux-errno-EMFILE",
+    "document_ids": [
+      "linux-errno-EMFILE",
+      "linux-open-EMFILE"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EMFILE",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENAMETOOLONG",
+    "title_ko": "파일 이름이 너무 김 (ENAMETOOLONG)",
+    "title_original": "ENAMETOOLONG: Filename too long (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENAMETOOLONG"
+    ],
+    "symptoms": [
+      "Filename too long"
+    ],
+    "summary": "파일 이름이 너무 길다는 errno다.",
+    "source_excerpt": "ENAMETOOLONG Filename too long (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENAMETOOLONG",
+    "document_ids": [
+      "linux-errno-ENAMETOOLONG",
+      "linux-open-ENAMETOOLONG"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENAMETOOLONG",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENETDOWN",
+    "title_ko": "네트워크 다운 (ENETDOWN)",
+    "title_original": "ENETDOWN: Network is down (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ENETDOWN"
+    ],
+    "symptoms": [
+      "Network is down"
+    ],
+    "summary": "네트워크가 다운되었다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ENETDOWN Network is down (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENETDOWN",
+    "document_ids": [
+      "linux-errno-ENETDOWN"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENETDOWN",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENETUNREACH",
+    "title_ko": "네트워크 도달 불가 (ENETUNREACH)",
+    "title_original": "ENETUNREACH: Network unreachable (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ENETUNREACH"
+    ],
+    "symptoms": [
+      "Network unreachable"
+    ],
+    "summary": "네트워크에 도달할 수 없다는 errno다. 호스트 도달 불가(EHOSTUNREACH)와 구분한다.",
+    "source_excerpt": "ENETUNREACH Network unreachable (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENETUNREACH",
+    "document_ids": [
+      "linux-errno-ENETUNREACH",
+      "linux-connect-ENETUNREACH"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENETUNREACH",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENFILE",
+    "title_ko": "시스템 전체 열린 파일 수 초과 (ENFILE)",
+    "title_original": "ENFILE: Too many open files in system (POSIX.1-2001)",
+    "category": "resource",
+    "product": "Linux",
+    "error_codes": [
+      "ENFILE"
+    ],
+    "symptoms": [
+      "Too many open files in system"
+    ],
+    "summary": "시스템 전체에 열린 파일이 너무 많다는 errno다. 원문은 Linux에서 /proc/sys/fs/file-max 제한에 걸린 결과일 가능성이 크다고 설명한다. 프로세스 제한(EMFILE)과 구분한다.",
+    "source_excerpt": "ENFILE Too many open files in system (POSIX.1-2001). On Linux, this is probably a result of encountering the /proc/sys/fs/file-max limit (see proc(5)).",
+    "primary_doc_id": "linux-errno-ENFILE",
+    "document_ids": [
+      "linux-errno-ENFILE",
+      "linux-open-ENFILE"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENFILE",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOBUFS",
+    "title_ko": "버퍼 공간 부족 (ENOBUFS)",
+    "title_original": "ENOBUFS: No buffer space available (POSIX.1 (XSI STREAMS option))",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ENOBUFS"
+    ],
+    "symptoms": [
+      "No buffer space available"
+    ],
+    "summary": "버퍼 공간을 사용할 수 없다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ENOBUFS No buffer space available (POSIX.1 (XSI STREAMS option)).",
+    "primary_doc_id": "linux-errno-ENOBUFS",
+    "document_ids": [
+      "linux-errno-ENOBUFS"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOBUFS",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENODEV",
+    "title_ko": "장치 없음 (ENODEV)",
+    "title_original": "ENODEV: No such device (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENODEV"
+    ],
+    "symptoms": [
+      "No such device"
+    ],
+    "summary": "해당 장치가 없다는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "ENODEV No such device (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENODEV",
+    "document_ids": [
+      "linux-errno-ENODEV",
+      "linux-open-ENODEV"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENODEV",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOENT",
+    "title_ko": "파일·디렉터리 없음 (ENOENT)",
+    "title_original": "ENOENT: No such file or directory (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENOENT"
+    ],
+    "symptoms": [
+      "No such file or directory"
+    ],
+    "summary": "파일이나 디렉터리가 없다는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "ENOENT No such file or directory (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOENT",
+    "document_ids": [
+      "linux-errno-ENOENT",
+      "linux-open-ENOENT"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOENT",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOEXEC",
+    "title_ko": "실행 형식 오류 (ENOEXEC)",
+    "title_original": "ENOEXEC: Exec format error (POSIX.1-2001)",
+    "category": "process",
+    "product": "Linux",
+    "error_codes": [
+      "ENOEXEC"
+    ],
+    "symptoms": [
+      "Exec format error"
+    ],
+    "summary": "실행 파일 형식 오류라는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ENOEXEC Exec format error (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOEXEC",
+    "document_ids": [
+      "linux-errno-ENOEXEC"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOEXEC",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOMEM",
+    "title_ko": "메모리 부족 (ENOMEM)",
+    "title_original": "ENOMEM: Not enough space/cannot allocate memory (POSIX.1-2001)",
+    "category": "resource",
+    "product": "Linux",
+    "error_codes": [
+      "ENOMEM"
+    ],
+    "symptoms": [
+      "Cannot allocate memory",
+      "Not enough space"
+    ],
+    "summary": "공간이 부족하거나 메모리를 할당할 수 없다는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "ENOMEM Not enough space/cannot allocate memory (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOMEM",
+    "document_ids": [
+      "linux-errno-ENOMEM",
+      "linux-open-ENOMEM"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOMEM",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOSPC",
+    "title_ko": "장치에 남은 공간 없음 (ENOSPC)",
+    "title_original": "ENOSPC: No space left on device (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENOSPC"
+    ],
+    "symptoms": [
+      "No space left on device"
+    ],
+    "summary": "장치에 남은 공간이 없다는 errno다. write(2)는 파일이 있는 장치에 데이터를 쓸 공간이 없는 경우를 설명한다. 할당량 초과(EDQUOT)와 구분한다.",
+    "source_excerpt": "ENOSPC No space left on device (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOSPC",
+    "document_ids": [
+      "linux-errno-ENOSPC",
+      "linux-open-ENOSPC",
+      "linux-write-ENOSPC"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOSPC",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOTCONN",
+    "title_ko": "소켓 미연결 (ENOTCONN)",
+    "title_original": "ENOTCONN: The socket is not connected (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ENOTCONN"
+    ],
+    "symptoms": [
+      "The socket is not connected"
+    ],
+    "summary": "소켓이 연결되지 않았다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ENOTCONN The socket is not connected (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOTCONN",
+    "document_ids": [
+      "linux-errno-ENOTCONN"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOTCONN",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOTDIR",
+    "title_ko": "디렉터리가 아님 (ENOTDIR)",
+    "title_original": "ENOTDIR: Not a directory (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENOTDIR"
+    ],
+    "symptoms": [
+      "Not a directory"
+    ],
+    "summary": "디렉터리가 아니라는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "ENOTDIR Not a directory (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOTDIR",
+    "document_ids": [
+      "linux-errno-ENOTDIR",
+      "linux-open-ENOTDIR"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOTDIR",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOTEMPTY",
+    "title_ko": "디렉터리가 비어 있지 않음 (ENOTEMPTY)",
+    "title_original": "ENOTEMPTY: Directory not empty (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "ENOTEMPTY"
+    ],
+    "symptoms": [
+      "Directory not empty"
+    ],
+    "summary": "디렉터리가 비어 있지 않다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ENOTEMPTY Directory not empty (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOTEMPTY",
+    "document_ids": [
+      "linux-errno-ENOTEMPTY"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOTEMPTY",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ENOTSOCK",
+    "title_ko": "소켓이 아님 (ENOTSOCK)",
+    "title_original": "ENOTSOCK: Not a socket (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ENOTSOCK"
+    ],
+    "symptoms": [
+      "Not a socket"
+    ],
+    "summary": "대상이 소켓이 아니라는 errno다. connect(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "ENOTSOCK Not a socket (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ENOTSOCK",
+    "document_ids": [
+      "linux-errno-ENOTSOCK",
+      "linux-connect-ENOTSOCK"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ENOTSOCK",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EPERM",
+    "title_ko": "작업 허용되지 않음 (EPERM)",
+    "title_original": "EPERM: Operation not permitted (POSIX.1-2001)",
+    "category": "permission",
+    "product": "Linux",
+    "error_codes": [
+      "EPERM"
+    ],
+    "symptoms": [
+      "Operation not permitted"
+    ],
+    "summary": "작업이 허용되지 않는다는 errno다. 권한 거부(EACCES)와 구분하며 호출별 조건은 open(2)·write(2) ERRORS 절을 본다.",
+    "source_excerpt": "EPERM Operation not permitted (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EPERM",
+    "document_ids": [
+      "linux-errno-EPERM",
+      "linux-open-EPERM",
+      "linux-write-EPERM"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EPERM",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EPIPE",
+    "title_ko": "끊어진 파이프 (EPIPE)",
+    "title_original": "EPIPE: Broken pipe (POSIX.1-2001)",
+    "category": "process",
+    "product": "Linux",
+    "error_codes": [
+      "EPIPE"
+    ],
+    "symptoms": [
+      "Broken pipe"
+    ],
+    "summary": "파이프가 끊어졌다는 errno다. write(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EPIPE Broken pipe (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EPIPE",
+    "document_ids": [
+      "linux-errno-EPIPE",
+      "linux-write-EPIPE"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EPIPE",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-EROFS",
+    "title_ko": "읽기 전용 파일 시스템 (EROFS)",
+    "title_original": "EROFS: Read-only filesystem (POSIX.1-2001)",
+    "category": "filesystem",
+    "product": "Linux",
+    "error_codes": [
+      "EROFS"
+    ],
+    "symptoms": [
+      "Read-only filesystem"
+    ],
+    "summary": "읽기 전용 파일 시스템이라는 errno다. open(2) ERRORS 절의 조건을 함께 본다.",
+    "source_excerpt": "EROFS Read-only filesystem (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-EROFS",
+    "document_ids": [
+      "linux-errno-EROFS",
+      "linux-open-EROFS"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/EROFS",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ESRCH",
+    "title_ko": "프로세스 없음 (ESRCH)",
+    "title_original": "ESRCH: No such process (POSIX.1-2001)",
+    "category": "process",
+    "product": "Linux",
+    "error_codes": [
+      "ESRCH"
+    ],
+    "symptoms": [
+      "No such process"
+    ],
+    "summary": "해당 프로세스가 없다는 errno다. 이번 카탈로그에는 호출별 상세 조건 문서가 연결되지 않았다.",
+    "source_excerpt": "ESRCH No such process (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ESRCH",
+    "document_ids": [
+      "linux-errno-ESRCH"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ESRCH",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "linux-errno-ETIMEDOUT",
+    "title_ko": "연결 시간 초과 (ETIMEDOUT)",
+    "title_original": "ETIMEDOUT: Connection timed out (POSIX.1-2001)",
+    "category": "network",
+    "product": "Linux",
+    "error_codes": [
+      "ETIMEDOUT"
+    ],
+    "symptoms": [
+      "Connection timed out"
+    ],
+    "summary": "연결 시간이 초과되었다는 errno다. connect(2) ERRORS 절의 조건을 함께 본다. curl 종료 코드 28과 계층이 다르다.",
+    "source_excerpt": "ETIMEDOUT Connection timed out (POSIX.1-2001).",
+    "primary_doc_id": "linux-errno-ETIMEDOUT",
+    "document_ids": [
+      "linux-errno-ETIMEDOUT",
+      "linux-connect-ETIMEDOUT"
+    ],
+    "source_url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "source_section": "DESCRIPTION/ETIMEDOUT",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-target-not-inservice",
+    "title_ko": "ALB 타깃이 서비스에 참여하지 못함",
+    "title_original": "A registered target is not in service",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "target-not-inservice"
+    ],
+    "symptoms": [
+      "타깃이 InService 상태가 되지 않음",
+      "헬스 체크 실패"
+    ],
+    "summary": "등록된 타깃이 예상보다 오래 InService 상태가 되지 않는 경우다. 원문은 헬스 체크를 한 번 통과해야 서비스에 참여한다고 설명하고 확인할 설정 목록을 제시한다.",
+    "source_excerpt": "A registered target is not in service\nIf a target is taking longer than expected to enter the InService state,\nit might be failing health checks. Your target is not in service until it passes one\nhealth check. For more information, see Health checks for Application Load Balancer target groups.\nVerify that your instance is failing health checks and then check for the following\nissues:\nA security group does not allow traffic\nThe security group associated with an instance must allow traffic from the\nload balancer using the health check port and health check protocol. You can\nadd a rule to the ins",
+    "primary_doc_id": "alb-target-not-inservice",
+    "document_ids": [
+      "alb-target-not-inservice",
+      "alb-health-overview",
+      "alb-health-states"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#target-not-inservice",
+    "source_section": "target-not-inservice",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-client-cannot-connect",
+    "title_ko": "인터넷 연결 ALB에 클라이언트가 연결하지 못함",
+    "title_original": "Clients cannot connect to an internet-facing load balancer",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "client-cannot-connect"
+    ],
+    "symptoms": [
+      "로드 밸런서가 요청에 응답하지 않음"
+    ],
+    "summary": "인터넷 연결 로드 밸런서가 요청에 응답하지 않을 때 확인할 항목을 다룬다. 원문은 서브넷 구성과 보안 그룹·네트워크 ACL 등을 점검 항목으로 든다.",
+    "source_excerpt": "Clients cannot connect to an internet-facing load balancer\nIf the load balancer is not responding to requests, check for the following\nissues:\nYour internet-facing load balancer is attached to a private subnet\nYou must specify public subnets for your load balancer. A public subnet\nhas a route to the Internet Gateway for your virtual private cloud\n(VPC).\nA security group or network ACL does not allow traffic\nThe security group for the load balancer and any network ACLs for the load\nbalancer subnets must allow inbound traffic from the clients and outbound\ntraffic to the clients on the listener p",
+    "primary_doc_id": "alb-client-cannot-connect",
+    "document_ids": [
+      "alb-client-cannot-connect"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#client-cannot-connect",
+    "source_section": "client-cannot-connect",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-custom-domain-request",
+    "title_ko": "사용자 지정 도메인 요청이 ALB에 도달하지 않음",
+    "title_original": "Requests sent to a custom domain aren't received by the load balancer",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "custom-domain-request"
+    ],
+    "symptoms": [
+      "사용자 지정 도메인으로 보낸 요청을 로드 밸런서가 받지 못함"
+    ],
+    "summary": "사용자 지정 도메인 요청이 로드 밸런서에 도달하지 않을 때의 점검 항목이다. 원문은 도메인이 로드 밸런서 IP로 해석되는지 확인하는 것부터 안내한다.",
+    "source_excerpt": "Requests sent to a custom domain aren't received by the load balancer\nIf the load balancer is not receiving requests sent to a custom domain, check for the following issues:\nThe custom domain name does not resolve to the load balancer IP address\nConfirm what IP address the custom domain name resolves to using a command line interface.\nLinux, macOS, or Unix – You can use the dig command within Terminal. Ex.dig example.com\nWindows – You can use the nslookup command within Command Prompt. Ex.nslookup example.com\nConfirm what IP address the load balancers DNS name resolves to using a command line ",
+    "primary_doc_id": "alb-custom-domain-request",
+    "document_ids": [
+      "alb-custom-domain-request"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#custom-domain-request",
+    "source_section": "custom-domain-request",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-https-cert-invalid",
+    "title_ko": "HTTPS 요청의 인증서 이름 불일치",
+    "title_original": "HTTPS requests sent to the load balancer return \"NET::ERR_CERT_COMMON_NAME_INVALID\"",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "https-cert-invalid"
+    ],
+    "symptoms": [
+      "NET::ERR_CERT_COMMON_NAME_INVALID"
+    ],
+    "summary": "HTTPS 요청이 NET::ERR_CERT_COMMON_NAME_INVALID를 받는 경우다. 원문은 요청 도메인과 ACM 인증서 이름 불일치, 기본 DNS 이름 사용 등을 가능한 원인으로 든다.",
+    "source_excerpt": "HTTPS requests sent to the load balancer return \"NET::ERR_CERT_COMMON_NAME_INVALID\"\nIf HTTPS requests are receiving NET::ERR_CERT_COMMON_NAME_INVALID from the load balancer, check the following possible causes:\nThe domain name used in the HTTPS request does not match the alternate name specified in the listeners associated ACM certificate.\nThe load balancers default DNS name is being used. The default DNS name cannot be used to\nmake HTTPS requests as a public certificate cannot be requested for the *.amazonaws.com domain.",
+    "primary_doc_id": "alb-https-cert-invalid",
+    "document_ids": [
+      "alb-https-cert-invalid"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#https-cert-invalid",
+    "source_section": "https-cert-invalid",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-elevated-processing-time",
+    "title_ko": "ALB 처리 시간 증가",
+    "title_original": "Load balancer shows elevated processing times",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "elevated-processing-time"
+    ],
+    "symptoms": [
+      "액세스 로그의 처리 시간 증가"
+    ],
+    "summary": "로드 밸런서 처리 시간이 길게 보이는 경우다. 원문은 구성에 따라 처리 시간 집계 방식이 달라진다고 설명한다(예: AWS WAF 연결 시 POST 데이터 전송 시간).",
+    "source_excerpt": "Load balancer shows elevated processing times\nThe load balancer counts processing times differently based on configuration.\nIf AWS WAF is associated with your Application Load Balancer and a client sends an HTTP POST\nrequest, the time to send the data for POST requests is reflected in the\nrequest_processing_time field in the load balancer access logs.\nThis behavior is expected for HTTP POST requests.\nIf AWS WAF is not associated with your Application Load Balancer and a client sends an HTTP POST\nrequest, the time to send the data for POST requests is reflected in the\ntarget_processing_time fie",
+    "primary_doc_id": "alb-elevated-processing-time",
+    "document_ids": [
+      "alb-elevated-processing-time"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#elevated-processing-time",
+    "source_section": "elevated-processing-time",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-400-issues",
+    "title_ko": "ALB HTTP 400 오류",
+    "title_original": "HTTP 400: Bad request",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-400-issues"
+    ],
+    "symptoms": [
+      "HTTP 400 Bad request"
+    ],
+    "summary": "ALB가 400을 반환하는 가능한 원인을 다룬다. 원문은 잘못된 형식의 요청, 헤더 크기 초과, 본문 전송 전 클라이언트 연결 종료를 든다.",
+    "source_excerpt": "HTTP 400: Bad request\nPossible causes:\nThe client sent a malformed request that does not meet the HTTP\nspecification.\nThe request header exceeded 16 K per request line, 16 K per single header,\nor 64 K for the entire request header.\nThe client closed the connection before sending the full request\nbody.",
+    "primary_doc_id": "alb-http-400-issues",
+    "document_ids": [
+      "alb-http-400-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-400-issues",
+    "source_section": "http-400-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-401-issues",
+    "title_ko": "ALB HTTP 401 오류",
+    "title_original": "HTTP 401: Unauthorized",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-401-issues"
+    ],
+    "symptoms": [
+      "HTTP 401 Unauthorized"
+    ],
+    "summary": "사용자 인증 리스너 규칙을 설정한 상태에서 401이 나는 경우를 다룬다. 원문은 미인증 요청 거부 설정, IdP 클레임 크기 초과 등을 가능한 원인으로 든다.",
+    "source_excerpt": "HTTP 401: Unauthorized\nYou configured a listener rule to authenticate users, but one of the following is\ntrue:\nYou configured OnUnauthenticatedRequest to deny\nunauthenticated users or the IdP denied access.\nThe size of the claims returned by the IdP exceeded the maximum size\nsupported by the load balancer.\nA client submitted an HTTP/1.0 request without a host header, and the load\nbalancer was unable to generate a redirect URL.\nThe requested scope doesn't return an ID token.\nYou don't complete the login process before the client login timeout\nexpires. For more information see, Client login time",
+    "primary_doc_id": "alb-http-401-issues",
+    "document_ids": [
+      "alb-http-401-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-401-issues",
+    "source_section": "http-401-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-403-issues",
+    "title_ko": "ALB HTTP 403 오류",
+    "title_original": "HTTP 403: Forbidden",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-403-issues"
+    ],
+    "symptoms": [
+      "HTTP 403 Forbidden"
+    ],
+    "summary": "ALB에 연결한 AWS WAF 웹 ACL이 요청을 차단한 경우를 다룬다.",
+    "source_excerpt": "HTTP 403: Forbidden\nYou configured an AWS WAF web access control list (web ACL) to monitor requests\nto your Application Load Balancer and it blocked a request.",
+    "primary_doc_id": "alb-http-403-issues",
+    "document_ids": [
+      "alb-http-403-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-403-issues",
+    "source_section": "http-403-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-405-issues",
+    "title_ko": "ALB HTTP 405 오류",
+    "title_original": "HTTP 405: Method not allowed",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-405-issues"
+    ],
+    "symptoms": [
+      "HTTP 405 Method not allowed"
+    ],
+    "summary": "ALB가 지원하지 않는 TRACE 메서드를 클라이언트가 사용한 경우다.",
+    "source_excerpt": "HTTP 405: Method not allowed\nThe client used the TRACE method, which is not supported by Application Load Balancers.",
+    "primary_doc_id": "alb-http-405-issues",
+    "document_ids": [
+      "alb-http-405-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-405-issues",
+    "source_section": "http-405-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-408-issues",
+    "title_ko": "ALB HTTP 408 오류",
+    "title_original": "HTTP 408: Request timeout",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-408-issues"
+    ],
+    "symptoms": [
+      "HTTP 408 Request timeout"
+    ],
+    "summary": "클라이언트가 유휴 제한 시간 안에 데이터를 보내지 않은 경우다. 원문은 TCP keep-alive로는 이 제한을 막지 못한다고 설명한다.",
+    "source_excerpt": "HTTP 408: Request timeout\nThe client did not send data before the idle timeout period expired. Sending a TCP\nkeep-alive does not prevent this timeout. Send at least 1 byte of data before each\nidle timeout period elapses. Increase the length of the idle timeout period as\nneeded.",
+    "primary_doc_id": "alb-http-408-issues",
+    "document_ids": [
+      "alb-http-408-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-408-issues",
+    "source_section": "http-408-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-413-issues",
+    "title_ko": "ALB HTTP 413 오류",
+    "title_original": "HTTP 413: Payload too large",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-413-issues"
+    ],
+    "symptoms": [
+      "HTTP 413 Payload too large"
+    ],
+    "summary": "요청이 너무 큰 경우를 다룬다. 원문은 Lambda 타깃의 요청 본문 1MB 초과와 헤더 크기 초과를 가능한 원인으로 든다.",
+    "source_excerpt": "HTTP 413: Payload too large\nPossible causes:\nThe target is a Lambda function and the request body exceeds 1 MB.\nThe request header exceeded 16 K per request line, 16 K per single header,\nor 64 K for the entire request header.",
+    "primary_doc_id": "alb-http-413-issues",
+    "document_ids": [
+      "alb-http-413-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-413-issues",
+    "source_section": "http-413-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-414-issues",
+    "title_ko": "ALB HTTP 414 오류",
+    "title_original": "HTTP 414: URI too long",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-414-issues"
+    ],
+    "symptoms": [
+      "HTTP 414 URI too long"
+    ],
+    "summary": "요청 URL이나 쿼리 문자열 매개변수가 너무 큰 경우다.",
+    "source_excerpt": "HTTP 414: URI too long\nThe request URL or query string parameters are too large.",
+    "primary_doc_id": "alb-http-414-issues",
+    "document_ids": [
+      "alb-http-414-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-414-issues",
+    "source_section": "http-414-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-460-issues",
+    "title_ko": "ALB HTTP 460 오류",
+    "title_original": "HTTP 460",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-460-issues"
+    ],
+    "symptoms": [
+      "HTTP 460"
+    ],
+    "summary": "유휴 제한 시간이 지나기 전에 클라이언트가 로드 밸런서와의 연결을 닫은 경우다. 원문은 클라이언트 제한 시간과 로드 밸런서 유휴 제한 시간을 비교하라고 한다.",
+    "source_excerpt": "HTTP 460\nThe load balancer received a request from a client, but the client closed the\nconnection with the load balancer before the idle timeout period elapsed.\nCheck whether the client timeout period is greater than the idle timeout period\nfor the load balancer. Ensure that your target provides a response to the client\nbefore the client timeout period elapses, or increase the client timeout period to\nmatch the load balancer idle timeout, if the client supports this.",
+    "primary_doc_id": "alb-http-460-issues",
+    "document_ids": [
+      "alb-http-460-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-460-issues",
+    "source_section": "http-460-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-464-issues",
+    "title_ko": "ALB HTTP 464 오류",
+    "title_original": "HTTP 464",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-464-issues"
+    ],
+    "symptoms": [
+      "HTTP 464"
+    ],
+    "summary": "요청 프로토콜이 타깃 그룹의 프로토콜 버전 설정과 호환되지 않는 경우다(예: HTTP/1.1 요청과 gRPC·HTTP/2 타깃 그룹).",
+    "source_excerpt": "HTTP 464\nThe load balancer received an incoming request protocol that is incompatible with\nthe version config of the target group protocol.\nPossible causes:\nThe request protocol is an HTTP/1.1, while the target group protocol\nversion is a gRPC or HTTP/2.\nThe request protocol is a gRPC, while the target group protocol version\nis an HTTP/1.1.\nThe request protocol is an HTTP/2 and the request is not POST, while\ntarget group protocol version is a gRPC.",
+    "primary_doc_id": "alb-http-464-issues",
+    "document_ids": [
+      "alb-http-464-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-464-issues",
+    "source_section": "http-464-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-500-issues",
+    "title_ko": "ALB HTTP 500 오류",
+    "title_original": "HTTP 500: Internal server error",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-500-issues"
+    ],
+    "symptoms": [
+      "HTTP 500 Internal server error"
+    ],
+    "summary": "ALB가 500을 반환하는 가능한 원인을 다룬다. 원문은 웹 ACL 규칙 실행 오류, IdP 엔드포인트와의 통신 실패 등을 든다.",
+    "source_excerpt": "HTTP 500: Internal server error\nPossible causes:\nYou configured an AWS WAF web access control list (web ACL) and there\nwas an error executing the web ACL rules.\nThe load balancer is unable to communicate with the IdP token endpoint or\nthe IdP user info endpoint.\nVerify that the IdP's DNS is publicly resolvable.\nVerify that the security groups for your load balancer and the network\nACLs for your VPC allow outbound access to these endpoints.\nVerify that your VPC has internet access. If you have an internal-facing\nload balancer, use a NAT gateway to enable internet access.\nThe user claim received",
+    "primary_doc_id": "alb-http-500-issues",
+    "document_ids": [
+      "alb-http-500-issues"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-500-issues",
+    "source_section": "http-500-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-502-issues",
+    "title_ko": "ALB HTTP 502 오류",
+    "title_original": "HTTP 502: Bad gateway",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-502-issues"
+    ],
+    "symptoms": [
+      "HTTP 502 Bad gateway"
+    ],
+    "summary": "ALB가 생성하는 502의 가능한 원인을 타깃 연결·응답 조건에서 확인한다.",
+    "source_excerpt": "HTTP 502: Bad gateway\nPossible causes:\nThe load balancer received a TCP RST from the target when attempting to\nestablish a connection.\nThe load balancer received an unexpected response from the target, such as\n\"ICMP Destination unreachable (Host unreachable)\", when attempting to\nestablish a connection. Check whether traffic is allowed from the load\nbalancer subnets to the targets on the target port.\nThe target closed the connection with a TCP RST or a TCP FIN while the\nload balancer had an outstanding request to the target. Check whether the\nkeep-alive duration of the target is shorter than th",
+    "primary_doc_id": "alb-http-502-issues",
+    "document_ids": [
+      "alb-http-502-issues",
+      "alb-health-overview",
+      "alb-health-states"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-502-issues",
+    "source_section": "http-502-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-503-issues",
+    "title_ko": "ALB HTTP 503 오류",
+    "title_original": "HTTP 503: Service unavailable",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-503-issues"
+    ],
+    "symptoms": [
+      "HTTP 503 Service unavailable"
+    ],
+    "summary": "등록 타깃이 없거나 모두 unused인 경우 등을 확인한다. 모두 unhealthy인 경우의 fail-open과 구분한다.",
+    "source_excerpt": "HTTP 503: Service unavailable\nPossible causes:\nThe target groups for the load balancer have no registered targets,\nor all of the registered targets are in an unused state.\nThe request was routed to a target group with target optimizer enabled, and\nwas rejected because no targets were ready to receive requests.\nSee Troubleshoot target optimizer.",
+    "primary_doc_id": "alb-http-503-issues",
+    "document_ids": [
+      "alb-http-503-issues",
+      "alb-health-overview",
+      "alb-health-states"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-503-issues",
+    "source_section": "http-503-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-http-504-issues",
+    "title_ko": "ALB HTTP 504 오류",
+    "title_original": "HTTP 504: Gateway timeout",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "http-504-issues"
+    ],
+    "symptoms": [
+      "HTTP 504 Gateway timeout"
+    ],
+    "summary": "ALB와 타깃 사이의 연결·응답 시간 제한 등 가능한 원인을 확인한다.",
+    "source_excerpt": "HTTP 504: Gateway timeout\nPossible causes:\nThe load balancer failed to establish a connection to the target before\nthe connection timeout expired (10 seconds).\nThe load balancer established a connection to the target but the target\ndid not respond before the idle timeout period elapsed.\nThe network ACL for the subnet did not allow traffic from\nthe targets to the load balancer nodes on the ephemeral ports (1024-65535).\nThe target returns a content-length header that is larger than the entity\nbody. The load balancer timed out waiting for the missing bytes.\nThe target is a Lambda function and the",
+    "primary_doc_id": "alb-http-504-issues",
+    "document_ids": [
+      "alb-http-504-issues",
+      "alb-health-overview",
+      "alb-health-states"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-504-issues",
+    "source_section": "http-504-issues",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-target-http-errors",
+    "title_ko": "타깃이 생성한 HTTP 오류",
+    "title_original": "A target generates an HTTP error",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "target-http-errors"
+    ],
+    "symptoms": [
+      "HTTPCode_Target_4XX_Count·5XX_Count 증가"
+    ],
+    "summary": "로드 밸런서는 타깃이 만든 HTTP 오류 응답도 클라이언트에 전달하며, 이 오류는 HTTPCode_Target_4XX_Count·HTTPCode_Target_5XX_Count 지표에 기록된다. ALB가 직접 만든 오류와 구분한다.",
+    "source_excerpt": "A target generates an HTTP error\nThe load balancer forwards valid HTTP responses from targets to the client, including\nHTTP errors. The HTTP errors generated by a target are recorded in the\nHTTPCode_Target_4XX_Count and HTTPCode_Target_5XX_Count\nmetrics.",
+    "primary_doc_id": "alb-target-http-errors",
+    "document_ids": [
+      "alb-target-http-errors"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#target-http-errors",
+    "source_section": "target-http-errors",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  },
+  {
+    "item_id": "aws-alb-acm-cert-unavailable",
+    "title_ko": "ACM 인증서를 사용할 수 없음",
+    "title_original": "An AWS Certificate Manager certificate is not available for use",
+    "category": "aws",
+    "product": "AWS ALB",
+    "error_codes": [
+      "acm-cert-unavailable"
+    ],
+    "symptoms": [
+      "인증서가 Pending Validation 상태"
+    ],
+    "summary": "ACM 인증서가 도메인 소유권 검증을 마치지 않아 Pending Validation 상태로 남아 사용할 수 없는 경우다.",
+    "source_excerpt": "An AWS Certificate Manager certificate is not available for use\nWhen deciding to use an HTTPS listener with your Application Load Balancer, AWS Certificate Manager requires you to validate domain\nownership before issuing a certificate. If this step is missed during setup, the certificate\nremains in the Pending Validation state, and not available for use until validated.\nIf using email validation, see Email validation in the AWS Certificate Manager User Guide.\nIf using DNS validation, see DNS validation in the AWS Certificate Manager User Guide.",
+    "primary_doc_id": "alb-acm-cert-unavailable",
+    "document_ids": [
+      "alb-acm-cert-unavailable"
+    ],
+    "source_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#acm-cert-unavailable",
+    "source_section": "acm-cert-unavailable",
+    "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
+    "scenario_ids": [],
+    "annotation_origin": "원문 절 추출(영문) + LLM 보조 한국어 제목·증상·요약(원문 대조 검수 대기)"
+  }
+]

@@ -7,7 +7,9 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from app.catalog import DOCUMENTS, ITEMS, CURL
+from app.catalog import DOCUMENTS, ITEMS
+
+CURL = "https://curl.se/docs/manpage.html"
 from app.collectors import extract_section, digest, save_json
 from app.config import Settings
 from app.contracts import Answer, ChatRequest, Selection, SearchTerms
@@ -61,7 +63,7 @@ class RagTests(unittest.TestCase):
             call_count = len(calls)
             second = prepare(settings, embeddings)
             self.assertEqual(first["counts"], second["counts"])
-            self.assertEqual(first["counts"]["knowledge_items"], 10)
+            self.assertEqual(first["counts"]["knowledge_items"], len(ITEMS))
             self.assertEqual(len(calls), call_count)
             self.assertEqual(second["embedding_batches"], 0)
             store, collections = open_store(settings.chroma_path)

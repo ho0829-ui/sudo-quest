@@ -1,0 +1,10 @@
+{
+  "curl-option-resolve": {"source": "curl-manpage", "section": "--resolve", "title": "curl --resolve"},
+  "curl-option-connect-timeout": {"source": "curl-manpage", "section": "--connect-timeout", "title": "curl --connect-timeout"},
+  "curl-option-max-time": {"source": "curl-manpage", "section": "--max-time", "title": "curl --max-time"},
+  "curl-option-output": {"source": "curl-manpage", "section": "--output", "title": "curl --output"},
+  "curl-option-verbose": {"source": "curl-manpage", "section": "--verbose", "title": "curl --verbose"},
+  "curl-option-cacert": {"source": "curl-manpage", "section": "--cacert", "title": "curl --cacert"},
+  "alb-health-overview": {"source": "alb-health", "section": "target-group-health-checks", "title": "ALB health checks and fail-open"},
+  "alb-health-states": {"source": "alb-health", "section": "target-health-states", "title": "ALB target health status"}
+}

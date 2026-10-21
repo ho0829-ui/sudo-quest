@@ -60,6 +60,17 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 
 호출 형식 참고: [OpenAI Responses](https://developers.openai.com/api/reference/python/resources/responses/methods/create), [Embeddings](https://developers.openai.com/api/reference/python/resources/embeddings/methods/create). GMS 모델 가용성은 GMS 안내 및 실제 호출로 별도 확인한다.
 
+## 지식 카탈로그 (100건)
+
+`catalog/`에 도메인 데이터가 있다. `sources.json`은 출처와 라이선스, `shortlist_100.json`은 후보 목록, `annotations_ko.json`은 한국어 주석(LLM 보조 작성, 검수 대기), `items.json`·`documents.json`은 생성물이다. 주석이나 후보를 바꾼 뒤에는 다음 순서로 실행한다(유료 API 호출 없음, 원문은 `data/corpus` 캐시 사용).
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m scripts.build_catalog
+.venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog
+```
+
+카탈로그가 바뀌면 색인 내용도 바뀐다. 기존 Chroma 경로는 재사용하지 않고 새 `CHROMA_PATH`로 다시 색인한다.
+
 ## 데이터·그래프
 
 Chroma는 기본 `backend/data/chroma`에 저장한다. `knowledge_items`, `reference_chunks`를 자동 생성하고 기본 임베딩 모델을 자동 다운로드하지 않는다. `.venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus`로 공식 문서를 수집·색인한다(재실행 시 캐시로 HTTP·임베딩 0회). 테스트의 임시 벡터는 제품 색인에 들어가지 않는다.

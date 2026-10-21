@@ -1,0 +1,59 @@
+{
+  "curl-manpage": {
+    "url": "https://curl.se/docs/manpage.html",
+    "publisher": "curl contributors",
+    "product": "curl",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html"
+  },
+  "libcurl-errors": {
+    "url": "https://curl.se/libcurl/c/libcurl-errors.html",
+    "publisher": "curl contributors",
+    "product": "curl",
+    "license": "curl",
+    "usage_terms_url": "https://curl.se/docs/copyright.html",
+    "note": "libcurl API 오류 설명. curl CLI 종료 코드와 번호가 같지만 API 문맥임을 구분한다."
+  },
+  "errno": {
+    "url": "https://man7.org/linux/man-pages/man3/errno.3.html",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "product": "Linux",
+    "license": "GPL-2.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "connect": {
+    "url": "https://man7.org/linux/man-pages/man2/connect.2.html",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "product": "Linux",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "open": {
+    "url": "https://man7.org/linux/man-pages/man2/open.2.html",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "product": "Linux",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "write": {
+    "url": "https://man7.org/linux/man-pages/man2/write.2.html",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "product": "Linux",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "alb-troubleshooting": {
+    "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html",
+    "publisher": "Amazon Web Services",
+    "product": "AWS ALB",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "alb-health": {
+    "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+    "publisher": "Amazon Web Services",
+    "product": "AWS ALB",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  }
+}
