@@ -21,11 +21,17 @@ CANDIDATE_LIMIT = 20
 PRODUCT_PATTERNS = {
     "curl": r"(?<![a-z0-9])(?:lib)?curl(?![a-z0-9])|컬",
     "Linux": r"linux|리눅스|errno|시스템\s*콜|system\s*call",
-    "AWS ALB": r"(?<![a-z0-9])(?:alb|aws|elb)(?![a-z0-9])|로드\s*밸런서|load\s*balancer",
+    "AWS ALB": r"(?<![a-z0-9])(?:alb|elb)(?![a-z0-9])|로드\s*밸런서|load\s*balancer",
+    "AWS": r"(?<![a-z0-9])(?:aws|iam|s3|ec2|vpc)(?![a-z0-9])|보안\s*그룹|security\s*group",
+    "Kubernetes": r"kubernetes|(?<![a-z0-9])(?:k8s|kubectl|pod)(?![a-z0-9])|쿠버네티스|파드",
+    "Docker": r"docker|도커",
 }
+# 'AWS 503'처럼 AWS라고만 말하면 ALB 항목도 같은 AWS 문서이므로 함께 찾는다.
+PRODUCT_ALIASES = {"AWS": ["AWS ALB"]}
 CATEGORY_LABELS = {
     "network": "네트워크", "http": "HTTP", "tls": "TLS·인증서", "filesystem": "파일 시스템",
     "permission": "권한", "resource": "자원", "process": "프로세스", "aws": "AWS",
+    "container": "컨테이너·쿠버네티스",
 }
 
 
@@ -33,6 +39,7 @@ def explicit_conditions(query: str) -> dict:
     """제품과 오류 코드처럼 문자 그대로 확인되는 조건만 뽑는다."""
     lowered = query.lower()
     products = [name for name, pattern in PRODUCT_PATTERNS.items() if re.search(pattern, lowered)]
+    products += [alias for name in list(products) for alias in PRODUCT_ALIASES.get(name, []) if alias not in products]
     known_codes = {code for item in ITEMS for code in item.error_codes}
     # 'E'로 시작하는 errno 이름, 'HTTP 503' 같은 상태 코드, 'curl 7' 같은 종료 코드를 찾는다.
     # 한글 조사(ENOSPC나, 503에서)가 바로 붙을 수 있어 \b 대신 영문·숫자 경계를 쓴다.

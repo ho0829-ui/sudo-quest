@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -15,6 +16,8 @@ class Settings(BaseModel):
     embedding_base_url: str = ""
     embedding_model: str = ""
     embedding_api_key: SecretStr = SecretStr("")
+    # 임베딩 API 형식. openai = /embeddings, gemini = Gemini API batchEmbedContents(x-goog-api-key 헤더).
+    embedding_api: Literal["openai", "gemini"] = "openai"
     api_timeout_seconds: float = Field(default=30, gt=0, le=120)
     llm_max_output_tokens: int = Field(default=256, ge=16, le=8192)
     chroma_path: Path = BACKEND_ROOT / "data/chroma"

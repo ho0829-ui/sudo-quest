@@ -31,6 +31,14 @@ def fake_vectors(settings, texts):
 
 
 class RagTests(unittest.TestCase):
+    def test_extract_unquoted_heading_id(self):
+        # kubernetes.io 같은 압축 HTML은 id 따옴표가 없다. 비슷한 접두어의 다른 제목과 헷갈리지 않아야 한다.
+        html = '<h2 id=pod-phase-x>X</h2><p>wrong section body text here</p><h2 id=pod-phase>Pod phase</h2><p>The phase of a Pod is a summary.</p><h2 id=next>N</h2>'
+        text = extract_section(html, "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/", "pod-phase")
+        self.assertTrue(text.startswith("Pod phase"))
+        self.assertNotIn("wrong", text)
+        self.assertNotIn("N", text.splitlines()[-1][:1])
+
     def test_extract_curl_only_requested_section(self):
         html = '<p class="level0"><a name="7"></a>7</p><p>Failed to connect to host.</p><p class="level0"><a name="8"></a>8</p><p>SECRET_OTHER_SECTION</p>'
         text = extract_section(html, CURL, "7")

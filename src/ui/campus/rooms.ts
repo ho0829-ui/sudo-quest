@@ -34,7 +34,7 @@ export function roomRank({ slot: [col, row] }: Pick<RoomInfo, "slot">): number {
 
 const FIXED_ROOMS: Omit<RoomInfo, "origin">[] = [
   { kind: "library", slot: RESERVED_SLOTS.library, name: "자료실", tag: "KNOWLEDGE",
-    blurb: "공식 문서 100개 주제를 근거와 함께 찾아보는 곳" },
+    blurb: "curl·Linux·AWS·Kubernetes·Docker 공식 문서 130여 개 주제를 근거와 함께 찾아보는 곳" },
   { kind: "control", slot: RESERVED_SLOTS.control, name: "관제실", tag: "CONTROL",
     blurb: "지금까지 해결한 장애와 최고 점수를 모아 보는 곳" },
   { kind: "community", slot: RESERVED_SLOTS.community, name: "커뮤니티실", tag: "COMMUNITY",

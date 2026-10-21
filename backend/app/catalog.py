@@ -12,9 +12,10 @@ CATALOG_DIR = Path(__file__).resolve().parents[1] / "catalog"
 
 # 근거 문서로 넣어도 되는 라이선스(SPDX 식별자 또는 원문 라이선스 이름).
 # 새 제품 문서를 넣기 전에 원본 LICENSE 파일을 확인하고, 출처 표시만으로 인용할 수 있는 것만 더한다.
-# 앞의 넷은 지금 쓰는 것, 뒤의 둘은 쿠버네티스 문서(CC BY 4.0)·도커 문서(Apache 2.0)용으로 미리 확인해 둔 것이다.
+# 쿠버네티스 문서 CC BY 4.0, 도커 문서 Apache 2.0은 각 저장소 LICENSE로 확인했다.
+# man-pages는 페이지마다 원본 SPDX 줄이 다르다(errno GPL-2.0+, proc_pid_oom_score_adj GPL-3.0+, 대부분 copyleft).
 ALLOWED_LICENSES = frozenset({
-    "curl", "GPL-2.0-or-later", "Linux-man-pages-copyleft", "CC-BY-SA-4.0",
+    "curl", "GPL-2.0-or-later", "GPL-3.0-or-later", "Linux-man-pages-copyleft", "CC-BY-SA-4.0",
     "CC-BY-4.0", "Apache-2.0",
 })
 

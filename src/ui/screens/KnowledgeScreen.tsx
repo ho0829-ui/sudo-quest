@@ -96,7 +96,7 @@ export function KnowledgeScreen() {
       <div>
         <div className="archive-kicker">ARCHIVE · 자료실</div>
         <h2>공식 문서로 배우는 장애 지식</h2>
-        <p className="muted">curl·Linux·AWS ALB 오류 {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 운영 환경의 진단·복구 판단을 대신하지 않으니, 실서버 조치 전에는 원문 문서와 담당자 절차를 확인하세요.</p>
+        <p className="muted">{products.map(([name]) => name).join("·")} {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 운영 환경의 진단·복구 판단을 대신하지 않으니, 실서버 조치 전에는 원문 문서와 담당자 절차를 확인하세요.</p>
         <div className="archive-stats">
           {products.map(([name, count]) => <span key={name} className={`product-tag product-${productSlug(name)}`}>{name} <b>{count}</b></span>)}
         </div>

@@ -38,6 +38,12 @@ class ExploreTests(unittest.TestCase):
         self.assertEqual(explore.explicit_conditions("curl 오류 28")["products"], ["curl"])
         self.assertEqual(explore.explicit_conditions("curl에서 ALB로")["products"], ["curl", "AWS ALB"])
         self.assertEqual(explore.explicit_conditions("calbration curly")["products"], [])
+        # 새 제품: 쿠버네티스·도커·AWS(AWS라고만 하면 ALB 항목도 함께)
+        self.assertEqual(explore.explicit_conditions("쿠버네티스 파드가 OOMKilled")["products"], ["Kubernetes"])
+        self.assertEqual(explore.explicit_conditions("kubectl logs --previous")["products"], ["Kubernetes"])
+        self.assertEqual(explore.explicit_conditions("도커 이미지 정리")["products"], ["Docker"])
+        self.assertEqual(explore.explicit_conditions("AWS 보안 그룹 503")["products"], ["AWS", "AWS ALB"])
+        self.assertEqual(explore.explicit_conditions("ipod podcast s3cret")["products"], [])
         self.assertEqual(explore.explicit_conditions("인증서 관련 오류"), {"products": [], "codes": []})
 
     def test_code_condition_uses_exact_items_without_embedding(self):

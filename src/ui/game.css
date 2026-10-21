@@ -120,6 +120,8 @@
 .archive-stats b { margin-left: 4px; font-family: var(--mono); }
 .product-tag { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 5px; border: 1px solid currentColor; font: 700 9.5px var(--mono); letter-spacing: .8px; }
 .product-curl { color: #00d4ff; } .product-linux { color: #00ff66; } .product-aws-alb { color: #ff9a3d; }
+/* 캠퍼스 방 색과 맞춘다: 쿠버네티스 놋쇠 금빛, 도커 청록, AWS(ALB 외)는 클라우드 하늘색. */
+.product-kubernetes { color: #ffd447; } .product-docker { color: #26e5c6; } .product-aws { color: #5cc8ff; }
 /* 목록 스크롤: 항목이 움직이면(transform) 가로 넘침이 생겨 스크롤바가 나타났다 사라지며 떨린다.
    호버는 색·테두리로만 표현하고, 스크롤바 자리는 미리 잡아 두며, 가로 넘침을 막는다. */
 .knowledge-layout > aside { position: sticky; top: 16px; align-self: start; min-width: 0; }

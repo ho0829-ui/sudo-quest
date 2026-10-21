@@ -1888,5 +1888,315 @@
     "publisher": "Amazon Web Services",
     "license": "CC-BY-SA-4.0",
     "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "k8s-imagepullbackoff": {
+    "doc_id": "k8s-imagepullbackoff",
+    "canonical_url": "https://kubernetes.io/docs/concepts/containers/images/",
+    "section": "imagepullbackoff",
+    "title": "ImagePullBackOff",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-image-pull-policy": {
+    "doc_id": "k8s-image-pull-policy",
+    "canonical_url": "https://kubernetes.io/docs/concepts/containers/images/",
+    "section": "image-pull-policy",
+    "title": "Image pull policy",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-pod-phase": {
+    "doc_id": "k8s-pod-phase",
+    "canonical_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/",
+    "section": "pod-phase",
+    "title": "Pod phase",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-container-waiting": {
+    "doc_id": "k8s-container-waiting",
+    "canonical_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/",
+    "section": "container-state-waiting",
+    "title": "Container state: Waiting",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-container-terminated": {
+    "doc_id": "k8s-container-terminated",
+    "canonical_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/",
+    "section": "container-state-terminated",
+    "title": "Container state: Terminated",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-crashloopbackoff": {
+    "doc_id": "k8s-crashloopbackoff",
+    "canonical_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/",
+    "section": "container-restarts",
+    "title": "How Pods handle problems with containers (CrashLoopBackOff)",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-readiness-probe": {
+    "doc_id": "k8s-readiness-probe",
+    "canonical_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/",
+    "section": "readiness-probe",
+    "title": "Readiness probe",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-define-readiness": {
+    "doc_id": "k8s-define-readiness",
+    "canonical_url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+    "section": "define-readiness-probes",
+    "title": "Define readiness probes",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-oomkilled": {
+    "doc_id": "k8s-oomkilled",
+    "canonical_url": "https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/",
+    "section": "exceed-a-container-s-memory-limit",
+    "title": "Exceed a Container's memory limit",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-describe-pod": {
+    "doc_id": "k8s-describe-pod",
+    "canonical_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/",
+    "section": "using-kubectl-describe-pod-to-fetch-details-about-pods",
+    "title": "Using kubectl describe pod to fetch details about pods",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-pod-logs-previous": {
+    "doc_id": "k8s-pod-logs-previous",
+    "canonical_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/",
+    "section": "examine-pod-logs",
+    "title": "Examining pod logs",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-debugging-pods": {
+    "doc_id": "k8s-debugging-pods",
+    "canonical_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "section": "debugging-pods",
+    "title": "Debugging Pods",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-service-endpointslices": {
+    "doc_id": "k8s-service-endpointslices",
+    "canonical_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/",
+    "section": "does-the-service-have-any-endpointslices",
+    "title": "Does the Service have any EndpointSlices?",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-service-definition": {
+    "doc_id": "k8s-service-definition",
+    "canonical_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/",
+    "section": "is-the-service-defined-correctly",
+    "title": "Is the Service defined correctly?",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-set-image": {
+    "doc_id": "k8s-set-image",
+    "canonical_url": "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_set/kubectl_set_image/",
+    "section": "synopsis",
+    "title": "kubectl set image",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "k8s-rollout-undo": {
+    "doc_id": "k8s-rollout-undo",
+    "canonical_url": "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_undo/",
+    "section": "synopsis",
+    "title": "kubectl rollout undo",
+    "product": "Kubernetes",
+    "publisher": "The Kubernetes Authors",
+    "license": "CC-BY-4.0",
+    "usage_terms_url": "https://github.com/kubernetes/website/blob/main/LICENSE"
+  },
+  "docker-run-publish": {
+    "doc_id": "docker-run-publish",
+    "canonical_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+    "section": "publish",
+    "title": "Publish or expose port (-p, --expose)",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-port-publishing": {
+    "doc_id": "docker-port-publishing",
+    "canonical_url": "https://docs.docker.com/engine/network/port-publishing/",
+    "section": "publishing-ports",
+    "title": "Publishing ports",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-run-env": {
+    "doc_id": "docker-run-env",
+    "canonical_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+    "section": "env",
+    "title": "Set environment variables (-e, --env, --env-file)",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-restart-policy": {
+    "doc_id": "docker-restart-policy",
+    "canonical_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+    "section": "restart",
+    "title": "Restart policies (--restart)",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-logs": {
+    "doc_id": "docker-logs",
+    "canonical_url": "https://docs.docker.com/reference/cli/docker/container/logs/",
+    "section": "description",
+    "title": "docker container logs",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-system-df": {
+    "doc_id": "docker-system-df",
+    "canonical_url": "https://docs.docker.com/reference/cli/docker/system/df/",
+    "section": "description",
+    "title": "docker system df",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-prune-images": {
+    "doc_id": "docker-prune-images",
+    "canonical_url": "https://docs.docker.com/engine/manage-resources/pruning/",
+    "section": "prune-images",
+    "title": "Prune images",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "docker-prune-build-cache": {
+    "doc_id": "docker-prune-build-cache",
+    "canonical_url": "https://docs.docker.com/engine/manage-resources/pruning/",
+    "section": "prune-build-cache",
+    "title": "Prune build cache",
+    "product": "Docker",
+    "publisher": "Docker Inc. (docs contributors)",
+    "license": "Apache-2.0",
+    "usage_terms_url": "https://github.com/docker/docs/blob/main/LICENSE"
+  },
+  "aws-security-group-basics": {
+    "doc_id": "aws-security-group-basics",
+    "canonical_url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+    "section": "security-group-basics",
+    "title": "Security group basics",
+    "product": "AWS",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "aws-ec2-connection-timeout": {
+    "doc_id": "aws-ec2-connection-timeout",
+    "canonical_url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html",
+    "section": "TroubleshootingInstancesConnectionTimeout",
+    "title": "Error connecting to your instance: Connection timed out",
+    "product": "AWS",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "aws-iam-access-denied": {
+    "doc_id": "aws-iam-access-denied",
+    "canonical_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_access-denied.html",
+    "section": "troubleshoot_general_access-denied-service",
+    "title": "I get \"access denied\" when I make a request to an AWS service",
+    "product": "AWS",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "aws-iam-implicit-deny": {
+    "doc_id": "aws-iam-implicit-deny",
+    "canonical_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_access-denied.html",
+    "section": "access-denied-identity-based-policy-examples-implicit",
+    "title": "Access denied due to identity-based policies – implicit denial",
+    "product": "AWS",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "aws-s3-403-permission-tips": {
+    "doc_id": "aws-s3-403-permission-tips",
+    "canonical_url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/troubleshoot-403-errors.html",
+    "section": "troubleshoot-403-tips",
+    "title": "Tips for checking permissions",
+    "product": "AWS",
+    "publisher": "Amazon Web Services",
+    "license": "CC-BY-SA-4.0",
+    "usage_terms_url": "https://aws.amazon.com/terms/"
+  },
+  "linux-rlimit-nofile": {
+    "doc_id": "linux-rlimit-nofile",
+    "canonical_url": "https://man7.org/linux/man-pages/man2/getrlimit.2.html",
+    "section": "DESCRIPTION/RLIMIT_NOFILE",
+    "title": "getrlimit(2): RLIMIT_NOFILE",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "Linux-man-pages-copyleft",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
+  },
+  "linux-oom-score-adj": {
+    "doc_id": "linux-oom-score-adj",
+    "canonical_url": "https://man7.org/linux/man-pages/man5/proc_pid_oom_score_adj.5.html",
+    "section": "DESCRIPTION//proc/pid/oom_score_adj",
+    "title": "/proc/pid/oom_score_adj",
+    "product": "Linux",
+    "publisher": "Linux man-pages project (man7.org HTML)",
+    "license": "GPL-3.0-or-later",
+    "usage_terms_url": "https://www.kernel.org/doc/man-pages/"
   }
 }

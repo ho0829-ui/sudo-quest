@@ -71,7 +71,7 @@ def extract_man_entry(html: str, section: str) -> str:
 
 
 def extract_section(html: str, url: str, section: str) -> str:
-    # curl은 단락 앵커, man7은 오류 이름 단락, AWS는 제목 경계를 사용한다.
+    # curl은 단락 앵커, man7은 오류 이름 단락, AWS·Kubernetes·Docker 문서는 제목 경계를 사용한다.
     # 절이 없으면 전체 본문으로 대체하지 않는다.
     host = urlsplit(url).hostname
     if host == "man7.org":
@@ -83,7 +83,8 @@ def extract_section(html: str, url: str, section: str) -> str:
             raise ValueError("source_section_missing")
         end = re.search(r'<p class="level0"><a name=|<h[12]', html[start.end():])
     else:
-        start = re.search(r'<h[123][^>]*id="' + re.escape(section) + r'"[^>]*>', html)
+        # kubernetes.io처럼 압축된 HTML은 id 따옴표를 생략한다(id=pod-phase). 둘 다 받는다.
+        start = re.search(r'<h[123][^>]*\bid=(?:"' + re.escape(section) + r'"|' + re.escape(section) + r'(?=[\s>]))[^>]*>', html)
         if not start:
             raise ValueError("source_section_missing")
         end = re.search(r'<h[123]\b', html[start.end():])

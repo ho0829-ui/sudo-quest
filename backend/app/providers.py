@@ -1,6 +1,8 @@
 import logging
 import math
 
+import requests
+
 from openai import OpenAI, OpenAIError
 
 from app.config import Settings
@@ -46,19 +48,51 @@ def generate(settings: Settings, prompt: str, instructions: str | None = None, m
         raise ProviderError("generation_request_failed") from None
 
 
+def _check_vectors(vectors: list[list[float]], count: int) -> list[list[float]]:
+    if (len(vectors) != count or not vectors or not vectors[0]
+            or any(len(v) != len(vectors[0]) for v in vectors)
+            or any(not isinstance(x, (int, float)) or not math.isfinite(x) for v in vectors for x in v)):
+        raise ProviderError("invalid_embedding_response")
+    return vectors
+
+
+def _gemini_embed(settings: Settings, texts: list[str]) -> list[list[float]]:
+    """Gemini API batchEmbedContents. 문서·질문 모두 같은 방식(taskType 없음)으로 만들어 벡터 캐시를 한 갈래로 둔다."""
+    if settings.missing("embedding"):
+        raise ProviderError("missing_configuration")
+    model = settings.embedding_model
+    url = f"{settings.embedding_base_url.rstrip('/')}/models/{model}:batchEmbedContents"
+    body = {"requests": [{"model": f"models/{model}", "content": {"parts": [{"text": text}]}} for text in texts]}
+    try:
+        response = requests.post(url, json=body, timeout=settings.api_timeout_seconds, headers={
+            "Content-Type": "application/json", "x-goog-api-key": settings.embedding_api_key.get_secret_value()})
+    except requests.RequestException as exc:
+        log_failure("embedding", exc)
+        raise ProviderError("embedding_request_failed") from None
+    if response.status_code != 200:
+        # 응답 본문에는 요청 일부가 섞일 수 있어 상태 코드만 남긴다.
+        LOG.warning("embedding request failed: HTTPError status=%s", response.status_code)
+        raise ProviderError("embedding_request_failed")
+    try:
+        rows = response.json()["embeddings"]
+        vectors = [row["values"] for row in rows]
+    except (ValueError, KeyError, TypeError):
+        raise ProviderError("invalid_embedding_response") from None
+    return _check_vectors(vectors, len(texts))
+
+
 def embed(settings: Settings, texts: list[str]) -> list[list[float]]:
+    if settings.embedding_api == "gemini":
+        return _gemini_embed(settings, texts)
     try:
         with client_for(settings, "embedding") as client:
             response = client.embeddings.create(
                 model=settings.embedding_model, input=texts, encoding_format="float",
             )
         ordered = sorted(response.data, key=lambda row: row.index)
-        vectors = [row.embedding for row in ordered]
-        if ([row.index for row in ordered] != list(range(len(texts))) or not vectors
-                or not vectors[0] or any(len(v) != len(vectors[0]) for v in vectors)
-                or any(not math.isfinite(x) for v in vectors for x in v)):
+        if [row.index for row in ordered] != list(range(len(texts))):
             raise ProviderError("invalid_embedding_response")
-        return vectors
+        return _check_vectors([row.embedding for row in ordered], len(texts))
     except OpenAIError as exc:
         log_failure("embedding", exc)
         raise ProviderError("embedding_request_failed") from None
