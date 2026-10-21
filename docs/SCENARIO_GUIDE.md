@@ -209,12 +209,12 @@ const breakSomething: Fault = (state) => {
 
 | 분야 | 명령어 |
 |---|---|
-| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep` `sort` `wc` `rm` `sed` `chmod` `chown` |
+| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep`(-A/-B/-C 문맥 포함) `sort` `wc` `rm` `sed` `chmod` `chown` |
 | 시스템 | `df` `du` `free` `ps` `dmesg` `kill` `systemctl` `journalctl` |
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
-| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/events/nodes, 이름·별칭·wide), `describe pod/deploy`, `set image`, `rollout status` |
+| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/events/nodes, 이름·별칭·wide), `describe pod/deploy`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests), `rollout status` · `history` · `undo`(--to-revision) |
 
 ### 호스트 프리셋
 
@@ -307,7 +307,7 @@ npx vitest run tests/_play.test.ts
 
 ### 이미 방이 지어진 분류: Docker·Kubernetes
 
-`docker`(컨테이너 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다. `kubernetes`는 이미지 풀 실패 실습으로 운영을 시작했습니다.
+`docker`(컨테이너 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다. `kubernetes`는 이미지 풀 실패·CrashLoopBackOff·OOMKilled 실습 3개가 있습니다.
 `category: "docker"` 시나리오를 처음 넣을 때 `src/ui/categories.ts` 에서 그 분류의 `comingSoon: true` 를 지우면
 목록 탭·레일·관제실 화면·경보등이 함께 열립니다. 둘 중 하나만 하면 `tests/campus.test.ts` 가 실패해 알려 줍니다.
 
@@ -327,9 +327,20 @@ npx vitest run tests/_play.test.ts
 
 ### Kubernetes 프리셋
 
-`host: "kubernetes-admin"`과 `withCommands("kubectl")`을 사용합니다. 상태 타입은 `src/engine/state/kubernetes/types.ts`, 계산은 `reconcile.ts`입니다. Deployment 템플릿을 바꾸는 fault는 revision을 올리고 `reconcileKubernetes(cluster, state.clock)`을 호출합니다. 서비스 엔드포인트는 selector와 Ready 파드에서 계산합니다.
+`host: "kubernetes-admin"`과 `withCommands("kubectl")`을 사용합니다. 상태 타입은 `src/engine/state/kubernetes/types.ts`, 계산은 `reconcile.ts`입니다. Deployment를 새로 만들 때는 `state/kubernetes/history.ts`의 `addDeployment`(revision 1 기록 포함), 템플릿을 바꾸는 fault는 `changeTemplate(deployment, "변경 사유", template => …)`를 쓰고 `reconcileKubernetes(cluster, 시각)`을 호출합니다. `changeTemplate`이 revision과 `rollout history`를 함께 남기므로 `rollout undo`가 자동으로 대체 풀이가 됩니다. 서비스 엔드포인트는 selector와 Ready 파드에서 계산합니다.
 
-현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 지연·RollingUpdate·인증·logs·undo·resources·delete는 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
+컨테이너가 어떻게 끝나는지도 상태에서 계산합니다(`runtime.ts`의 `outcome`). 출력 문장을 시나리오에 적지 마세요.
+
+| 상태 | 쓰는 곳 | 결과 |
+|---|---|---|
+| `images[이미지]` 없음 | — | ImagePullBackOff |
+| 이미지 `requiredEnv`에 있는데 컨테이너 `env`에 없음 | `images[…].requiredEnv`, `containers[].env` | CrashLoopBackOff, Last State Error·종료 코드 1, 로그 마지막 줄 `FATAL config: required environment variable X is not set` |
+| 이미지 `memoryMi` > 컨테이너 `resources.limits.memoryMi` | `images[…].memoryMi`, `containers[].resources` | CrashLoopBackOff, Last State OOMKilled·137, 로그는 `log.boot`에서 오류 없이 끊김 |
+| 그 밖 | `images[…].log.boot`·`log.ready` | Running, 로그는 boot+ready |
+
+재시작 횟수는 반복 종료가 시작된 시각과 시뮬레이션 시각으로 계산합니다(10초부터 두 배, 최대 300초 간격).
+
+현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 대기·RollingUpdate·ConfigMap/Secret 참조·인증·delete·`kubectl top`은 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
 
 새 시나리오는 `tests/scenario-exploration.cases.ts`에도 조회·무관한 조치·대체 풀이를 추가해야 합니다. `solutionPath`를 복사해 채우지 말고 실제 사용자가 시도할 다른 경로를 작성하세요.
 

@@ -122,9 +122,10 @@
 - [x] 게시판 2단계: 스키마 버전(user_version 2, 기존 파일 자동 올림), 응답 열 명시(해시 미노출), 작성자 삭제 비밀번호(scrypt, 틀린 시도도 속도 제한), 운영자 모드 화면(키는 탭 메모리만), 코드 블록·인라인 코드 표시, 풀이 포함 표시(목록 미리보기 숨김·상세 펼치기), 실습 리포트 "커뮤니티에 회고 남기기", 초안 탭 보관·닉네임 기억, NEW 표시.
 - [ ] 게시판 다음 후보: 글 수정(삭제 비밀번호로), 신고·숨김 대기열, 댓글순 정렬, 캠퍼스 카페 HUD에 최근 글 표시, 백엔드 배포 시 프록시 뒤 실제 접속 주소 처리(현재 X-Forwarded-For 불신), COMMUNITY_ADMIN_KEY 실제 값 입력(사용자).
 - [x] 시나리오 근거 공식 문서 31건(K8s 16·Docker 8·AWS 5·Linux 2) 카탈로그 추가(131건), 임베딩 gemini-embedding-2 전환·`data/chroma-gemini` 색인(131/298), 레일 커뮤니티 배지·홈 히어로 버튼 정리.
-- [ ] 31건 한국어 메타데이터 사람 검수. 예정 시나리오를 만들면 `scenario_sources.json`의 planned를 scenario_ids로 옮기기.
+- [ ] 31건 한국어 메타데이터 사람 검수. 예정 시나리오를 만들면 `scenario_sources.json`의 planned를 scenario_ids로 옮기기(CrashLoop·OOM은 옮김).
 - [ ] (결정) 제출 문서(docs/submission)의 항목 수·임베딩 모델·RAG 비교 수치를 새 모델로 다시 잴지.
-- [ ] 후속 문제 보강: K8s CrashLoop/OOM → Docker 2 → Linux·Web. 첫 K8s 실습은 완료, 상세 순서/범위는 다음 작업과 조율.
-- [ ] 번들 531.6kB(Vite 경고, 게시판은 별도 21kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
+- [x] K8s CrashLoopBackOff(15)·OOMKilled(16) 실습: 종료 방식 상태 계산(runtime)·revision 기록(history), kubectl logs·set env/resources·rollout history/undo, grep -A/-B/-C. 롤백도 대체 풀이로 인정(사용자 승인). 시나리오 16개.
+- [ ] 후속 문제 보강: Docker 2(docker 명령 엔진 필요) → K8s readiness/selector → Linux·Web. 새 시나리오마다 탐색 검사 추가.
+- [ ] 번들 563kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).

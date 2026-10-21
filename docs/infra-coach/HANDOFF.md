@@ -1,8 +1,28 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: 시나리오 근거 문서 131건·gemini-embedding-2 색인 완료, 다음은 예정 시나리오 구현
+갱신: 2026-10-22 · 단계: K8s CrashLoopBackOff·OOMKilled 실습 완료(시나리오 16개), 다음은 Docker 실습 또는 K8s readiness/selector
 
-## 최신 상태 — 시나리오 근거 공식 문서 31건 추가, 임베딩 gemini-embedding-2 전환, UI 두 곳 정리 (2026-10-22, Mac, Claude)
+## 최신 상태 — K8s CrashLoopBackOff·OOMKilled 실습 2개 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "예정 시나리오 구현을 시작하자. K8s CrashLoopBackOff·OOMKilled부터, 계획 먼저 보여줘." → 계획 승인 "계획대로 진행해줘. 롤백도 정답 경로로 인정하는 것에 동의해."
+- 엔진(왜: 출력을 시나리오에 적지 않고 상태에서 계산하려고):
+  - `state/kubernetes/types.ts`: 이미지 `requiredEnv`·`memoryMi`·`log{boot,ready}`, 컨테이너 `env`·`resources{requests,limits}`, Deployment `history`, 컨테이너 `lastState`·`crashingSince`, 이유 `CrashLoopBackOff`.
+  - `runtime.ts`(새): 결과 순서 — 이미지 없음 → pull 실패 / 필수 env 없음 → Error·1 / 메모리 > limit → OOMKilled·137 / 그 밖 실행. 재시작 횟수는 `crashingSince`와 시각으로 계산(10초부터 두 배, 300초 상한). 메모리 단위 파싱·표시.
+  - `history.ts`(새): `changeTemplate`(실제로 바뀔 때만 revision+1, 같은 템플릿은 합침), `undoTo`(옛 템플릿을 새 revision으로), `addDeployment`. 이미지 풀 실습 fault도 `changeTemplate`로 바꿈.
+  - `reconcile.ts`: CrashLoopBackOff 컨테이너(Waiting, Ready 아님), BackOff 이벤트.
+- kubectl(`commands/kubectl.ts` + `kubectl/{flags,logs,set,rollout}.ts` 새, `mutations.ts` 삭제): `logs`(-c, -p/--previous, --tail, deploy/NAME은 "Found N pods…"를 stderr로), `set image|env|resources`(모든 인자 검사 후 변경, request>limit 거부), `rollout status|history|undo [--to-revision]`. describe에 Last State·Limits/Requests·Environment. 코치용 `operations`에 새 하위 명령 추가.
+- grep(`commands/grep.ts`): `-A/-B/-C N`, `-A2`, `--after-context=N` 등 문맥 옵션. 이유: 브라우저 점검에서 `describe … | grep -A2 Last`가 찾은 줄만 내고 옵션을 조용히 무시했음. 잘못된 값은 `invalid context length argument`·종료 2.
+- 시나리오: `kubernetes-crashloop`(15, 중급 — order-api 2.3.0이 요구하는 PAYMENT_API_URL 누락), `kubernetes-oom`(16, 고급 — 비용 검토로 limit 512→128Mi, 캐시 약 280Mi). 둘 다 정답 경로는 설정 보충, 대체 풀이 `rollout undo`(사용자 승인). OOM은 request만 올리면 계속 죽음. 레지스트리 끝에 추가해 기존 미션 번호 유지.
+- 카탈로그: `scenario_sources.json`의 planned를 scenario_ids로(k8s-container-terminated·crashloopbackoff·oomkilled·pod-logs-previous, describe-pod·debugging-pods·rollout-undo에 두 id 추가), `add_scenario_catalog`로 items.json 재생성(HTTP 0). 색인(`data/chroma-gemini`)은 다시 만들지 않음 — scenario_ids는 메타데이터라 검색 결과에는 영향 없음, 필요하면 `scripts.prepare_corpus` 재실행(캐시 명중 예상).
+- 실행한 검사(이 Mac): `npm run typecheck` 통과, `npx vitest run` **564개/25파일** 통과(새: kubernetes-runtime·kubectl-crash·grep-context, 탐색 검사 두 실습 추가), `npm run build` 통과(본체 JS 563kB, Vite 500kB 경고 유지), backend `unittest discover -s tests` **66개** OK, `scripts.validate_catalog` 실패 0, `git diff --check` 통과.
+- 브라우저(5173): 미션 15 — get pods CrashLoopBackOff·RESTARTS 증가, describe Last State Error/1, logs FATAL 줄, rollout undo로 복구·HUD 복구 단계 켜짐. 미션 16 — Last State OOMKilled/137, `--requests`만 올리면 계속 반복 종료, `--limits=memory=512Mi`로 복구. 원인 제출·리포트 화면은 학습 기록 보존을 위해 하지 않음(자동 테스트로 검증). 검사 뒤 탭 저장소의 실습 세션·코치 대화 키를 지워 검사 전 상태(지식 대화 2키, localStorage 비어 있음)로 되돌림.
+- 유료 호출: 없음.
+- 실행 중: Vite `127.0.0.1:5173`(PID 61243), API `127.0.0.1:8000`(api-mac, Gemini 임베딩 설정).
+- 남은 것·한계: 실제 back-off 대기·RollingUpdate·ConfigMap/Secret 참조·`kubectl top`·delete는 재현하지 않음(default 네임스페이스·Recreate·즉시 계산 모델). 앱 메모리 사용량은 고정값. 알려진 오류 없음.
+- 커밋: `feat(k8s)`·`feat(grep)`·docs 커밋(해시는 `git log`). push·master 병합 없음.
+- 다음 후보: (1) Docker 실습 2개(docker-port-allocated·docker-missing-env, `docker` 명령 엔진 필요 → 계획 먼저) (2) K8s readiness probe·service selector 실습(엔진 대부분 있음). 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — 시나리오 근거 공식 문서 31건 추가, 임베딩 gemini-embedding-2 전환, UI 두 곳 정리 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: ① 추가하기로 한 시나리오·추가된 시나리오를 뒷받침할 공식 문서 업데이트와 그 임베딩 ② 임베딩 모델을 GMS `gemini-embedding-2`로 변경 ③ 왼쪽 레일 "커뮤니티 카페"가 다른 메뉴와 다름 ④ 홈 히어로 "첫 장애 해결하기" 아래 "지식 탐색"의 어긋난 구조.
 - UI: 레일 커뮤니티 배지가 빈 상자였음 → 실제 게시글 수(`ui/community/useBoardCount.ts`, 서버 꺼지면 "–"). 히어로 보조 버튼이 글자 링크로 다음 줄에 떨어져 있었음 → 같은 폭·높이의 테두리 버튼으로 세로 정렬(좁은 화면은 가로 두 칸, `campus/campus.css`).
