@@ -26,7 +26,7 @@ export function BackendStatus() {
         : `서버 연결됨 · 생성 ${health.providers.generation.configured ? "설정됨" : "설정 필요"}`
           + ` · 임베딩 ${health.providers.embedding.configured ? "설정됨" : "설정 필요"}`
           + ` · 지식 ${health.index.counts.knowledge_items ?? 0}건`}
-      {health && <span> · RAG 코칭 구현 준비 중 (모델 연결 검증은 별도)</span>}
+      {health && <span> · {health.rag_status === "pilot_ready" ? "지식 RAG 파일럿 준비됨" : "지식 색인 준비 필요"}</span>}
       <button className="small" onClick={() => setAttempt(attempt + 1)}>다시 확인</button>
     </aside>
   );

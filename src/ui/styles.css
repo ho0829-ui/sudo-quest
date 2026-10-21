@@ -394,3 +394,15 @@ button.primary {
   font-size: 0.875rem;
 }
 .backend-status button { margin-left: 12px; }
+.workspace-tabs { display: flex; gap: 10px; margin: 20px 0; }
+button[aria-pressed="true"] { border-color: var(--accent); background: #20384c; }
+.knowledge-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; }
+.knowledge-items { display: grid; gap: 8px; margin-top: 14px; }
+.knowledge-items button { text-align: left; }
+.knowledge input, .knowledge textarea { display: block; width: 100%; margin: 8px 0 12px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); color: var(--text); font: inherit; }
+.knowledge-turns article { padding: 18px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
+.answer-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.source-card { border-top: 1px solid var(--border); padding: 12px 0; }
+.knowledge a { color: var(--accent); }
+.knowledge summary { cursor: pointer; }
+@media (max-width: 760px) { .knowledge-layout { grid-template-columns: 1fr; } }

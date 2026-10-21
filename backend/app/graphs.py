@@ -9,6 +9,7 @@ class RagState(TypedDict, total=False):
     question: str
     evidence: list[dict]
     answer: str
+    result: dict
 
 
 def build_graph(retrieve: Callable, generate: Callable):

@@ -21,12 +21,13 @@ def client_for(settings: Settings, kind: str) -> OpenAI:
     )
 
 
-def generate(settings: Settings, prompt: str) -> str:
+def generate(settings: Settings, prompt: str, instructions: str | None = None, max_tokens: int | None = None) -> str:
     try:
         with client_for(settings, "generation") as client:
+            extra = {"instructions": instructions} if instructions else {}
             response = client.responses.create(
                 model=settings.llm_model, input=prompt, store=False,
-                max_output_tokens=settings.llm_max_output_tokens,
+                max_output_tokens=max_tokens or settings.llm_max_output_tokens, **extra,
             )
         if response.status != "completed" or not response.output_text.strip():
             raise ProviderError("incomplete_or_empty_generation")

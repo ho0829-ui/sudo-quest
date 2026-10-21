@@ -1,6 +1,6 @@
 # InfraCoach 개발 환경
 
-기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 현재 서버는 환경 구축 단계다. `/api/health`, 두 Chroma 컬렉션, LangGraph 두 노드 연결 팩터리, GMS Responses/임베딩 어댑터와 연결 점검 CLI가 있다. 실제 문서 수집·색인·검색·코칭 API는 다음 단계이며 완성된 RAG로 표시하지 않는다.
+기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 현재 서버는 10건 RAG 파일럿 단계다(curl 6·ALB 4 항목). 수집·색인(`scripts.prepare_corpus`), `/api/items`, `POST /api/chat`+`/api/jobs/{id}`, retrieve→generate 그래프와 인용 검증이 동작한다. 100건 데이터·조건 탐색·실습 코치는 아직 없다.
 
 ## 설치 (Windows PowerShell)
 
@@ -62,9 +62,9 @@ Vite는 `/api`를 8000번 서버로 프록시한다. 화면 상단에서 서버 
 
 ## 데이터·그래프
 
-Chroma는 기본 `backend/data/chroma`에 저장한다. `knowledge_items`, `reference_chunks`를 자동 생성하고 기본 임베딩 모델을 자동 다운로드하지 않는다. 현재 컬렉션은 비어 있다. 테스트의 임시 벡터는 제품 색인에 들어가지 않는다.
+Chroma는 기본 `backend/data/chroma`에 저장한다. `knowledge_items`, `reference_chunks`를 자동 생성하고 기본 임베딩 모델을 자동 다운로드하지 않는다. `.venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus`로 공식 문서를 수집·색인한다(재실행 시 캐시로 HTTP·임베딩 0회). 테스트의 임시 벡터는 제품 색인에 들어가지 않는다.
 
-`app/graphs.py`는 `START → retrieve → generate → END` 구조를 만들고 테스트에서 실행한다. 실제 검색·생성 함수 연결, 선택 항목 메타데이터 강제 포함, 인용 검증은 다음 단계다. 임베딩 공급자·모델·차원·정규화 manifest와 변경 시 재색인 방어도 실제 색인 구현 전에 추가해야 한다.
+`app/graphs.py`는 `START → retrieve → generate → END` 구조이며 `app/rag.py`가 실제 검색·생성 함수를 연결한다. 선택 항목 메타데이터는 항상 근거 1번, 인용 번호는 검증 후 실제 인용 근거만 반환한다. 임베딩 설정·청킹 값은 `data/chroma/manifest.json`에 기록되고 바뀌면 재색인을 요구한다.
 
 ## 검증
 

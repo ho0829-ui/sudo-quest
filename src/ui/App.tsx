@@ -17,6 +17,7 @@ import { ReportScreen } from "./screens/ReportScreen";
 import { clearProgress, loadProgress, saveClear, type Progress } from "./storage";
 import "./styles.css";
 import { BackendStatus } from "./components/BackendStatus";
+import { KnowledgeScreen } from "./screens/KnowledgeScreen";
 
 /**
  * 화면 전환.
@@ -27,6 +28,7 @@ import { BackendStatus } from "./components/BackendStatus";
 type Screen = "list" | "ticket" | "play" | "report";
 
 export function App() {
+  const [workspace, setWorkspace] = useState<"game" | "knowledge">("game");
   const [screen, setScreen] = useState<Screen>("list");
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -73,6 +75,12 @@ export function App() {
         )}
       </header>
       <BackendStatus />
+      <nav className="workspace-tabs" aria-label="학습 모드">
+        <button aria-pressed={workspace === "game"} onClick={() => setWorkspace("game")}>가상 장애 실습</button>
+        <button aria-pressed={workspace === "knowledge"} onClick={() => setWorkspace("knowledge")}>지식 탐색 · RAG 질문</button>
+      </nav>
+      <div hidden={workspace !== "knowledge"}><KnowledgeScreen /></div>
+      <div hidden={workspace !== "game"}>
 
       {screen === "list" && (
         <ScenarioList
@@ -104,6 +112,7 @@ export function App() {
       {screen === "report" && session && (
         <ReportScreen session={session} onBackToList={backToList} onRetry={beginInvestigation} />
       )}
+      </div>
     </div>
   );
 }
