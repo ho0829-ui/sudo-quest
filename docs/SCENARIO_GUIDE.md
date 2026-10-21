@@ -304,15 +304,23 @@ npx vitest run tests/_play.test.ts
 
 도커·쿠버네티스처럼 **분류 자체가 새로 생길 때**만 필요합니다. 기존 분류에 문제를 더할 때는 위 3단계로 충분합니다.
 
-1. `src/engine/scenario/categories.ts` 의 `CATEGORY_IDS` 에 id를 더한다. (예: `"container"`)
+### 이미 방이 지어진 분류: Docker·Kubernetes
+
+`docker`(컨테이너 운영실)와 `kubernetes`(쿠버네티스 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다.
+`category: "docker"` 시나리오를 처음 넣을 때 `src/ui/categories.ts` 에서 그 분류의 `comingSoon: true` 를 지우면
+목록 탭·레일·관제실 화면·경보등이 함께 열립니다. 둘 중 하나만 하면 `tests/campus.test.ts` 가 실패해 알려 줍니다.
+
+### 완전히 새 분류
+
+1. `src/engine/scenario/categories.ts` 의 `CATEGORY_IDS` 에 id를 더한다.
 2. `npm run typecheck` 를 돌리면 **빠진 곳이 컴파일 오류로 나온다.** 그 세 곳을 채운다.
-   - `src/ui/categories.ts` — 이름·태그·운영실 이름(예: "컨테이너 운영실")·설명·아이콘·캠퍼스 칸(`slot`)
-   - `src/ui/campus/themes.ts` — 네온 색(다른 방과 겹치지 않게)과 바닥·벽 색
+   - `src/ui/categories.ts` — 이름·태그·운영실 이름("○○ 운영실")·설명·아이콘·캠퍼스 칸(`slot`)
+   - `src/ui/campus/themes.ts` — 네온 색(화면에서 이웃한 방과 색상이 겹치지 않게)과 바닥·벽 색
    - `src/ui/campus/art/RoomArt.tsx` — 방 안 그림 컴포넌트(`art/` 에 새 파일)
-3. 캠퍼스 칸은 3×3 격자의 빈 칸 `[2,0]` `[0,2]` `[2,2]` 중 하나를 쓴다. 문·복도·지도 크기·관제실 미니맵은
-   `src/ui/campus/layout.ts` 가 칸에서 계산하므로 손댈 필요가 없다.
-4. 그 분류의 시나리오를 1개 이상 넣는다. 시나리오가 없는 분류는 테스트가 막는다.
-5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙을 검사한다.
+3. 지금 3×3 격자는 방 9개로 꽉 찼다. 새 칸을 쓰려면 `GRID_SIZE` 를 늘리고 바깥 칸(예: `[3,0]`)을 준다.
+   문·복도·지도 크기·관제실 미니맵은 `src/ui/campus/layout.ts` 가 칸에서 계산하므로 손댈 필요가 없다.
+4. 시나리오를 1개 이상 넣거나, 아직 없으면 `comingSoon: true` 로 둔다.
+5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙·준비 중 표시를 검사한다.
 
 새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
 
