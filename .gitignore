@@ -12,3 +12,6 @@ __pycache__/
 *.pyc
 backend/data/
 tmp/
+
+# TypeScript 증분 빌드 산출물(빌드마다 바뀜)
+*.tsbuildinfo

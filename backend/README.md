@@ -2,6 +2,37 @@
 
 기존 React/TypeScript 가상 게임을 유지하고 FastAPI 서버를 추가한다. 복구 판정은 기존 엔진이 담당한다. 지식 항목 100건(curl 40·Linux errno 40·AWS ALB 20)을 색인하고, `/api/items`, `POST /api/chat`(질문 중 외부 후보 검색·수집 포함), `POST /api/items/search`(조건 탐색), `POST /api/coach`(실습 코치), `/api/jobs/{id}`(진행 상태)를 제공한다. 전체 구조와 실행 순서는 루트 README와 `docs/submission/`을 본다.
 
+## macOS / Linux 실행 준비
+
+기존 백엔드 검증 환경과 같은 Python 3.11이 설치되어 있어야 합니다(Mac: `brew install python@3.11`). 2026-10-21 Mac(Python 3.11.17)에서 `requirements.lock.txt` 설치, `pip check`, 백엔드 테스트 37개, 연결 점검, 색인(100/221), 실습 코치 호출을 확인했습니다. 미리보기 실행 설정은 `.claude/launch.json`의 `api-mac`입니다.
+
+저장소 루트에서:
+
+```bash
+npm run setup:env
+python3.11 -m venv backend/.venv
+backend/.venv/bin/python -m pip install -r backend/requirements.txt
+backend/.venv/bin/python -m pip check
+```
+
+`backend/.env`의 `GMS_KEY=`를 직접 채웁니다. 프론트엔드용 루트 `.env`나 `VITE_*`에는 키를 넣지 않습니다. 초기화 명령은 기존 설정을 덮어쓰거나 키를 출력하지 않습니다.
+
+서버는 저장소 루트에서도 실행할 수 있습니다(설정 파일은 실행 위치와 무관하게 `backend/.env`를 읽음):
+
+```bash
+backend/.venv/bin/python -m uvicorn app.main:create_app --factory --app-dir backend --host 127.0.0.1 --port 8000
+```
+
+키 입력 후, 최초 지식 색인은 다른 터미널에서 준비합니다. **아래 두 작업은 실제 API를 호출하며 비용이 발생합니다.**
+
+```bash
+cd backend
+.venv/bin/python -m scripts.check_providers
+.venv/bin/python -m scripts.prepare_corpus
+```
+
+키나 색인이 없어도 프론트엔드 가상 게임은 동작합니다. 키를 변경했다면 서버를 재시작하고 화면의 `다시 확인`을 누릅니다. 색인 설정·임베딩 모델을 바꿀 때는 기존 설명대로 새 `CHROMA_PATH`를 사용합니다.
+
 ## 설치 (Windows PowerShell)
 
 저장소 루트에서 실행한다. 확인 환경: Node 24.18.0, npm 11.16.0, Python 3.11.9.
@@ -10,7 +41,7 @@
 npm ci
 python -m venv backend/.venv
 backend/.venv/Scripts/python.exe -X utf8 -m pip install -r backend/requirements.lock.txt
-Copy-Item backend/.env.example backend/.env
+npm run setup:env
 ```
 
 `.env`가 이미 있으면 복사 단계를 생략한다. 가상환경 활성화 없이 실행해 PowerShell 실행 정책 변경이 필요 없다. 과제 PDF 5~6쪽 직접 의존성은 `requirements.txt`, 이 Windows 환경에서 설치한 전이 의존성까지의 고정본은 `requirements.lock.txt`다. 다른 OS는 `requirements.txt`로 설치 후 `pip check`를 실행하고 별도 검증한다. Streamlit은 과제 지정 의존성으로 설치하되 서비스 UI는 확정된 React를 사용한다.
