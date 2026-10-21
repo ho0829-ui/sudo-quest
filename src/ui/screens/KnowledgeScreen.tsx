@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { getItems, getJob, startChat, type Item, type Answer, type Message } from "../../api/knowledge";
+import { getItems, getJob, startChat, type Item } from "../../api/knowledge";
 import { ConditionSearch } from "../components/ConditionSearch";
+import { historyFor, type Turn } from "../chatHistory";
 
-type Turn = { question: string; result?: Answer; error?: string };
 const stages: Record<string, string> = {
   queued: "요청 대기 중", search_terms: "검색어 추출 중", select_documents: "공식 문서 후보 검색·선별 중",
   select_cache: "이전에 선별한 문서 재사용 중", collect: "선별한 문서 수집·색인 중",
@@ -39,9 +39,7 @@ export function KnowledgeScreen() {
     if (!text || !selected || pending) return;
     const item = selected;
     const previous = turns[item] ?? [];
-    const history: Message[] = previous.filter(t => t.result).slice(-5).flatMap(t => [
-      { role: "user" as const, content: t.question }, { role: "assistant" as const, content: t.result!.answer },
-    ]);
+    const history = historyFor(turns, item);
     setQuestion(""); setError("");
     setTurns(current => ({ ...current, [item]: [...previous, { question: text }] }));
     setPending({ item, stage: "queued" });
@@ -71,10 +69,10 @@ export function KnowledgeScreen() {
   return <section className="knowledge">
     <header>
       <h2>공식 문서로 배우는 장애 지식</h2>
-      <p className="muted">curl·Linux·AWS ALB 오류 {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 환경의 복구 판정을 대신하지 않습니다.</p>
+      <p className="muted">curl·Linux·AWS ALB 오류 {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 운영 환경의 진단·복구 판단을 대신하지 않으니, 실서버 조치 전에는 원문 문서와 담당자 절차를 확인하세요.</p>
     </header>
     {error && <p role="alert">{error} <button onClick={() => void load()}>다시 불러오기</button></p>}
-    {!ready && !error && <p role="status">지식 색인이 준비되지 않았습니다. 데이터 준비 후 <button onClick={() => void load()}>다시 확인</button>해주세요.</p>}
+    {!ready && !error && <p role="status">지식 색인이 준비되지 않아 질문할 수 없습니다. 위 안내대로 색인을 만든 뒤 <button onClick={() => void load()}>다시 확인</button>해주세요.</p>}
     <ConditionSearch ready={ready} onSelect={id => { setSelected(id); setQuestion(""); }} />
     <div className="knowledge-layout">
       <aside>
@@ -105,6 +103,7 @@ export function KnowledgeScreen() {
                     <details><summary>검색한 근거 본문 보기</summary><p className="answer-text">{c.text}</p></details>
                   </div>)}
                 </details>}
+                {(turn.result.collected_documents?.length ?? 0) > 0 && <p className="muted small">이번 질문에서 새로 수집·색인한 공식 문서: {turn.result.collected_documents!.map(d => d.title).join(", ")}</p>}
                 {turn.result.cache_hit && <small className="muted">동일 질문·맥락의 검증된 형식 답변을 캐시에서 불러왔습니다.</small>}
               </>}
             </article>)}

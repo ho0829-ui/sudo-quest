@@ -6,9 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 from app.providers import ProviderError
 
 SAFE_ERRORS = {
-    "index_not_ready": "먼저 대표 데이터 수집·색인을 실행해주세요.",
+    "index_not_ready": "지식 색인이 없습니다. backend 폴더에서 scripts.prepare_corpus를 실행한 뒤 다시 시도해주세요.",
     "index_configuration_changed": "임베딩 또는 청킹 설정이 바뀌었습니다. 새 경로에 재색인해주세요.",
-    "provider_not_configured": "생성·임베딩 설정을 확인해주세요.",
+    "provider_not_configured": "API 키 설정이 없어 새 답변을 만들 수 없습니다. backend/.env의 GMS_KEY(또는 LLM_API_KEY·EMBEDDING_API_KEY)를 확인해주세요.",
     "generation_request_failed": "생성 요청에 실패했습니다. 키·모델·네트워크를 확인해주세요.",
     "embedding_request_failed": "임베딩 요청에 실패했습니다. 키·모델·네트워크를 확인해주세요.",
     "incomplete_or_empty_generation": "모델 응답이 완성되지 않았습니다. 잠시 후 다시 시도해주세요.",

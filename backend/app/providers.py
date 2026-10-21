@@ -1,8 +1,17 @@
+import logging
 import math
 
 from openai import OpenAI, OpenAIError
 
 from app.config import Settings
+
+
+LOG = logging.getLogger("infracoach.providers")
+
+
+def log_failure(kind: str, exc: Exception) -> None:
+    # 서버 진단용. 예외 메시지에는 키·요청 내용이 섞일 수 있어 종류와 HTTP 상태만 남긴다(NF2004).
+    LOG.warning("%s request failed: %s status=%s", kind, type(exc).__name__, getattr(exc, "status_code", None))
 
 
 class ProviderError(RuntimeError):
@@ -32,7 +41,8 @@ def generate(settings: Settings, prompt: str, instructions: str | None = None, m
         if response.status != "completed" or not response.output_text.strip():
             raise ProviderError("incomplete_or_empty_generation")
         return response.output_text
-    except OpenAIError:
+    except OpenAIError as exc:
+        log_failure("generation", exc)
         raise ProviderError("generation_request_failed") from None
 
 
@@ -49,5 +59,6 @@ def embed(settings: Settings, texts: list[str]) -> list[list[float]]:
                 or any(not math.isfinite(x) for v in vectors for x in v)):
             raise ProviderError("invalid_embedding_response")
         return vectors
-    except OpenAIError:
+    except OpenAIError as exc:
+        log_failure("embedding", exc)
         raise ProviderError("embedding_request_failed") from None

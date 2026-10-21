@@ -21,6 +21,7 @@ export interface Answer {
   suggested_checks: string[];
   citations: Citation[];
   warnings: string[];
+  collected_documents?: { doc_id: string; title: string }[];
   cache_hit: boolean;
 }
 export interface ExploreCard { item_id: string; title_ko: string; product: string; category: string; reason: string }

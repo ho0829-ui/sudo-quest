@@ -87,8 +87,12 @@ class FoundationTests(unittest.TestCase):
             mock = constructor.return_value.__enter__.return_value
             mock.responses.create.side_effect = APIConnectionError(
                 message="test-secret", request=httpx.Request("POST", "https://example.com"))
-            with self.assertRaisesRegex(ProviderError, "^generation_request_failed$"):
-                generate(Settings(llm_api_key=SecretStr("test-secret")), "test")
+            with self.assertLogs("infracoach.providers", level="WARNING") as logs:
+                with self.assertRaisesRegex(ProviderError, "^generation_request_failed$"):
+                    generate(Settings(llm_api_key=SecretStr("test-secret")), "test")
+            # 서버 로그에는 예외 종류만 남고 키·메시지는 남지 않는다.
+            self.assertIn("APIConnectionError", logs.output[0])
+            self.assertNotIn("test-secret", "".join(logs.output))
 
     def test_missing_configuration_never_calls_provider(self):
         with patch("app.providers.OpenAI") as constructor:

@@ -128,6 +128,8 @@ def respond(settings, collections, request, progress=lambda stage: None):
                       "reasons": reasons, "collected_ids": collection["collected"],
                       "collect_embedding_calls": collection["embedding_calls"],
                       "evidence_count": len(evidence), "graph_nodes": ["retrieve", "generate"]},
+            "collected_documents": [{"doc_id": d, "title": (discovery.SECTIONS.get(d) or {}).get("title", d)}
+                                    for d in collection["collected"]],
             "cache_hit": False,
         }}
 
