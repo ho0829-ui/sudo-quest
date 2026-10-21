@@ -1,14 +1,15 @@
 """catalog/items.json·documents.json이 실제 원문과 맞는지 검사한다. 유료 API는 호출하지 않는다.
 
 backend 폴더에서 실행: .venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog
-검사: 고유 항목 100건 이상, 모든 문서 절 추출 성공, 원문 발췌 일치, 출처·라이선스 기록.
+검사: 고유 항목 100건 이상, 모든 문서 절 추출 성공, 원문 발췌 일치, 출처·라이선스 기록,
+라이선스가 허용 목록(app.catalog.ALLOWED_LICENSES)에 있는지.
 실패가 하나라도 있으면 종료 코드 1.
 """
 import json
 import sys
 from collections import Counter
 
-from app.catalog import DOCUMENTS, ITEMS
+from app.catalog import ALLOWED_LICENSES, DOCUMENTS, ITEMS
 from app.collectors import Collector
 from app.config import load_settings
 
@@ -25,6 +26,8 @@ def main() -> int:
             failures.append(f"{doc_id}: {exc}")
         if not doc["license"] or not doc["usage_terms_url"]:
             failures.append(f"{doc_id}: license_missing")
+        elif doc["license"] not in ALLOWED_LICENSES:
+            failures.append(f"{doc_id}: license_not_allowed ({doc['license']})")
     if len(ITEMS) < MIN_ITEMS:
         failures.append(f"items: {len(ITEMS)} < {MIN_ITEMS}")
     for item in ITEMS:

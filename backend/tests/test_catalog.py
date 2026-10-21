@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.catalog import DOCUMENTS, ITEMS, item_text, load_catalog
+from app.catalog import ALLOWED_LICENSES, DOCUMENTS, ITEMS, item_text, load_catalog
 from app.collectors import extract_section, product_version
 
 MAN = "https://man7.org/linux/man-pages/man2/open.2.html"
@@ -29,6 +29,11 @@ class CatalogTests(unittest.TestCase):
             for doc_id in item.document_ids:
                 doc = DOCUMENTS[doc_id]
                 self.assertTrue(doc["license"] and doc["usage_terms_url"].startswith("https://"))
+
+    def test_every_document_license_is_allowed(self):
+        # 새 제품 문서를 넣을 때 라이선스를 확인하지 않고 넣는 것을 막는다.
+        for doc_id, doc in DOCUMENTS.items():
+            self.assertIn(doc["license"], ALLOWED_LICENSES, doc_id)
 
     def test_item_text_contains_search_attributes(self):
         item = next(i for i in ITEMS if i.item_id == "linux-errno-ENOSPC")
