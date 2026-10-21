@@ -1,8 +1,23 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-21 · 단계: 구현·검증·제출 문서 완료. 셀프 체크리스트·상호 점검·제출은 사용자 몫
+갱신: 2026-10-22 · 단계: 구현·검증·제출 문서 완료. 셀프 체크리스트·상호 점검·제출은 사용자 몫
 
-## 최신 상태 — 명령 커버리지 완료, 뒤로가기·세션 보존·스크롤 수정, 확장 계획 (2026-10-22, Mac)
+## 최신 상태 — 확장 대비 완료, 방 이름 "운영실"로 변경 (2026-10-22, Mac)
+
+- 사용자 요청: "문제들이 계속 추가될 수 있으니 대비 먼저", 방 이름을 리눅스 운영실·네트워크 운영실·웹·DB 운영실·클라우드 운영실로(더 좋은 안이 있으면 그걸로). → 사용자 안을 그대로 채택(관제실·자료실 유지, 새 분류도 "○○ 운영실").
+- 커밋(브랜치 `feature/sudo-quest`, push 안 함):
+  - `1623324` feat(scenarios): `engine/scenario/categories.ts`(CATEGORY_IDS → Category 타입, isCategory). `Scenario.evidence` 필수(kind official-doc/postmortem/survey, title, url) — 13개 모두 링크 직접 확인 후 채움. 리포트에만 "참고 자료"(브리핑·코치 요청 제외, 코치 유출 테스트에 근거 제목·주소 추가). `.external-link`에 강조색(기본 파란색이 어두운 배경에서 안 읽힘).
+  - `44c2afd` refactor(ui): `ui/categories.ts` 레지스트리(label·tag·room·wallTag·blurb·icon·slot). `campus/layout.ts`가 칸에서 문·복도·층·viewBox·미니맵을 계산(지금 배치와 값이 같음을 회귀 테스트로 고정: viewBox `-440 -128 880 760`, 복도 6개·장식 그대로). RoomArt `Record<Category, ComponentType>`. 전광판 태그 색은 THEMES 색 인라인. 관제실 분류 화면·미니맵은 칸이 늘면 줄여 맞춤. 빠짐 검사 테스트 5개.
+  - `68b91ef` feat(backend): `app.catalog.ALLOWED_LICENSES`(curl, GPL-2.0-or-later, Linux-man-pages-copyleft, CC-BY-SA-4.0 + 미리 확인한 CC-BY-4.0, Apache-2.0). validate_catalog와 단위 테스트에서 검사.
+  - 이 문서 커밋: SCENARIO_GUIDE("근거 자료", 기본 명령 묶음 갱신, 커버리지 테스트 안내, "새 분류(운영실) 추가"), README, TASKS, 11_ 계획 문서.
+- 실행한 검사(이 Mac에서 실제 실행): `npm run typecheck` 통과, vitest **357**(16파일), `npm run build` 통과, 백엔드 `unittest discover` 40개 OK, `scripts.validate_catalog` 실패 0. 중간 커밋 `1623324`를 임시 worktree에서 typecheck·vitest 351 통과 확인(worktree 삭제함).
+- 브라우저 확인(5173): 캠퍼스 배치·viewBox 변경 없음, 벽 간판의 긴 이름(네트워크·클라우드·웹·DB 운영실)이 문·보드와 겹치지 않음, 전광판 태그 색 기존과 동일(#00ff66/#a259ff/#ff2d95/#5cc8ff), 호버 HUD·브리핑 "DEPLOY TO 리눅스 운영실", 실습 1을 실제로 클리어해 리포트 "참고 자료" 2건(새 탭·noopener) 확인. 확인 뒤 진행 기록·실습 세션 저장본을 지워 원래 상태(진행 기록 없음, 지식 대화만)로 되돌림. HMR 중간의 콘솔 오류는 새로고침 후 재발 없음.
+- 미검증·남은 것: 분류가 5개 이상일 때의 관제실 벽 화면·미니맵 축소는 단위 테스트(좌표)만 있고 화면 확인은 없음(실제 분류를 더할 때 확인). 시나리오 카드 아이콘 색은 분류별 CSS 그대로(새 분류는 기본색).
+- 실행 중: 5173(dev), 8000(api-mac).
+- 사용자 결정 대기: ① 문제 보강 진행 신호(K8s 3 → Docker 2 → Linux·Web 3, 칸 제안 쿠버네티스 운영실 [2,0]·컨테이너 운영실 [0,2]) ② 제출 전 LLM_MODEL을 gpt-6.1-sol로 되돌릴지 ③ README·제출 문서의 InfraCoach 명칭 ④ master 병합.
+- 다음 작업(진행 신호 시): 쿠버네티스 상태 모델(파드·디플로이먼트·서비스·이벤트, 출력은 상태에서 계산) + `kubectl get/describe/logs [--previous]/rollout undo/set image/set resources` + 첫 시나리오 CrashLoopBackOff, 분류 id `kubernetes` 추가 → 컴파일 오류 3곳 채우기(방 그림 새로).
+
+## 이전 상태 — 명령 커버리지 완료, 뒤로가기·세션 보존·스크롤 수정, 확장 계획 (2026-10-22, Mac)
 
 - 브랜치 `feature/sudo-quest`(push 안 함). 이번 커밋: `460010a` 엔진 커버리지, `34876a2` UI 수정. vitest **325**, typecheck·build 통과.
 - 엔진(`460010a`): 파이프(|), grep/head/sort/wc 신규(기본 묶음), tail·cat·sed 파이프 입력, systemctl reload·nginx -s reload/-T/-v, openssl s_client, mysql SHOW PROCESSLIST/DATABASES·1064, 게임식 안내 → 실제 도구 오류 형식(aws CLI v2 Invalid choice 등), /etc/hosts. 상설 테스트 `tests/command-coverage.test.ts`(시나리오 문구·풀이 명령이 "미지원"으로 거절되면 실패).

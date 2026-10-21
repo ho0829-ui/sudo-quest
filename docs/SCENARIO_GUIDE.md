@@ -62,7 +62,7 @@ import type { Scenario } from "../engine/scenario/types";
 export const myScenario: Scenario = {
   id: "my-scenario",                   // 파일명과 같게
   title: "사이트가 안 열린다고 합니다",    // 증상을 신고자 말투로
-  category: "linux",                   // linux | network | web-db | aws
+  category: "linux",                   // linux | network | web-db | aws (engine/scenario/categories.ts)
   difficulty: 1,                       // 1 초급 | 2 중급 | 3 고급
 
   // 장애 티켓: 증상만! 원인을 절대 노출하지 않는다
@@ -138,8 +138,25 @@ export const myScenario: Scenario = {
     ].join("\n"),
     realWorldNote: "실무에서 이 장애가 어떤 모습으로 나타나는지 (선택)",
   },
+
+  // 실제로 일어나는 장애라는 근거. 클리어 뒤 리포트의 "참고 자료"에만 보인다.
+  evidence: [
+    { kind: "official-doc", title: "write(2) — ENOSPC", url: "https://man7.org/linux/man-pages/man2/write.2.html" },
+  ],
 };
 ```
+
+### 근거 자료 (`evidence`)
+
+"이 장애가 실제로 자주 일어나는가"를 데이터로 남깁니다. 테스트가 아래를 강제합니다.
+
+| 규칙 | 이유 |
+|---|---|
+| 1개 이상, 주소는 `https://` | 출처 없는 시나리오가 들어오지 않게 |
+| `official-doc`(공식 문서)나 `postmortem`(공개 포스트모템)이 하나 이상 | 3자 블로그·설문만으로는 근거가 약하다. `survey`(업계 조사)는 덧붙이는 용도 |
+| 브리핑·코치 요청에는 넣지 않는다 | 제목에 원인이 드러난다(예: "bind(2) — EADDRINUSE"). 리포트에서만 보여 준다 |
+
+링크는 넣기 전에 직접 열어 보고, 오류 문구·설정 이름이 실제로 그 페이지에 있는지 확인하세요.
 
 ---
 
@@ -184,11 +201,15 @@ const breakSomething: Fault = (state) => {
 ### 쓸 수 있는 명령어
 
 `withCommands(...)` 로 기본 묶음에 더합니다. 기본 묶음(생략 시)은
-`help ls cat cd pwd tail df du rm systemctl journalctl` 입니다.
+`help ls cat cd pwd tail head grep sort wc df du rm systemctl journalctl` 입니다.
+파이프(`journalctl -u nginx | grep error | wc -l`)도 됩니다.
+
+티켓·힌트·모범 풀이에 적은 명령은 **그 시나리오에서 실제로 실행돼야** 합니다.
+`tests/command-coverage.test.ts` 가 "지원하지 않는 옵션"으로 끝나는 명령을 잡아냅니다.
 
 | 분야 | 명령어 |
 |---|---|
-| 파일 | `ls` `cat` `cd` `pwd` `tail` `rm` `sed` `chmod` `chown` |
+| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep` `sort` `wc` `rm` `sed` `chmod` `chown` |
 | 시스템 | `df` `du` `free` `ps` `dmesg` `kill` `systemctl` `journalctl` |
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
@@ -214,6 +235,7 @@ const breakSomething: Fault = (state) => {
 - [ ] **원인과 무관한 정상 로그도 섞여 있다.** 실제 서버 로그는 깨끗하지 않다.
 - [ ] **힌트 1단계가 정답을 말하지 않는다.** 질문을 던진다.
 - [ ] **포스트모템의 `howToPrevent` 가 구체적이다.** "잘 관리한다" ✕ / "80%에서 경고 알림" ○
+- [ ] **`evidence` 에 공식 문서나 공개 포스트모템이 있다.** 링크를 직접 열어 확인했다.
 
 ### 티켓 쓰는 요령
 
@@ -275,6 +297,24 @@ it("플레이 화면 확인", () => {
 ```bash
 npx vitest run tests/_play.test.ts
 ```
+
+---
+
+## 새 분류(운영실) 추가
+
+도커·쿠버네티스처럼 **분류 자체가 새로 생길 때**만 필요합니다. 기존 분류에 문제를 더할 때는 위 3단계로 충분합니다.
+
+1. `src/engine/scenario/categories.ts` 의 `CATEGORY_IDS` 에 id를 더한다. (예: `"container"`)
+2. `npm run typecheck` 를 돌리면 **빠진 곳이 컴파일 오류로 나온다.** 그 세 곳을 채운다.
+   - `src/ui/categories.ts` — 이름·태그·운영실 이름(예: "컨테이너 운영실")·설명·아이콘·캠퍼스 칸(`slot`)
+   - `src/ui/campus/themes.ts` — 네온 색(다른 방과 겹치지 않게)과 바닥·벽 색
+   - `src/ui/campus/art/RoomArt.tsx` — 방 안 그림 컴포넌트(`art/` 에 새 파일)
+3. 캠퍼스 칸은 3×3 격자의 빈 칸 `[2,0]` `[0,2]` `[2,2]` 중 하나를 쓴다. 문·복도·지도 크기·관제실 미니맵은
+   `src/ui/campus/layout.ts` 가 칸에서 계산하므로 손댈 필요가 없다.
+4. 그 분류의 시나리오를 1개 이상 넣는다. 시나리오가 없는 분류는 테스트가 막는다.
+5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙을 검사한다.
+
+새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
 
 ---
 
