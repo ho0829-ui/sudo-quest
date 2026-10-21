@@ -52,7 +52,7 @@ export const CATEGORIES: Record<Category, CategoryMeta> = {
   },
   kubernetes: {
     label: "Kubernetes", tag: "K8S", room: "쿠버네티스 운영실", wallTag: "ORCHESTRATION", icon: "helm", slot: [0, 2],
-    blurb: "CrashLoopBackOff·OOMKilled·이미지 풀 실패처럼 파드가 제자리를 못 찾는 장애", comingSoon: true,
+    blurb: "배포·파드·이벤트를 살펴 서비스가 돌아오지 않는 원인을 찾는 장애 대응",
   },
 };
 

@@ -1,5 +1,6 @@
 /** 파일을 다루는 명령어들: ls, cat, cd, pwd, tail, rm */
 import { flagValue, hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { canRead, canWrite, formatMode, isDir, lookup, removeNode, splitLast } from "../state/fs";
 import { formatLogTime, humanKB, table } from "../state/format";
 import type { FsNode } from "../state/types";
@@ -134,6 +135,8 @@ export const rm: Command = {
   summary: "파일을 삭제한다 (-r 디렉터리째, -f 강제)",
   usage: "rm [-rf] <파일...>",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "rRf");
+    if (unknown) return fail(`rm: unrecognized option '${unknown}'`);
     const recursive = hasFlag(tokens, "r") || hasFlag(tokens, "R");
     const force = hasFlag(tokens, "f");
     const paths = positionals(tokens);

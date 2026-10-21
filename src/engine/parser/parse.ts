@@ -127,7 +127,10 @@ export function flagValue(tokens: string[], short: string, long?: string): strin
     const t = tokens[i];
     if (!isFlag(t)) continue;
     if (t.startsWith("--")) {
-      const [key, value] = [t.slice(2).split("=")[0], t.slice(2).split("=")[1]];
+      // SQL·설정 표현식의 '='도 옵션 값의 일부다. 첫 구분자 뒤를 통째로 보존한다.
+      const separator = t.indexOf("=");
+      const key = separator === -1 ? t.slice(2) : t.slice(2, separator);
+      const value = separator === -1 ? undefined : t.slice(separator + 1);
       if (long !== undefined && key === long) return value ?? tokens[i + 1];
       continue;
     }

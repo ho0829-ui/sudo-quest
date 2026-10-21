@@ -6,6 +6,8 @@
  * 그래야 플레이어가 파일을 지우면 df 결과가 저절로 바뀐다.
  */
 
+import type { KubernetesState } from "./kubernetes/types";
+
 // ---------- 파일시스템 ----------
 
 interface NodeBase {
@@ -264,6 +266,8 @@ export interface AwsState {
   loadBalancers?: LoadBalancer[];
   targetGroups?: TargetGroup[];
   roles?: IamRole[];
+  /** 가상 IAM에서 존재 여부를 확인할 수 있는 AWS 관리형 정책 이름 */
+  availableManagedPolicies?: string[];
   /**
    * 인스턴스가 실제로 응답하는 경로들.
    * 헬스체크 통과 여부를 "정해두는" 대신 여기서 계산한다.
@@ -298,4 +302,6 @@ export interface SystemState {
   database?: Database;
   /** AWS 시나리오에서만 쓴다 */
   aws?: AwsState;
+  /** Kubernetes 실습에만 있는 가상 클러스터 */
+  kubernetes?: KubernetesState;
 }

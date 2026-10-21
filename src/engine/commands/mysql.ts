@@ -48,10 +48,15 @@ function runQuery(db: Database, sql: string): { output: string; error?: string }
   const set = /^SET\s+GLOBAL\s+([\w_]+)\s*=\s*'?([^';]+)'?$/i.exec(query);
   if (set) {
     const [, name, value] = set;
-    if (!(name in db.variables)) {
+    if (!Object.hasOwn(db.variables, name)) {
       return { output: "", error: `ERROR 1193 (HY000) at line 1: Unknown system variable '${name}'` };
     }
-    db.variables[name] = value.trim();
+    const text = value.trim();
+    // 현재 모델의 설정은 모두 정수다. Infinity 같은 문자열로 복구 판정을 우회하지 못하게 한다.
+    if (!/^\d+$/.test(text) || !Number.isSafeInteger(Number(text)) || Number(text) < 1 || (name === "max_connections" && Number(text) > 100_000)) {
+      return { output: "", error: `ERROR 1231 (42000) at line 1: Variable '${name}' can't be set to the value of '${text}'` };
+    }
+    db.variables[name] = text;
     return { output: "" };
   }
 

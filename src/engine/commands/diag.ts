@@ -202,7 +202,13 @@ export const kill: Command = {
   summary: "프로세스를 종료한다 (-9 강제)",
   usage: "kill [-9] <PID>",
   run({ state, tokens, user }: CommandContext) {
+    const signals = tokens.filter(t => t.startsWith("-"));
+    const signal = signals[0] ?? "-15";
+    if (signals.length > 1 || !["-0", "-9", "-15", "-TERM", "-KILL", "-SIGTERM", "-SIGKILL"].includes(signal)) {
+      return fail(`kill: ${signal.slice(1)}: invalid signal specification`);
+    }
     const args = positionals(tokens);
+    if (args.length !== 1) return fail("kill: usage: kill [-0|-9|-15] pid");
     const pid = Number(args[0]);
     if (!Number.isInteger(pid)) return fail(`kill: ${args[0] ?? ""}: arguments must be process IDs`, 1);
 
@@ -211,6 +217,9 @@ export const kill: Command = {
     if (user !== "root" && proc.user !== user) {
       return fail(`kill: (${pid}) - Operation not permitted`, 1);
     }
+
+    // signal 0은 존재 여부·권한 검사만 한다. 종료 신호로 취급하면 점검이 장애 조치가 되어 버린다.
+    if (signal === "-0") return ok();
 
     state.processes = state.processes.filter((p) => p.pid !== pid);
     // systemd가 관리하는 프로세스를 죽이면 서비스도 죽은 것으로 표시된다

@@ -5,6 +5,7 @@
  * 시나리오는 이 중에서 쓸 수 있는 것만 골라 화이트리스트로 지정한다.
  */
 import { aws } from "./aws";
+import { kubectl } from "./kubectl";
 import { dig, dmesg, free, kill, ping, ps } from "./diag";
 import { cat, cd, ls, pwd, rm, tail } from "./files";
 import { chmod, chown } from "./perms";
@@ -24,7 +25,7 @@ const list: Command[] = [
   ls, cat, cd, pwd, tail, head, grep, sort, wc, rm, sed, chmod, chown,
   df, du, systemctl, journalctl, free, ps, dmesg, kill,
   curl, ss, ufw, nginx, ping, dig, openssl, certbot,
-  aws, mysql,
+  aws, mysql, kubectl,
 ];
 
 const registry = new Map<string, Command>(list.map((c) => [c.name, c]));

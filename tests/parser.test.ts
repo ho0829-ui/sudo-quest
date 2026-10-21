@@ -60,6 +60,7 @@ describe("플래그 헬퍼", () => {
     expect(flagValue(["-n", "20"], "n", "lines")).toBe("20");
     expect(flagValue(["-n20"], "n", "lines")).toBe("20");
     expect(flagValue(["--lines=20"], "n", "lines")).toBe("20");
+    expect(flagValue(["--execute=SET GLOBAL max_connections = 250"], "e", "execute")).toBe("SET GLOBAL max_connections = 250");
     expect(flagValue(["-u", "nginx"], "u", "unit")).toBe("nginx");
   });
 

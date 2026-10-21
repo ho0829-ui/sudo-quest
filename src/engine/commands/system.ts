@@ -1,5 +1,6 @@
 /** 시스템 상태를 보는 명령어들: df, du, systemctl, journalctl, help */
 import { flagValue, hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { allDiskUsage, duKB } from "../state/derived";
 import { isDir, lookup, walk } from "../state/fs";
 import { formatAgo, formatFullTime, formatLogTime, humanKB, table } from "../state/format";
@@ -117,7 +118,10 @@ export const systemctl: Command = {
   summary: "서비스를 조회하고 제어한다 (status/start/stop/restart/reload)",
   usage: "systemctl <status|start|stop|restart|reload|is-active|list-units> [서비스]",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "l", ["no-pager", "full"]);
+    if (unknown) return fail(`systemctl: unrecognized option '${unknown}'`);
     const args = positionals(tokens);
+    if (args.length > 2) return fail("systemctl: expected one unit name");
     const sub = args[0] ?? "list-units";
     const name = args[1];
 
@@ -205,7 +209,13 @@ export const journalctl: Command = {
   usage: "journalctl [-u 서비스] [-n 줄수] [-xe]",
   run({ state, tokens }: CommandContext) {
     const unit = flagValue(tokens, "u", "unit");
-    const lines = Number(flagValue(tokens, "n", "lines") ?? 25);
+    const requested = flagValue(tokens, "n", "lines");
+    if ((hasFlag(tokens, "n", "lines") && requested === undefined) || (requested !== undefined && !/^\d+$/.test(requested))) {
+      return fail(`Failed to parse lines '${requested ?? ""}'`);
+    }
+    const lines = Number(requested ?? 25);
+    if (!Number.isSafeInteger(lines)) return fail(`Failed to parse lines '${requested}'`);
+    if (lines === 0) return ok();
 
     let entries = state.journal;
     if (unit) {

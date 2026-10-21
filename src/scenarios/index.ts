@@ -16,6 +16,7 @@ import { webSslExpired } from "./web-ssl-expired";
 import { awsAlbHealthcheck } from "./aws-alb-healthcheck";
 import { awsIamS3 } from "./aws-iam-s3";
 import { dbMaxConnections } from "./db-max-connections";
+import { kubernetesImagePull } from "./kubernetes-image-pull";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -31,6 +32,7 @@ export const scenarios: Scenario[] = [
   awsSecurityGroup,
   awsAlbHealthcheck,
   awsIamS3,
+  kubernetesImagePull,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

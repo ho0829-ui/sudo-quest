@@ -61,6 +61,8 @@ export function buildReportMarkdown(session: Session, reflection: Reflection): s
     '### 어떻게 예방하나', scenario.postmortem.howToPrevent,
     ...(scenario.postmortem.realWorldNote ? ['### 실무에서는', scenario.postmortem.realWorldNote] : []),
     '## 모범 풀이', codeBlock(scenario.solutionPath.join('\n')),
+    // 화면에서 본 근거가 다운로드 뒤에도 남아 있어야 다시 학습할 수 있다.
+    '## 참고 자료', scenario.evidence.map(item => `- [${item.title}](<${item.url}>)`).join('\n'),
   ];
   return blocks.join('\n\n') + '\n';
 }

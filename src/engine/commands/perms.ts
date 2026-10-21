@@ -1,5 +1,6 @@
 /** 권한을 바꾸는 명령어: chmod, chown */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { isDir, lookup, walk } from "../state/fs";
 import type { FsNode } from "../state/types";
 import { fail, ok, type Command, type CommandContext } from "./types";
@@ -37,6 +38,8 @@ export const chmod: Command = {
   summary: "파일 권한을 바꾼다 (-R 하위까지)",
   usage: "chmod [-R] <권한> <경로...>",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "R", ["recursive"]);
+    if (unknown) return fail(`chmod: unrecognized option '${unknown}'`);
     const recursive = hasFlag(tokens, "R") || hasFlag(tokens, "r", "recursive");
     const args = positionals(tokens);
     const [spec, ...paths] = args;
@@ -64,6 +67,8 @@ export const chown: Command = {
   summary: "파일 소유자를 바꾼다 (-R 하위까지)",
   usage: "chown [-R] <소유자[:그룹]> <경로...>",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "R", ["recursive"]);
+    if (unknown) return fail(`chown: unrecognized option '${unknown}'`);
     const recursive = hasFlag(tokens, "R") || hasFlag(tokens, "r", "recursive");
     const args = positionals(tokens);
     const [spec, ...paths] = args;

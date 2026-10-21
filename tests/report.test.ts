@@ -73,7 +73,12 @@ describe('Markdown 리포트', () => {
       let session = createSession(scenario, now);
       for (const command of scenario.solutionPath) session = execute(session, command, now);
       session = submitCause(session, scenario.rootCause.answerId, now).session;
-      expect(buildReportMarkdown(session, EMPTY_REFLECTION)).toContain(scenario.title);
+      const report = buildReportMarkdown(session, EMPTY_REFLECTION);
+      expect(report).toContain(scenario.title);
+      for (const evidence of scenario.evidence) {
+        expect(report).toContain(evidence.title);
+        expect(report).toContain(evidence.url);
+      }
       expect(reportFilename(session)).toBe(`infracoach-${scenario.id}-${now}.md`);
     }
   });

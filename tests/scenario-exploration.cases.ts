@@ -1,0 +1,77 @@
+/** 정답 목록에서 추출하지 않은 조사/오조치/대체 풀이. 플레이어의 다른 접근을 검증한다. */
+export interface ExplorationCase { inspect: string[]; unrelated: string[]; alternative: string[] }
+const sg = "sg-0f1e2d3c4b5a69788";
+const tg = "arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/shop-tg/73e2d6bc24d8a067";
+
+export const explorations: Record<string, ExplorationCase> = {
+  "linux-disk-full": {
+    inspect: ["du -h --max-depth=1 /var/log", "journalctl --unit=nginx.service --lines=3", "ls -lah /var/log/app", "systemctl is-active nginx.service"],
+    unrelated: ["sudo rm -f /tmp/missing", "sudo systemctl restart nginx"],
+    alternative: ["sudo tail -n 0 /var/log/app/app.log > /var/log/app/app.log", "sudo systemctl start nginx.service"],
+  },
+  "linux-permission": {
+    inspect: ["curl -i http://localhost", "ls -lah /var/www/html", "cat /var/log/nginx/error.log | grep -i denied", "ss -ltnp"],
+    unrelated: ["sudo systemctl restart nginx", "sudo chmod 600 /var/www/html/index.html"],
+    alternative: ["sudo chmod a+r /var/www/html/index.html", "curl --head http://localhost"],
+  },
+  "linux-port-conflict": {
+    inspect: ["ss -ltnp | grep :80", "ps aux | grep python", "nginx -T", "journalctl -u nginx.service | tail -n 3"],
+    unrelated: ["sudo systemctl start nginx", "sudo kill 99999"],
+    alternative: ["sudo kill -9 4127", "sudo systemctl restart nginx.service"],
+  },
+  "linux-oom": {
+    inspect: ["free -h", "ps aux | sort -nr | head -n 5", "dmesg -T | grep -i oom", "journalctl -u shop-api.service --lines=2"],
+    unrelated: ["sudo systemctl restart nginx", "sudo kill 99999"],
+    alternative: ["sudo kill -15 5218", "sudo systemctl restart shop-api.service"],
+  },
+  "network-firewall": {
+    inspect: ["curl -i http://localhost", "ss -ltnp | grep :80", "sudo ufw status verbose", "journalctl | grep UFW"],
+    unrelated: ["sudo ufw allow 443/tcp", "sudo systemctl restart nginx"],
+    alternative: ["sudo ufw allow http", "sudo ufw status"],
+  },
+  "network-dns": {
+    inspect: ["cat /etc/hosts", "cat /etc/resolv.conf | grep nameserver", "ping -c 1 203.0.113.40", "dig shop.example.com"],
+    unrelated: ["sudo systemctl restart shop-api", "sudo sed -i 's/never-match/anything/' /etc/resolv.conf"],
+    alternative: ["sudo sed --in-place 's/10.0.0.53/10.0.0.2/g' /etc/resolv.conf", "curl --head https://api.payments.example.com"],
+  },
+  "network-bind-localhost": {
+    inspect: ["ss -ltnp | grep 3000", "curl -i http://127.0.0.1:3000", "cat /opt/app/config.yml | grep host", "ps aux | grep node"],
+    unrelated: ["sudo ufw allow 3000/tcp", "sudo systemctl restart shop-api"],
+    alternative: ["sudo sed --in-place 's/127.0.0.1/0.0.0.0/' /opt/app/config.yml", "sudo systemctl stop shop-api", "sudo systemctl start shop-api"],
+  },
+  "web-nginx-config": {
+    inspect: ["nginx -T", "cat /etc/nginx/nginx.conf | grep server_name", "systemctl is-active nginx", "journalctl -xeu nginx.service"],
+    unrelated: ["sudo systemctl start nginx", "sudo systemctl reload nginx"],
+    alternative: ["sudo sed --in-place 's/server_name shop.example.com/server_name shop.example.com;/g' /etc/nginx/nginx.conf", "sudo systemctl start nginx"],
+  },
+  "web-ssl-expired": {
+    inspect: ["curl -I http://shop.example.com", "openssl s_client -connect shop.example.com:443", "openssl x509 -dates -noout -in /etc/letsencrypt/live/shop.example.com/fullchain.pem", "journalctl | grep certbot"],
+    unrelated: ["sudo systemctl restart nginx", "sudo certbot certificates"],
+    alternative: ["sudo certbot renew --force-renewal", "sudo systemctl reload nginx"],
+  },
+  "db-max-connections": {
+    inspect: ["mysql -e \"SHOW GLOBAL VARIABLES LIKE 'max_%'\"", "mysql --execute=\"SHOW STATUS LIKE 'Threads%'\"", "mysql -e 'SHOW FULL PROCESSLIST' | head -n 3", "tail -n 8 /var/log/app/shop-api.log | grep -i connection"],
+    unrelated: ["mysql -e 'SET GLOBAL wait_timeout = 60'", "sudo systemctl restart shop-api"],
+    alternative: ["mysql --execute=\"SET GLOBAL max_connections = 250;\"", "mysql -e \"SHOW VARIABLES LIKE 'max_connections'\""],
+  },
+  "aws-security-group": {
+    inspect: ["aws ec2 describe-instances", `aws ec2 describe-security-groups --group-ids ${sg}`, "aws sts get-caller-identity", "journalctl | grep -i ssh"],
+    unrelated: [`aws ec2 authorize-security-group-ingress --group-id ${sg} --protocol tcp --port 80 --cidr 10.0.1.0/24`],
+    alternative: [`aws ec2 authorize-security-group-ingress --cidr 10.0.1.0/24 --port 22 --protocol tcp --group-id ${sg}`],
+  },
+  "aws-alb-healthcheck": {
+    inspect: ["aws elbv2 describe-load-balancers", `aws elbv2 describe-target-groups --target-group-arns ${tg}`, `aws elbv2 describe-target-health --target-group-arn ${tg}`, "journalctl -n 5"],
+    unrelated: [`aws elbv2 modify-target-group --target-group-arn ${tg} --health-check-path /does-not-exist`],
+    alternative: [`aws elbv2 modify-target-group --health-check-path /health --target-group-arn ${tg}`],
+  },
+  "aws-iam-s3": {
+    inspect: ["aws iam list-roles", "aws iam list-attached-role-policies --role-name shop-web-role", "cat /var/log/app/upload.log | grep -i denied", "aws ec2 describe-instances"],
+    unrelated: ["aws iam attach-role-policy --role-name shop-web-role --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"],
+    alternative: ["aws iam attach-role-policy --policy-arn=arn:aws:iam::aws:policy/AmazonS3FullAccess --role-name=shop-web-role"],
+  },
+  "kubernetes-image-pull": {
+    inspect: ["kubectl get po -o wide", "kubectl describe deploy/shop-web", "kubectl get svc --output=wide", "kubectl get events | grep Failed"],
+    unrelated: ["kubectl set image deploy/status-page status=registry.example.com/status:1.0.0", "kubectl set image deploy/shop-web web=missing:1"],
+    alternative: ["kubectl set image deploy/shop-web web=registry.example.com/shop/web:1.4.2", "kubectl rollout status deploy/shop-web"],
+  },
+};

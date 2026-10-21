@@ -6,6 +6,7 @@
  * 지원 범위는 치환(s/찾을것/바꿀것/[g]) 하나뿐이다.
  */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { canWrite, isDir, lookup, writeFile } from "../state/fs";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
@@ -39,7 +40,7 @@ function parseScript(script: string): Substitution | null {
   }
   parts.push(current);
 
-  if (parts.length < 2) return null;
+  if (parts.length !== 3 || !["", "g"].includes(parts[2])) return null;
   return { pattern: parts[0], replacement: parts[1], global: (parts[2] ?? "").includes("g") };
 }
 
@@ -52,6 +53,8 @@ export const sed: Command = {
   summary: "파일 내용을 치환한다 (-i 파일에 바로 반영)",
   usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>",
   run({ state, tokens, user, stdin }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "i", ["in-place"]);
+    if (unknown) return fail(`sed: unrecognized option '${unknown}'`);
     const inPlace = hasFlag(tokens, "i", "in-place");
     const args = positionals(tokens);
     const [script, path] = args;

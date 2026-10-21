@@ -115,10 +115,10 @@ describe("준비 중인 방", () => {
   it("실습이 없는 분류·커뮤니티실은 경보등이 없고 '준비 중'으로 표시된다", async () => {
     const { OPEN_CATEGORIES } = await import("../src/ui/categories");
     expect(roomStatus("docker", scenarios, {}).alarm).toBeNull();
-    expect(roomStatus("kubernetes", scenarios, {}).alarm).toBeNull();
+    expect(roomStatus("kubernetes", scenarios, {})).toEqual({ total: 1, cleared: 0, alarm: true });
     expect(roomStatus("community", scenarios, {}).alarm).toBeNull();
-    expect(ROOMS.filter(r => r.soon).map(r => r.kind).sort()).toEqual(["community", "docker", "kubernetes"]);
-    expect(OPEN_CATEGORIES.map(c => c.id)).toEqual(["linux", "network", "web-db", "aws"]);
+    expect(ROOMS.filter(r => r.soon).map(r => r.kind).sort()).toEqual(["community", "docker"]);
+    expect(OPEN_CATEGORIES.map(c => c.id)).toEqual(["linux", "network", "web-db", "aws", "kubernetes"]);
   });
 });
 

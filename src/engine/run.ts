@@ -7,6 +7,7 @@
 import { DEFAULT_COMMANDS, getCommand } from "./commands";
 import type { CommandResult } from "./commands/types";
 import { parse, splitPipeline } from "./parser/parse";
+import { syntaxError } from "./parser/syntax";
 import { isDir, lookup, normalizePath, splitLast, writeFile, canWrite, findNode } from "./state/fs";
 import type { SystemState } from "./state/types";
 
@@ -53,6 +54,8 @@ export function runCommand(state: SystemState, input: string, options: RunOption
   const available = options.available ?? DEFAULT_COMMANDS;
 
   if (!input.trim()) return { stdout: "", stderr: "", exitCode: 0, state: next };
+  const error = syntaxError(input);
+  if (error) return { stdout: "", stderr: error, exitCode: 2, state: next };
 
   const stages = splitPipeline(input);
   if (!stages) {

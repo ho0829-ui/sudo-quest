@@ -139,6 +139,7 @@ export function awsAdmin(): SystemState {
           targetIds: ["i-09f8e7d6c5b4a3210"],
         },
       ],
+      availableManagedPolicies: ["CloudWatchAgentServerPolicy", "AmazonSSMManagedInstanceCore", "AmazonS3FullAccess", "AmazonS3ReadOnlyAccess"],
       roles: [
         {
           name: "shop-web-role",

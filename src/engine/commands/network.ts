@@ -1,5 +1,6 @@
 /** 네트워크 명령어들: curl, ss, ufw */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { listeningSockets } from "../state/derived";
 import { table } from "../state/format";
 import { addLog } from "../state/log";
@@ -111,9 +112,10 @@ export const ss: Command = {
 /** "80/tcp", "443", "http" 같은 입력을 포트 번호로 바꾼다. */
 function parsePortSpec(spec: string): { port: number; proto: "tcp" | "udp" } | null {
   const named: Record<string, number> = { http: 80, https: 443, ssh: 22 };
-  const [portPart, protoPart] = spec.split("/");
+  const [portPart, protoPart, extra] = spec.split("/");
   const port = named[portPart] ?? Number(portPart);
-  if (!Number.isInteger(port) || port <= 0) return null;
+  if (!Number.isInteger(port) || port <= 0 || port > 65535 || extra !== undefined) return null;
+  if (protoPart !== undefined && protoPart !== "tcp" && protoPart !== "udp") return null;
   return { port, proto: protoPart === "udp" ? "udp" : "tcp" };
 }
 
@@ -122,6 +124,8 @@ export const ufw: Command = {
   summary: "방화벽 규칙을 보고 바꾼다 (status / allow / deny)",
   usage: "ufw <status [verbose] | allow <포트> | deny <포트> | enable | disable>",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "");
+    if (unknown) return fail(`ERROR: Invalid option '${unknown}'`);
     const args = positionals(tokens);
     const sub = args[0] ?? "status";
     const { firewall } = state.network;
@@ -154,12 +158,12 @@ export const ufw: Command = {
     if (sub === "allow" || sub === "deny") {
       if (user !== "root") return fail("ERROR: You need to be root to run this script", 1);
       const spec = args[1];
-      if (!spec) return fail("ERROR: Wrong number of arguments", 1);
+      if (!spec || args.length !== 2) return fail("ERROR: Wrong number of arguments", 1);
       const parsed = parsePortSpec(spec);
       if (!parsed) return fail(`ERROR: Bad port '${spec}'`, 1);
 
       const rule: FirewallRule = { port: parsed.port, proto: parsed.proto, action: sub };
-      const existing = firewall.rules.findIndex((r) => r.port === rule.port);
+      const existing = firewall.rules.findIndex((r) => r.port === rule.port && r.proto === rule.proto);
       const unchanged = existing !== -1 && firewall.rules[existing].action === sub;
 
       if (existing === -1) firewall.rules.push(rule);

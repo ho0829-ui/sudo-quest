@@ -8,6 +8,7 @@ import { positionals } from "../parser/parse";
 import { targetHealth } from "../state/aws";
 import type { SecurityGroup, SecurityGroupRule, SystemState } from "../state/types";
 import { fail, ok, type Command, type CommandContext, type CommandResult } from "./types";
+import { parseAwsOptions, validIpv4Cidr } from "./awsOptions";
 
 /**
  * 이 가상 aws가 지원하는 서비스와 하위 명령. 오류 안내와 코치 제안 검사가 같은 표를 쓴다.
@@ -49,19 +50,6 @@ function unknownSubcommand(service: AwsService, _operation: string | undefined):
 
 /** 필수 옵션이 빠졌을 때 CLI가 요청을 보내기 전에 거절하는 메시지. */
 const missing = (option: string) => fail(`${AWS_USAGE}\naws: error: the following arguments are required: ${option}`, 252);
-
-/** "--group-id sg-123 --port 22" 같은 긴 옵션들을 뽑아낸다. */
-function options(tokens: string[]): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i];
-    if (!token.startsWith("--")) continue;
-    const [key, inlineValue] = token.slice(2).split("=");
-    const value = inlineValue ?? (tokens[i + 1]?.startsWith("--") ? "" : tokens[i + 1]);
-    result[key] = value ?? "";
-  }
-  return result;
-}
 
 const json = (value: unknown) => JSON.stringify(value, null, 4);
 
@@ -224,7 +212,13 @@ function iam(state: SystemState, operation: string | undefined, opts: Record<str
     }
     const arn = opts["policy-arn"];
     if (!arn) return missing("--policy-arn");
+    if (!/^arn:aws:iam::aws:policy\/[A-Za-z0-9+=,.@_-]+$/.test(arn)) {
+      return fail("An error occurred (ValidationError) when calling the AttachRolePolicy operation: Invalid policy ARN", 254);
+    }
     const policy = arn.split("/").pop() ?? arn;
+    if (!requireAws(state).availableManagedPolicies?.includes(policy)) {
+      return fail(`An error occurred (NoSuchEntity) when calling the AttachRolePolicy operation: Policy ${arn} does not exist.`, 254);
+    }
     if (!role.attachedPolicies.includes(policy)) role.attachedPolicies.push(policy);
     return ok("");
   }
@@ -247,7 +241,10 @@ export const aws: Command = {
     const args = positionals(tokens, VALUE_OPTIONS);
     const service = args[0];
     const operation = args[1];
-    const opts = options(tokens);
+    const parsedOptions = parseAwsOptions(tokens, `${service} ${operation}`);
+    if (parsedOptions.error) return fail(`aws: error: ${parsedOptions.error}`, 252);
+    const opts = parsedOptions.options;
+    if (!state.aws) return fail("Unable to locate credentials. You can configure credentials by running \"aws configure\".", 253);
     const cloud = requireAws(state);
 
     if (service === "sts" && operation === "get-caller-identity") {
@@ -323,7 +320,7 @@ export const aws: Command = {
       }
 
       const protocol = opts["protocol"] ?? "tcp";
-      const port = Number(opts["port"]);
+      const port = protocol === "-1" ? -1 : Number(opts["port"]);
       const cidr = opts["cidr"];
       if (!cidr || (protocol !== "-1" && !Number.isInteger(port))) {
         return fail(
@@ -331,6 +328,11 @@ export const aws: Command = {
           254,
         );
       }
+
+      if (!["tcp", "udp", "-1"].includes(protocol) || !validIpv4Cidr(cidr) || (protocol !== "-1" && (port < 0 || port > 65535))) {
+        return fail("An error occurred (InvalidParameterValue) when calling the AuthorizeSecurityGroupIngress operation: Invalid protocol, port or CIDR", 254);
+      }
+      if (opts["dry-run"]) return fail("An error occurred (DryRunOperation) when calling the AuthorizeSecurityGroupIngress operation: Request would have succeeded, but DryRun flag is set.", 255);
 
       const duplicate = group.ingress.some(
         (r) => r.protocol === protocol && r.fromPort === port && r.cidr === cidr,

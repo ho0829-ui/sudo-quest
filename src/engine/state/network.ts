@@ -80,7 +80,8 @@ export function inboundAllowed(state: SystemState, port: number): boolean {
 }
 
 function matchRule(rules: FirewallRule[], port: number): FirewallRule | undefined {
-  return rules.find((rule) => rule.port === port);
+  // 이 경로의 HTTP 요청과 복구 판정은 TCP다. 같은 번호의 UDP 허용 규칙은 관계없다.
+  return rules.find((rule) => rule.port === port && rule.proto === "tcp");
 }
 
 export interface RequestTarget {

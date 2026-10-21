@@ -1,5 +1,6 @@
 /** TLS 인증서 명령어: openssl, certbot */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { formatFullTime } from "../state/format";
 import { addLog } from "../state/log";
 import type { Certificate, SystemState } from "../state/types";
@@ -105,8 +106,11 @@ function sClient(state: SystemState, tokens: string[]) {
 export const certbot: Command = {
   name: "certbot",
   summary: "Let's Encrypt 인증서를 갱신한다 (certificates / renew)",
-  usage: "certbot <certificates|renew> [--force-renewal]",
+  usage: "certbot <certificates|renew> [--force-renewal] [--dry-run]",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "", ["force-renewal", "dry-run"]);
+    if (unknown) return fail(`certbot: error: unrecognized arguments: ${unknown}`, 2);
+    if (positionals(tokens).length > 1) return fail("certbot: error: unrecognized arguments", 2);
     const sub = positionals(tokens)[0] ?? "certificates";
 
     if (user !== "root") {
@@ -135,6 +139,7 @@ export const certbot: Command = {
     }
 
     if (sub === "renew") {
+      if (tokens.includes("--dry-run")) return ok("Simulating renewal of existing certificates\nThe dry run was successful. No certificates were saved.");
       const force = hasFlag(tokens, "", "force-renewal");
       // 실제 certbot은 만료 30일 전부터만 갱신한다. 아직 여유가 있으면 건너뛴다.
       const RENEW_WINDOW_MS = 30 * 86400_000;
