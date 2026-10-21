@@ -16,6 +16,7 @@ import { PlayScreen } from "./screens/PlayScreen";
 import { ReportScreen } from "./screens/ReportScreen";
 import { clearProgress, loadProgress, saveClear, type Progress } from "./storage";
 import "./styles.css";
+import { BackendStatus } from "./components/BackendStatus";
 
 /**
  * 화면 전환.
@@ -71,6 +72,7 @@ export function App() {
           </button>
         )}
       </header>
+      <BackendStatus />
 
       {screen === "list" && (
         <ScenarioList

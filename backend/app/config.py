@@ -1,0 +1,59 @@
+import os
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from dotenv import load_dotenv
+from pydantic import BaseModel, Field, SecretStr, model_validator
+
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+
+
+class Settings(BaseModel):
+    llm_base_url: str = "https://gms.ssafy.io/gmsapi/api.openai.com/v1/"
+    llm_model: str = "gpt-6.1-sol"
+    llm_api_key: SecretStr = SecretStr("")
+    embedding_base_url: str = ""
+    embedding_model: str = ""
+    embedding_api_key: SecretStr = SecretStr("")
+    api_timeout_seconds: float = Field(default=30, gt=0, le=120)
+    llm_max_output_tokens: int = Field(default=256, ge=16, le=8192)
+    chroma_path: Path = BACKEND_ROOT / "data/chroma"
+    chunk_size: int = Field(default=1000, gt=0)
+    chunk_overlap: int = Field(default=200, ge=0)
+    external_top_k: int = Field(default=4, ge=1, le=20)
+    cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
+
+    @model_validator(mode="after")
+    def validate_config(self):
+        if self.chunk_overlap >= self.chunk_size:
+            raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
+        for url in (self.llm_base_url, self.embedding_base_url):
+            if url:
+                parsed = urlsplit(url)
+                if (parsed.scheme != "https" or not parsed.hostname
+                        or parsed.username or parsed.password or parsed.query or parsed.fragment):
+                    raise ValueError("Provider URL must be HTTPS without credentials/query/fragment")
+        return self
+
+    def missing(self, kind: str) -> list[str]:
+        prefix = "llm" if kind == "generation" else "embedding"
+        return [f"{prefix}_{field}".upper() for field in ("base_url", "model", "api_key")
+                if not (getattr(self, f"{prefix}_{field}").get_secret_value()
+                        if field == "api_key" else getattr(self, f"{prefix}_{field}"))]
+
+
+def load_settings() -> Settings:
+    load_dotenv(BACKEND_ROOT / ".env", override=False)
+    values = {name: os.environ[name.upper()] for name in Settings.model_fields
+              if name.upper() in os.environ and name != "cors_origins"}
+    # A GMS key must never silently be sent to a different provider.
+    for prefix in ("llm", "embedding"):
+        url = values.get(f"{prefix}_base_url", Settings.model_fields[f"{prefix}_base_url"].default)
+        if not values.get(f"{prefix}_api_key") and urlsplit(url).hostname == "gms.ssafy.io":
+            values[f"{prefix}_api_key"] = os.getenv("GMS_KEY", "")
+    if "CORS_ORIGINS" in os.environ:
+        values["cors_origins"] = [s.strip() for s in os.environ["CORS_ORIGINS"].split(",") if s.strip()]
+    settings = Settings(**values)
+    if not settings.chroma_path.is_absolute():
+        settings.chroma_path = BACKEND_ROOT / settings.chroma_path
+    return settings
