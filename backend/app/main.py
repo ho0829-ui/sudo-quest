@@ -8,7 +8,8 @@ from fastapi.responses import JSONResponse
 from app.config import Settings, load_settings
 from app.indexing import open_store
 from app.catalog import ITEMS, ITEM_BY_ID
-from app.contracts import ChatRequest, ExploreRequest
+from app.coach import coach
+from app.contracts import ChatRequest, CoachRequest, ExploreRequest
 from app.corpus import check_manifest
 from app.jobs import Jobs
 from app.explore import search
@@ -71,6 +72,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def search_items(request: ExploreRequest):
         try:
             key = app.state.jobs.submit(lambda progress: search(settings, app.state.collections, request.query, progress))
+        except ValueError:
+            raise HTTPException(429, "busy") from None
+        return {"job_id": key}
+
+    @app.post("/api/coach", status_code=202)
+    def coach_session(request: CoachRequest):
+        if request.item_id and request.item_id not in ITEM_BY_ID:
+            raise HTTPException(404, "unknown_item")
+        try:
+            key = app.state.jobs.submit(lambda progress: coach(settings, app.state.collections, request, progress))
         except ValueError:
             raise HTTPException(429, "busy") from None
         return {"job_id": key}

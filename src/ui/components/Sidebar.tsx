@@ -1,4 +1,5 @@
 import type { Session } from "../../engine/session/session";
+import { CoachPanel } from "./CoachPanel";
 
 interface SidebarProps {
   session: Session;
@@ -46,6 +47,8 @@ export function Sidebar({ session, onRevealHint, onOpenCause, onGiveUp }: Sideba
           {allHintsUsed ? "힌트를 모두 봤습니다" : `힌트 열기 (-60점)`}
         </button>
       </section>
+
+      <CoachPanel session={session} />
 
       <section className="panel">
         <h4>입력한 명령어</h4>

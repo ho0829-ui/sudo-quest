@@ -411,3 +411,5 @@ button[aria-pressed="true"] { border-color: var(--accent); background: #20384c; 
 .condition-search input { flex: 1; min-width: 220px; margin: 0; }
 .condition-results { display: grid; gap: 8px; margin-top: 12px; }
 .condition-card { text-align: left; }
+.coach select, .coach textarea { display: block; width: 100%; margin: 6px 0 8px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); color: var(--text); font: inherit; }
+.coach-turn { border-top: 1px solid var(--border); padding: 8px 0; }

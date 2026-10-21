@@ -57,3 +57,7 @@ export const startSearch = (query: string) =>
   request<{ job_id: string }>("/api/items/search", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
   });
+export const startCoach = (body: unknown) =>
+  request<{ job_id: string }>("/api/coach", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
