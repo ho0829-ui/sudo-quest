@@ -30,10 +30,11 @@ interface IsoCampusProps {
   onEnterCategory: (category: Category) => void;
   onOpenRecords: () => void;
   onExplore: () => void;
+  onCommunity: () => void;
   onOpenScenario: (scenario: Scenario) => void;
 }
 
-export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords, onExplore, onOpenScenario }: IsoCampusProps) {
+export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords, onExplore, onOpenScenario, onCommunity }: IsoCampusProps) {
   const [active, setActive] = useState<RoomKind | null>(null);
   // 마우스가 없는 화면(터치)에서는 호버가 없으므로 첫 탭은 방 정보 보기, 같은 방을 다시 누르면 입장한다.
   const touch = useMemo(() => window.matchMedia("(hover: none)").matches, []);
@@ -47,7 +48,8 @@ export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords,
     if (ROOMS.find(r => r.kind === kind)?.soon) setActive(kind);
     else if (kind === "control") onOpenRecords();
     else if (kind === "library") onExplore();
-    else if (kind !== "community") onEnterCategory(kind);
+    else if (kind === "community") onCommunity();
+    else onEnterCategory(kind);
   }
 
   const info = ROOMS.find(room => room.kind === active);

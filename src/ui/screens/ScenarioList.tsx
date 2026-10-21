@@ -13,10 +13,11 @@ interface ScenarioListProps {
   recordsOnly?: boolean;
   onExplore: () => void;
   onOpenRecords: () => void;
+  onCommunity: () => void;
 }
 const LEVELS = ['', '입문', '중급', '고급'];
 
-export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords }: ScenarioListProps) {
+export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity }: ScenarioListProps) {
   const headingId = useId();
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [query, setQuery] = useState('');
@@ -50,7 +51,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
         <div className="hero-actions"><button className="primary" onClick={() => next && onSelect(next)}> {cleared.length ? '다음 실습 시작' : '첫 장애 해결하기'} <Icon name="arrow" size={17} /></button>
           <button className="text-button" onClick={onExplore}>지식 탐색 <Icon name="arrow" size={15} /></button></div>
         <div className="hero-note"><Icon name="shield" size={14} /> 실제 시스템에 영향 없는 가상 환경</div>
-      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} />
+      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} />
     </section>}
     <section className="lab-stats" aria-label="내 학습 현황">
       <div className="lab-stat"><span className="stat-icon"><Icon name="server" /></span><div><span>실습 시나리오</span><strong>{String(scenarios.length).padStart(2, '0')} <small>개</small></strong></div><span className="stat-note">{OPEN_CATEGORIES.length}개 인프라 영역</span></div>

@@ -10,9 +10,11 @@ interface ReportScreenProps {
   session: Session;
   onBackToList: () => void;
   onRetry: () => void;
+  /** 커뮤니티 카페에 이 실습의 회고를 남기러 간다(풀이 포함 표시가 켜진 양식). */
+  onShare: () => void;
 }
 
-export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenProps) {
+export function ReportScreen({ session, onBackToList, onRetry, onShare }: ReportScreenProps) {
   const { scenario, commands } = session;
   const score = calculateScore(session);
   const { postmortem } = scenario;
@@ -112,6 +114,7 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
 
       <div className="row end">
         <button onClick={onRetry}>다시 풀기</button>
+        <button onClick={onShare}>커뮤니티에 회고 남기기</button>
         <button className="primary" onClick={onBackToList}>
           다른 시나리오 풀기
         </button>

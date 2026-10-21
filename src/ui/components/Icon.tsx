@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 
 const paths = {
+  chat: 'M4 3h16v13H9l-5 5V3Z M8 7h8 M8 11h5',
   home: 'M3 11l9-8 9 8 M5 9.5V21h14V9.5 M10 21v-6h4v6',
   grid: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
   server: 'M4 3h16v7H4z M4 14h16v7H4z M7 6h.01 M7 17h.01 M11 6h6 M11 17h6',

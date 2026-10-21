@@ -42,6 +42,14 @@ export function useStoredState<T>(
   return [value, update];
 }
 
+/**
+ * 저장본을 바로 지운다. 저장은 렌더 뒤 효과에서 일어나므로, 값을 비우자마자 화면을 떠나는 경우
+ * (예: 글 등록 직후 상세로 이동)에는 빈 값이 저장되기 전에 컴포넌트가 사라진다. 그때 이걸 함께 부른다.
+ */
+export function removeStored(key: string) {
+  try { sessionStorage.removeItem(key); } catch { /* 저장소가 막힌 환경은 무시한다 */ }
+}
+
 /** 응답을 기다리던 중 페이지를 떠난 턴은 되살릴 때 다시 물어보라고 표시한다. */
 export function settlePending<T extends { result?: unknown; error?: string }>(turns: T[]): T[] {
   return turns.map((turn) => (turn.result || turn.error ? turn : { ...turn, error: "페이지를 떠나 있는 동안 응답을 받지 못했습니다. 다시 물어봐 주세요." }));

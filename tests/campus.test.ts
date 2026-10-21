@@ -117,7 +117,7 @@ describe("준비 중인 방", () => {
     expect(roomStatus("docker", scenarios, {}).alarm).toBeNull();
     expect(roomStatus("kubernetes", scenarios, {})).toEqual({ total: 1, cleared: 0, alarm: true });
     expect(roomStatus("community", scenarios, {}).alarm).toBeNull();
-    expect(ROOMS.filter(r => r.soon).map(r => r.kind).sort()).toEqual(["community", "docker"]);
+    expect(ROOMS.filter(r => r.soon).map(r => r.kind).sort()).toEqual(["docker"]);
     expect(OPEN_CATEGORIES.map(c => c.id)).toEqual(["linux", "network", "web-db", "aws", "kubernetes"]);
   });
 });

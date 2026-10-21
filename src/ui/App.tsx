@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { scenarios } from '../scenarios';
 import type { Scenario } from '../engine/scenario/types';
 import { createSession, execute, isCleared, revealHint, submitCause, type Session } from '../engine/session/session';
@@ -19,6 +19,10 @@ import './styles.css';
 import './command-center.css';
 import './coach.css';
 import './game.css';
+import { missionDraft } from './community/postFormat';
+
+// 게시판 화면은 처음 들어갈 때 불러온다. 회고 양식(missionDraft)은 작은 순수 함수라 바로 가져온다.
+const CommunityScreen = lazy(() => import('./community/CommunityScreen').then(m => ({ default: m.CommunityScreen })));
 
 /**
  * 화면은 주소(해시 라우트)에서 정해진다. 이동할 때 브라우저 기록에 쌓아 두므로
@@ -32,7 +36,7 @@ export function App() {
   const [session, setSession] = useState<Session | null>(() => loadActiveSession(scenarios));
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
 
-  const workspace: Workspace = route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
+  const workspace: Workspace = route.kind === 'community' ? 'community' : route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
   const scenario = route.kind === 'mission' ? scenarios[route.no - 1] : null;
   const ownSession = session && scenario && session.scenario === scenario ? session : null;
   const stage = route.kind === 'mission' ? route.stage : null;
@@ -77,7 +81,7 @@ export function App() {
 
   const missionNo = (s: Scenario) => scenarios.indexOf(s) + 1;
   function navigate(next: Workspace) {
-    go(next === 'knowledge' ? { kind: 'knowledge' } : next === 'records' ? { kind: 'records' } : { kind: 'home' });
+    go(next === 'community' ? { kind: 'community' } : next === 'knowledge' ? { kind: 'knowledge' } : next === 'records' ? { kind: 'records' } : { kind: 'home' });
   }
   function startScenario(selected: Scenario) {
     go({ kind: 'mission', no: missionNo(selected), stage: 'briefing' });
@@ -103,20 +107,25 @@ export function App() {
     <CampusDefs />
     <Rail workspace={workspace} scenarios={scenarios} progress={progress} onNavigate={navigate} onHome={goHome} />
     <div className="workspace-body">
-      <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
+      <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
       <main className="app" id="main-content" tabIndex={-1}>
         <BackendStatus />
+        {route.kind === 'community' && <Suspense fallback={<p role="status">카페 문을 여는 중…</p>}><CommunityScreen postId={route.postId} writing={!!route.write}
+          preset={route.mission ? missionDraft(route.mission, scenarios[route.mission - 1].title) : undefined}
+          onOpen={postId => go({ kind: 'community', postId })} onWrite={() => go({ kind: 'community', write: true })}
+          onCreated={postId => go({ kind: 'community', postId }, true)} /></Suspense>}
         {knowledgeVisited && <div hidden={workspace !== 'knowledge'}><KnowledgeScreen /></div>}
-        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} />}
+        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
         <div hidden={workspace !== 'game'}>
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
-          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} />}
+          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
           {stage === 'briefing' && scenario && <TicketScreen scenario={scenario} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
           {stage === 'play' && ownSession && <PlayScreen session={ownSession}
             onCommand={input => setSession(current => current ? execute(current, input) : current)}
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
             onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} />}
-          {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)} />}
+          {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
+            onShare={() => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })} />}
         </div>
       </main>
     </div>
