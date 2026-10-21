@@ -2,7 +2,178 @@
 
 갱신: 2026-10-21 · 단계: 구현·검증·제출 문서 완료. 셀프 체크리스트·상호 점검·제출은 사용자 몫
 
-## 최신 상태 — ALB 실습 fail-open 정합성 수정 (2026-10-21 18시대, 아래 기록보다 우선)
+## 최신 상태 — SUDO QUEST 이름 확정, 경보등 수정, 원인 노출·du 깊이 수정, 본질 다듬기 로드맵 (2026-10-21 23시대, Mac)
+
+- 사용자 결정: 앱 이름 **SUDO QUEST(수도퀘스트)**. 디자인·레벨 시스템 만족. 경보등 박스가 무너진 것 수정 요청. 이후 디자인은 보류하고 실질적인 내용 다듬기 계획을 세우고, 이미 알던 결함은 바로 고쳐도 됨.
+- 경보등: 벽 뒤 모서리 위에 바로 얹혀 네온 이음새를 가리던 것을 가는 기둥 위로 올림(`RoomShell`). 같은 모서리에 있던 보안 카메라를 왼쪽 벽 [0.05, 1.4, 3.3]으로 옮김.
+- 이름: `components/BrandLogo.tsx`(보라 터미널 창 + 초록 프롬프트·깜박이는 커서 + 금빛 검, crispEdges 픽셀), 레일 "SUDO QUEST / INCIDENT RPG", index.html 제목·설명, 리포트 마크다운 머리. 백엔드 health의 service "InfraCoach"와 프론트 검사는 유지. README·docs/submission은 미변경(결정 필요).
+- 원인 노출 수정: 브리핑의 시나리오별 학습 목표(예: "df와 du로…")를 빼고 공통 조사 흐름 4단계를 보여 줌. 학습 목표는 리포트 포스트모템 끝 "이번 실습에서 익힌 것"으로 이동(코치 요청에는 원래 미포함).
+- 엔진: `du`가 `-d N`, `-dN`, `-xhd1`, `--max-depth=N`을 지원. 숫자가 아니면 `invalid maximum depth`, `-s`와 1 이상이 겹치면 GNU처럼 경고 후 실패, 0이면 합계만. 테스트 2개 추가. (glob `*` 확장은 이미 run.ts에 있었음 — 이전 메모의 "글롭 미확인"은 해소)
+- 정리: 레일 개편으로 안 쓰게 된 CSS 선택자 26개(rail-guide·journey-card·operator·nav-pill·session-banner 등) 삭제, `rooms.drawOrder`와 테스트 삭제(층 그리기로 대체).
+- 검증(실제 실행): vitest **278**, typecheck, build. 브라우저: 경보등 확대 확인, 제목 "SUDO QUEST — 인프라 장애 대응 퀘스트", 브리핑에 학습 목표 미노출, 디스크 실습을 실제로 클리어해 리포트에 학습 목표 3개 표시·레일 Lv.2 온콜 루키·XP 1,000 확인 후 진행 기록 삭제(원래 비어 있었음).
+- 로드맵: TASKS.md "본질 다듬기 로드맵" — 0 커밋(결정) → 1 학습 경험(명령 옵션 커버리지, 리포트 회고) → 2 코치 품질 평가 자동화·5xx 재시도(결정) → 3 성능·접근성·회귀 테스트 → 4 제출 문서·모델 원복(결정).
+- 커밋하지 않음. 실행 중 5173, 8000.
+
+## 이전 상태 — 네온 테두리 마감·네트워크실 보강·걷는 사람, 레일·실습·브리핑·자료실 게임 UI (2026-10-21 23시대, Mac)
+
+- 사용자 피드백: 색은 만족. 네트워크실이 비어 보임, 움직이는 사람이 적음, 벽 네온이 윗선만 있고 세로선이 없어 상자가 그리다 만 느낌. 메인에 비해 네비게이션·실습 환경·지식 탐색이 단순하고 게임 느낌이 없음. 앱 이름은 NOCNOC 같은 말장난 + 장애 해결·게임 혼합, 로고는 업타임 아케이드 같은 게임풍을 원함.
+- 캠퍼스:
+  - `parts.Walls`: 벽 앞쪽 세로 모서리 두 개를 윗선과 같은 굵기 네온으로 닫고, 뒤 모서리도 굵게.
+  - 네트워크실: 방화벽 장비 2단(주황 네온·FW), 분배 스위치 랙 3대(패치 코드), 세로 광 트레이(청록), 바닥 배선, 장비 상자·케이블 릴, 방화벽 점검자, 걷는 엔지니어.
+  - 걷는 사람: 모든 방에 1명 이상(리눅스 2), 복도 3명 + 순찰 로봇. `Person`에 `duration`을 줘 걸음이 맞물리지 않게 함. 걷는 사람은 앞 가구보다 먼저 그려 가림이 맞게 정리.
+- 구조 정리: 방 색은 `campus/themes.ts`(THEMES·CATEGORY_TAG·CATEGORY_ROOM), 방 그림 선택은 `campus/art/RoomArt.tsx`, 타공 타일 무늬는 페이지에 한 번만 두는 `CampusDefs`(App), 방 하나짜리 장면 `campus/RoomVignette.tsx`.
+- 레일(`components/Rail.tsx`, App에서 분리): 운영자 등급 카드(`ui/rank.ts`: 해결 수 비율로 Lv1 수습 → Lv6 전설의 온콜, XP=최고 점수 합, 다음 등급까지 남은 수), 네온 메뉴(활성 시 왼쪽 빛 막대, 숫자 배지 + aria-label), SECTOR STATUS(분류별 해결 칸), SANDBOX ONLINE. 1050px 이하 아이콘만, 760px 이하 등급 카드 숨김.
+- 실습 화면: `components/MissionHud.tsx` — 방 미니 장면, MISSION 번호·분류·방 이름, 퀘스트 단계(접속/원인 규명/복구, 현재 단계 맥동), 실제 경과 시간·예상 점수(등급 글자)·명령 수·힌트 칸. 터미널은 방 색 테두리·글로우·CRT 주사선·LIVE 표시. 사이드바 탭도 방 색.
+- 브리핑(`TicketScreen.tsx`): INCOMING INCIDENT 경보 띠(움직이는 사선), 티켓 서류·난이도 칸·학습 목표, 오른쪽 DEPLOY TO 방 장면. **기존 버그 수정**: "장애 티켓 #linux-disk-full"처럼 시나리오 ID(원인 노출)를 보여 주던 것을 실습 번호로 바꿈(CLAUDE.md 티켓에 원인 노출 금지).
+- 자료실(지식 탐색): ARCHIVE 머리(자료실 장면, 제품별 실제 주제 수 배지 curl 40·Linux 40·AWS ALB 20), 항목 목록 제품 색 태그·선택 시 금빛 강조, 답변 카드 금빛 왼쪽 선.
+- 새 스타일 `ui/game.css`(App에서 마지막에 불러옴).
+- 검증(실제 실행): vitest **277**(등급 3개 추가), typecheck, build. 브라우저 1200(레일 펼침)·800·375에서 홈/브리핑/실습/자료실 가로 넘침 없음, 브리핑에 ID 미노출 확인, 실습에서 명령 실행 후 HUD 갱신 확인. 증빙 `evidence/campus/game-*.jpg`, `network-room-detail.jpg`.
+- 발견(미수정, 사용자 판단 필요): 브리핑의 "이번 임무에서 연습할 것"(learningObjectives)이 예: "df와 du로 디스크를 넘긴 곳에서…"처럼 원인을 사실상 알려 준다. 기존부터 보여 주던 항목이라 그대로 두었다. 클리어 후 리포트로 옮기거나 일반적인 표현으로 바꾸는 방안을 제안할 것.
+- 앱 이름: 2차 후보 6개 제시(PANIC ROOM 추천 / FAILOVER 2순위 / PING PONG / HEAL CHECK / RESPAWN / SUDO QUEST, 픽셀 로고). **사용자 결정 대기**.
+- 커밋하지 않음. 실행 중 5173, 8000.
+
+## 이전 상태 — 사이버 네온 서버룸 개편·근무자·티켓 전광판, 앱 이름 후보 제시 (2026-10-21 22~23시대, Mac)
+
+- 사용자 피드백: 서버룸다운 공간 색감 부족(사이버 블루·네온 마젠타/퍼플·일렉트릭 그린·딥블랙/건메탈·경고 레드/오렌지, 면이 아니라 "선"으로 빛나게). 관제실과 리눅스 서버실 색이 겹침. 더 디테일하고 정렬된 서버실, 물리 요소, 출근해 일하는 사람들, 어울리는 컴포넌트로 꽉 찬 화면. 로고·앱 이름 변경 아이디어 요청.
+- 전체 색: `command-center.css` `:root` = bg #07090e, panel #0d1118, border(건메탈) #1f2833, accent 사이버 블루 #00d4ff(+deep #0055ff), ok #2cff8f, alert #ff7a1a, danger #ff3355, neon magenta/purple. 남색 하드코딩은 건메탈로, 밝은 파랑은 청록으로 옮기는 변환(scratchpad `cyber-shift.mjs`, 원본 사본 `css-before-cyber/`). primary 버튼에 네온 글로우.
+- 방 색 분리: 리눅스=일렉트릭 그린 #00ff66, 관제실=전기 파랑 #2f7bff + 플래티넘 화이트, 네트워크 #a259ff, 웹·DB #ff2d95, AWS #5cc8ff, 자료실 금빛 #ffcf8a. 벽·바닥은 딥블랙 계열, 색은 네온 선(벽 윗선·걸레받이·바닥 앞 가장자리·랙 틈·복도 가장자리)으로만. 회귀 테스트로 6개 방 색이 모두 다른지 검사.
+- 새 부품: `parts.Neon`(굵고 옅은 선 + 선명한 선으로 번짐 흉내, blur 필터 미사용), `art/people.tsx`(서기·앉기·타이핑·걷기, 4방향, 손 소품), `art/fixtures.tsx`(랙 앞/뒷면, 모니터, 항온항습기+회전 팬+냉기, 가스 소화 실린더, 소화기, 카메라, 화분), `CampusGround.tsx`(트론 바닥 격자, 네온 복도, 걷는 사람·순찰 로봇), `IncidentTicker.tsx`.
+- 방 디테일: 리눅스(랙 6×2 정렬, 냉기 통로 타공 타일·컨테인먼트 지붕·유리문, 뒷줄 열기 배출, CRAC, 케이블 사다리, 분전반, 소화 가스, 근무자 3), 네트워크(정리된 색별 케이블 벽, 네트워크 랙+패치 코드, 코어 라우터, 광 트레이, 콘솔·작업대, 근무자 2), 웹·DB(스토리지·앱 랙 3, 복제선 있는 DB 3, CI/CD 보드, </> 네온, 인증서, 개발자 2), AWS(AZ 두 곳·인스턴스 4·LB·보안 그룹·버킷·IAM 게이트·홀로그램 콘솔, 근무자 2, 구름), 관제실(실제 해결 수 화면 4칸+총계, 실제 시계, 실제 경보 상태 미니맵, 운영자 5·감독자), 자료실(이동식 사다리, 지구본, 책 읽는 사람 3).
+- 컴포넌트: 출동 대기 티켓 전광판(실제 미해결 실습만, 클릭 시 해당 티켓 열기, 호버·포커스 시 멈춤, 복사본은 보조기기·Tab 제외), HUD에 근무 시각.
+- 그리기 순서: 복도 사람이 뒤 방 앞·앞 방 뒤에 보이도록 방을 층(0 자료실→1 리눅스·네트워크→2 관제실→3 웹·DB·AWS)으로 그리고 층 사이에 복도를 그린다.
+- 검증(실제 실행): vitest **274**, typecheck, build. 브라우저 1440/900/375 가로 넘침 없음, 방별 확대 확인(SVG viewBox를 잠시 바꿔 관찰 후 새로고침), 티켓 클릭→해당 티켓 화면→홈. SVG 노드 약 2,400개. 증빙 `evidence/campus/cyber-*.jpg`.
+- 앱 이름·로고: 채팅 위젯으로 4안 제시(A RootCamp 추천 / B NOCNOC / C Uptime Arcade / D Tracer). **사용자 결정 대기**. 바꿀 때 주의: 백엔드 health의 `service: "InfraCoach"`를 프론트 `isHealth`가 검사하므로 내부 서비스 ID는 유지하고 화면 표시·로고·문서만 바꾸는 것을 권장. 제출 문서(docs/submission)의 이름 변경 여부도 확인 필요.
+- 남은 일: Phase 3(방 확대 전환·패럴랙스·모바일 확대), 이름 확정 후 로고 컴포넌트·index.html 제목·README 반영. 커밋하지 않음. 실행 중 5173, 8000.
+
+## 이전 상태 — 디자인 Phase 1(B안 색) + Phase 2(아이소메트릭 캠퍼스) (2026-10-21 22시대, Mac)
+
+- 사용자 결정: 대표색 **B안 인프라 블루**. 방마다 무슨 공간인지 개성이 드러나고 디테일하게 꾸밀 것, 2.5D 모듈형 구성 유지. 라이트/다크는 따로 답하지 않아 추천안인 어두운 배경으로 진행.
+- Phase 1 색 토큰:
+  - `command-center.css` `:root`: --bg #0b1630, --panel #101d3b, --panel-2 #16264a, --border #233559, --accent #3b9eff, --accent-strong, --on-accent, --ok #5ee0a8, --alert #ffb547, --danger.
+  - 하드코딩 hex 약 200개는 녹·청록 색만 파랑 쪽으로 돌리는 변환으로 바꿨다(scratchpad `hue-shift.mjs`, 원본 사본 scratchpad `css-before/`). 주황·빨강은 그대로.
+  - 의미 색 지정: primary 버튼=accent, 온라인 점·단계 완료·코치 온라인=ok, 통계 아이콘 green/amber=ok/alert.
+- Phase 2 캠퍼스(`src/ui/campus/`, 런타임 라이브러리 추가 없음, SVG 직접 그림):
+  - `iso.ts`(투영·면·벽 transform), `rooms.ts`(배치·`roomStatus`·`drawOrder`), `parts.tsx`(Box/Floor/Walls/OnWall/Cylinder/Led/Wire), `RoomShell.tsx`(바닥·벽·이름 간판·문·경보등·호버/키보드), `art/*.tsx` 방 6개, `IsoCampus.tsx`(복도·HUD·입장), `campus.css`.
+  - 방 개성: 리눅스(파랑, 이중 바닥·랙 2줄·찬 공기 통로·케이블 트레이·터미널), 네트워크(보라, 패치 패널·스위치 스택·라우터·흐르는 광케이블·토폴로지 보드), 웹·DB(마젠타, 빛나는 DB 디스크·웹 서버·브라우저 창·인증서 액자·책상), AWS(하늘, 유리벽·리전 플랫폼·LB→인스턴스 3대·보안 그룹 점선·IAM 리더·구름), 관제실(실제 분류별 해결 수 비디오 월·운영자 책상 2줄), 자료실(원목·서가 2면·독서 테이블·스탠드·화분).
+  - 경보등: 분류에 미해결 실습이 있으면 주황 깜박임, 모두 해결하면 초록. 학습 진행 표시이며 실제 모니터링 아님(관제실 화면 숫자도 학습 기록).
+  - 인터랙션: 등장 시 방이 차례로 떨어져 조립됨, 호버·포커스 시 방이 떠오르고 나머지는 어두워짐, LED·광케이블·DB 링·구름·스탠드 애니메이션, 지도 아래 HUD(방 설명·해결 현황). 클릭/Enter: 분류 방→아래 목록을 그 분류로 거르고 스크롤, 관제실→학습 기록, 자료실→지식 탐색. 터치 화면은 첫 탭 미리 보기·두 번째 탭 입장. 모션 끄기·reduced-motion 따름.
+  - 홈 히어로 오른쪽 장식 서버 랙(`ServerRoom.tsx`)과 그 CSS를 삭제하고 캠퍼스로 교체. 한글 제목 어절 단위 줄바꿈.
+- 테스트·검증(실제 실행): vitest **271**(새 `tests/campus.test.ts` 6개), typecheck, build. 브라우저 1440/900/375 가로 넘침 없음, 클릭·Enter·터치 2단계·모션 정지 확인, 임시 진행 기록(리눅스 4개+DNS)으로 초록/주황 경보등과 관제실 숫자 확인 후 기록 삭제(원래 비어 있었음). 증빙 `evidence/campus/`.
+- 발견·수정: SVG `fill="var(--x)"` 속성은 CSS 변수가 적용되지 않아 경보등이 검게 보였다 → style로 칠함.
+- 남은 일(Phase 3): 방 클릭 시 확대(카메라 줌) 전환, 마우스·스크롤 패럴랙스, 모바일에서 지도가 작아 방 이름이 작음(확대 보기 필요), 플레이 화면 배경에 해당 방 미니 장면.
+- 커밋하지 않음. 실행 중: 5173, 8000(api-mac).
+
+## 이전 상태 — 예시 질문·홈 바로가기, 디자인 방향 논의 시작 (2026-10-21 21시대, Mac)
+
+- 사용자 요청: 지식 탐색 "공식 문서에 질문하기"에 예시 질문 3개, 홈으로 바로 가는 길, 대표색 결정, 아이소메트릭 사무실형 구성 + 호버·패럴랙스 등 게임 같은 인터랙션. 참고 이미지 3장(Freepik 아이소메트릭 데이터센터 스톡 — 구도 참고만, 저장소에 복사하지 않음).
+- 구현:
+  - `KnowledgeScreen.tsx`: 예시 질문 칩 3개(조건 / 무엇부터 확인 / 비슷한 오류와 구분). 누르면 입력창에 채우기만 하고 전송은 사용자가 한다(유료 호출). placeholder 변경. 스타일은 `styles.css` 끝 `.example-questions`.
+  - `App.tsx`: `goHome()` — 로고와 상단바 새 "홈" 버튼(`.home-crumb`, `Icon` home 추가)에서 실습 목록(히어로 화면)으로 간다. 실습 중 명령을 1개 이상 실행했다면 `window.confirm`으로 확인.
+- 검증: vitest 265, typecheck, build 통과. 브라우저: 예시 칩 → 입력창 채움, 홈 버튼 → 히어로 표시, 명령 0개면 묻지 않음, 명령 후 취소하면 실습 유지·확인하면 홈(confirm은 페이지 안에서 임시 대체해 확인 후 새로고침).
+- 디자인 제안(채팅 위젯으로 제시, 사용자 결정 대기):
+  - 대표색 A 관제실 민트(현재 유지) / **B 인프라 블루 추천**(#3B9EFF 기본, #FFB547 장애 경보, #5EE0A8 복구, 배경 #0B1630) / C 인시던트 앰버.
+  - 아이소메트릭 홈: 가운데 관제실(학습 기록), 위 자료실(지식 탐색), 네 모서리에 분류별 서버실(리눅스 4·네트워크 3·웹·DB 3·AWS 3). 방 호버 시 떠오름, 미해결 실습이 있는 방에 경보등(학습 진행 표시이며 실제 모니터링 아님), 클릭 시 방으로 확대 → 시나리오 카드. 마우스·스크롤 패럴랙스, 모션 끄기·reduced-motion 존중. CSS/SVG로 직접 그림, 런타임 라이브러리 추가 없음.
+- 커밋하지 않음. 다음: 사용자가 대표색·라이트/다크 방향을 정하면 디자인 토큰 → 아이소메트릭 홈 → 방 확대·패럴랙스 순으로 Phase를 나눠 진행.
+
+## 이전 상태 — 지식 탐색 답변 서식 적용 (2026-10-21 21시대, Mac)
+
+- 사용자 요청: 커밋 전에 지식 탐색 답변에도 RichAnswer 적용.
+- 변경:
+  - `src/ui/screens/KnowledgeScreen.tsx`: 답변 본문 `RichAnswer`, 점검 제안 `RichLine`. 질문 원문과 "검색한 근거 본문"(문서 발췌)은 원문 그대로 둔다.
+  - `src/ui/rich-answer.css`(새, RichAnswer.tsx에서 import): 서식 스타일을 coach.css에서 옮기고 글자 크기를 em으로 바꿔 코치(12px 기준)와 지식(14px 기준) 화면 모두에 맞췄다. 코치 화면 계산값은 이전과 같음(code 10.8px, 칩 9px).
+- 검증(실제 실행): vitest 265개, typecheck, build 통과. 실제 지식 질문 2건(gpt-6-luna):
+  - ENOSPC "어떤 명령으로 확인하고 대응하나요?": 문서에 명령이 없어 "문서에서 확인되지 않습니다"로 보류. 출처 칩 2개, 근거 2건. 제목·목록은 없는 한 문단 답변.
+  - ALB "타깃이 서비스에 참여하지 못함" 단계별 질문: 목록 7개, 코드 2개(`Target.ResponseCodeMismatch` 등), 출처 칩 8개, 근거 4건. 화면에 `###`·`-` 원문 기호 없음. 375px에서 가로 넘침 없음. 서버 오류 없음. 증빙 `evidence/coach-in-play/real-knowledge-alb-answer.jpg`.
+- 커밋하지 않음(사용자가 이 작업 뒤 커밋 예정).
+
+## 이전 상태 — 코치의 미지원 aws 하위 서비스 제안 수정 (2026-10-21 21시대, Mac)
+
+- 문제: ALB 실습에서 코치가 `aws cloudwatch describe-alarms`를 제안 → "터미널에 입력" 버튼이 생기지만 가상 엔진은 `Unknown service: cloudwatch`. 버튼 판별·서버 검사 모두 명령 이름(`aws`)만 봤다.
+- 선택: 요청에 **새 필드 `command_operations`** 를 추가했다(예: `{"aws": ["elbv2 describe-target-groups", …]}`). `available_commands`에 문자열을 섞는 방법보다 계약이 분명하고 서버 검사가 단순하다. 이 목록은 엔진 공통이고 플레이어도 `aws elbv2 x`의 오류 안내("지원: …")로 이미 볼 수 있어 정답 유출이 아니다.
+- 변경 파일:
+  - `src/engine/commands/types.ts`: `Command.operations?`(하위 명령 경로) 추가.
+  - `src/engine/commands/aws.ts`: `AWS_OPERATIONS` 표 하나로 지원 목록과 오류 안내를 만든다(`unknownSubcommand`). `aws sts <없는 하위명령>`이 "Unknown service: sts"로 나오던 것을 "Unknown subcommand"로 고쳤다.
+  - `src/engine/commands/index.ts`: `commandOperations(available)`, `supportsInvocation(line, available)`(옵션 건너뛰고 앞 단어 비교, 옵션이 하위 명령보다 앞이면 보수적으로 false).
+  - `src/ui/coachPrompts.ts`: `runnableCommands`가 `supportsInvocation` 사용 → 미지원 aws 서비스는 버튼 없음.
+  - `src/api/coach.ts`: 요청에 `command_operations` 추가.
+  - `backend/app/contracts.py`: `CoachRequest.command_operations`(키 a-z 패턴·30자, 하위 명령 패턴·80자, 명령 10개·명령당 60개 상한).
+  - `backend/app/coach.py`: `unsupported_commands`가 하위 명령까지 검사(같은 규칙), 공개 입력·캐시 키에 포함, PROMPT_VERSION **coach-3**.
+  - `backend/app/prompts.py` COACH: command_operations 목록의 하위 명령만 제안, 없는 서비스는 suggested_checks에 넣지 말라고 지시.
+  - 테스트: `tests/command-operations.test.ts`(새, 표의 11개 하위 명령이 실제 구현되어 있는지 + 판별 규칙), `tests/coach.test.ts` 허용 키 갱신, `backend/tests/test_coach.py` 2개 추가(하위 명령 검사, 계약 상한).
+- 검증(실제 실행): vitest **265개**, typecheck 통과, 백엔드 unittest **39개** OK. 8000 재시작 후 ALB 실습에서 `aws elbv2 describe-target-groups` → "다음 점검"(실제 gpt-6-luna, 15초): 전송 본문 키 10개(command_operations 포함, 정답 정보 없음), 제안은 `aws elbv2 describe-target-health …` 1개뿐(cloudwatch 없음), 경고 없음, 문서 근거 2건. 버튼 → Enter → `Target.ResponseCodeMismatch [404]` 출력. 서버 오류 로그 없음.
+- 한계: 하위 명령 목록은 현재 aws만 정의했다(systemctl 등은 이름만 검사). LLM이 지시를 어겨도 프론트 버튼과 서버 경고가 걸러 준다.
+- 실행 중: 5173, 8000(api-mac). 커밋하지 않음.
+
+## 이전 상태 — Mac 백엔드 설치·실제 코치 검증 (2026-10-21 20~21시대, Mac)
+
+- 사용자 요청: Python 3.11 백엔드 설치, 사용자가 GMS_KEY 입력 후 색인, 실제 코치로 실습 화면 검증. 비용 때문에 **생성 모델은 테스트 동안 `gpt-6-luna`** 를 쓰기로 함(사용자 결정).
+- 설치·설정(실제 실행):
+  - `brew install python@3.11` → 3.11.17. 시스템 기본 3.14는 그대로.
+  - `python3.11 -m venv backend/.venv`, `pip install -r backend/requirements.lock.txt`, `pip check` 이상 없음.
+  - `backend/.env`: 사용자가 GMS_KEY 입력(값 미기록·미출력). `LLM_MODEL` 한 줄만 `gpt-6.1-sol` → `gpt-6-luna`로 바꿈. 제출 전 원래 모델로 되돌릴지는 사용자 결정 사항. `LLM_MAX_OUTPUT_TOKENS=256`은 연결 점검용 기본값이며 답변/코치는 호출부에서 2000/3000을 넘기므로 그대로 둠.
+  - `.claude/launch.json`에 `api-mac`(backend/.venv/bin/python, 8000) 추가. Windows 설정은 유지.
+- 검증(실제 실행):
+  - 백엔드 unittest 37개 OK(프롬프트 수정 전후 모두).
+  - `scripts.check_providers`: 생성 ok(gpt-6-luna), 임베딩 ok(3072차원).
+  - `scripts.prepare_corpus`: knowledge_items 100 / reference_chunks 221, 문서 189, HTTP 16회, 임베딩 11배치, 46초. `backend/data/chroma`(Git 제외).
+  - `/api/health`: 생성·임베딩 configured, rag_status pilot_ready. 5173 프록시 경유도 동일.
+- 실제 코치 실측(브라우저, 유료 호출 4회 + 연결 점검 1회):
+  1. 디스크 실습, `systemctl status nginx`·`df -h` 후 "마지막 출력 해석": 19초. 실습 기록 2건·문서 근거 1건(ENOSPC). 사실/가설/다음 점검 구분, 원인 단정 없음. 제안 2개 모두 버튼 → `du -h /var/log/nginx` 실행 성공(12M).
+  2. "내 가설 점검"(다른 로그 디렉터리 가설): 16초. 이전 대화와 실습 기록 3(du 12M)을 인용. **suggested_checks가 비어 버튼 0개** → 아래 프롬프트 수정의 계기.
+  3. 프롬프트 수정 후 "다음 점검": 13초. 제안 `du -h /var/log`, `du -h /var` 모두 버튼. 버튼 → Enter → `/var/log/app 5.9G` 단서 확인(정답을 말하지 않고 플레이어가 찾게 됨).
+  4. ALB 실습, `aws elbv2 describe-target-groups` 후 "다음 점검": 20초. 문서 근거 2건으로 fail-open을 설명하며 "사이트가 열린다고 오탐이 아니다, 알람 끄기 보류" — 시나리오 설명과 일치. 제안 2개 버튼.
+  - 서버 오류 로그 없음.
+- 이번 변경 파일:
+  - `backend/app/prompts.py` COACH: suggested_checks를 1~3개, 각 항목 맨 앞에 백틱 명령 하나, 파이프·리다이렉션 없이, 결과를 미리 말하지 않도록 지시. `backend/app/coach.py` PROMPT_VERSION coach-1 → **coach-2**(코치 캐시 무효화).
+  - `src/ui/answerFormat.ts`(새), `src/ui/components/RichAnswer.tsx`(새): 실제 답변이 `###`·`-`·백틱 Markdown이라 그대로 보이던 문제. 제목·목록·코드·[실습 기록 N]/[근거 N] 칩으로 그린다. HTML을 해석하지 않고 React 요소만 사용(`dangerouslySetInnerHTML` 없음). `CoachTurn.tsx`·`coach.css` 적용.
+  - `tests/answer-format.test.ts`(새, 3개). vitest 총 **249개 통과**, typecheck·build 통과.
+  - `backend/README.md` Mac 검증 문구 갱신. 증빙 `evidence/coach-in-play/real-disk-answer1.jpg`, `real-disk-next-checks.jpg`.
+- 남은 문제(재현 방법 포함):
+  - ALB 실습에서 코치가 `aws cloudwatch describe-alarms …`를 제안 → 버튼이 나오지만 가상 엔진은 `Unknown service: cloudwatch`(exit≠0). 원인: 버튼 판별과 서버 `unsupported_commands` 모두 명령 이름(`aws`)만 보고 하위 서비스는 보지 않음. 해결 후보: 엔진이 aws 지원 서비스/하위 명령 목록을 내보내고 요청의 available_commands에 담기(요청 계약 변경) 또는 프롬프트에 지원 서비스 명시.
+  - 지식 탐색 화면(KnowledgeScreen)의 답변은 여전히 Markdown 원문 표시. RichAnswer 재사용 가능.
+  - 코치 대화는 실습 화면을 떠나면 사라진다(리포트 미포함).
+- 실행 중: 5173 Vite(미리보기 `dev`), 8000 백엔드(미리보기 `api-mac`).
+- 커밋: 하지 않음.
+- 사용자 결정 대기: 다음 작업 방향, 제출 전 LLM_MODEL 복원 여부.
+
+## 이전 상태 — 실습 중 코치 적극 사용 UI (2026-10-21 20시대, Mac)
+
+- 사용자 요청: "실습 중에도 RAG 코치를 적극적으로 사용할 수 있었으면 좋겠다", 켜져 있던 로컬 서버를 모두 끄고 다시 실행.
+- 변경 파일과 이유:
+  - `src/ui/components/Sidebar.tsx`: 티켓 아래에 탭 [AI 코치 | 조사 현황(힌트 n/3)]을 두고 코치를 기본 탭으로 했다. 탭을 바꿔도 대화는 유지되고(hidden만 사용), 다른 탭을 보는 동안 답변이 오면 ● 배지를 띄운다. 980px 이하에서는 떠 있는 "AI 코치" 바로가기 버튼이 나온다.
+  - `src/ui/components/CoachPanel.tsx`: 연결 상태 표시(health로 온라인/설정 필요/오프라인, 다시 연결), 빠른 질문 4개(지금까지 정리·다음 점검·마지막 출력 해석·내 가설 점검), 오답 또는 마지막 질문 뒤 명령 6회 이상이면 "코치와 정리하기" 권유, ⌘/Ctrl+Enter 전송, 학습 주제 선택은 접어 둠. 서버 요청은 기존 `buildCoachRequest` 그대로라 보내는 필드는 바뀌지 않았다.
+  - `src/ui/components/CoachTurn.tsx`(새 파일): 답변 한 턴. 제안 점검의 백틱 명령 중 이 실습에서 쓸 수 있는 것만 "터미널에 입력" 버튼으로 보여 준다. 입력줄에 넣고 포커스만 하며, 실행은 플레이어가 Enter로 한다.
+  - `src/ui/coachPrompts.ts`(새 파일): 빠른 질문·명령 추출(`runnableCommands`: 사용 가능 명령만, sudo 허용, 파이프·리다이렉션·`;`·`&` 제외)·권유(`coachNudge`) 순수 함수.
+  - `src/ui/components/Terminal.tsx`, `src/ui/screens/PlayScreen.tsx`: `draft {text, nonce}` prop으로 바깥에서 입력줄을 채운다.
+  - `src/ui/coach.css`(새 파일, App에서 import): 코치 채널 스타일, 사이드바 폭 `clamp(320px, 29vw, 410px)`. 애니메이션은 기존 모션 정지/`prefers-reduced-motion` 규칙을 따른다.
+  - `tests/coach-prompts.test.ts`(새 파일, 21개): 빠른 질문에 13개 시나리오 정답 보기·answerId·풀이 명령이 들어가지 않는지, 명령 추출 규칙, 권유 조건.
+- 실행한 명령과 결과(이번 Mac에서 실제 실행):
+  - `npm test`: 11개 파일, **246개 통과**. `npm run typecheck` 통과. `npm run build` 성공.
+  - 기존 Vite(5173, PID 29653/29669, 이전 작업에서 띄운 것)를 종료하고 미리보기 도구 `dev`로 5173을 다시 띄웠다. 8000 백엔드는 원래 없었다.
+  - 브라우저(1440×900): 백엔드 없음 → 코치 "오프라인"과 다시 연결 표시, 게임은 정상.
+  - 브라우저에서 **fetch를 페이지 안에서 임시 가짜 응답으로 바꿔** UI 흐름만 확인했다(코드 변경 아님, 확인 후 새로고침으로 제거): 다시 연결 → 온라인, "마지막 출력 해석" 질문 문장에 `df -h` 포함, 진행 단계 표시, 제안 4개 중 실행 가능한 3개만 버튼(`lsof +L1 (실제 환경 참고)` 제외), 버튼 → 터미널 입력줄 채움·포커스·미실행, Enter로 실행, 명령 6회 뒤 권유 표시, 질문 직후 조사 현황 탭으로 옮기면 ● 배지 → 코치 탭으로 돌아오면 해제, 두 번째 질문에 이전 대화 2개 포함. 실제 전송 본문의 키는 기존 허용 9개뿐이고 faults/answerId/solutionPath/postmortem/state 없음.
+  - 모바일(375×812): 가로 넘침 없음, 떠 있는 "AI 코치" 버튼으로 코치 패널 이동 확인.
+  - 증빙: `evidence/coach-in-play/` (offline.jpg, desktop-answer-mock.jpg, mobile-coach-mock.jpg — 뒤 두 장은 가짜 응답 화면임).
+- 미검증: **실제 RAG 코치 답변**. 이 Mac에는 `backend/.venv`가 없고 Python 3.11도 없으며(기본 3.14.7), `backend/.env`의 `GMS_KEY`가 비어 있고 `backend/data` 색인도 없다. 실제 답변의 길이·명령 표기(백틱 여부)에 따라 "터미널에 입력" 버튼 수가 달라질 수 있다.
+- 알려진 한계: 코치가 `du -sh /var/log/*`처럼 글롭을 제안하면 버튼은 나오지만 가상 셸의 글롭 지원 여부는 확인하지 않았다. 코치 대화는 실습 화면을 떠나면 사라진다(리포트에 남지 않음).
+- 실행 중: 5173 Vite(미리보기 도구 관리). 백엔드 없음.
+- 커밋: 하지 않음. 이번 변경과 이전 서버실 UI 작업 변경이 모두 작업 트리에 남아 있다.
+- 사용자에게 아직 답을 받지 못한 것: 다음 작업 방향(사용자가 완료 후 토론을 요청함).
+- 다음 도우미가 바로 할 일: 사용자와 다음 방향을 정한다. 후보는 ① Python 3.11 백엔드 설치 + 사용자가 키 입력 → 색인 → 실제 코치로 이 UI 검증 ② 코치 대화를 리포트·학습 기록에 남기기 ③ 커밋 정리.
+
+## 이전 상태 — 서버실 UI 초안 및 프론트 안정화 (2026-10-21, Mac)
+
+- 사용자 요청: MD 문서로 구조를 파악하고 키를 넣을 `.env` 준비, 서버실 느낌의 동적 UI를 우선 제작해 피드백 받기. 로컬 작업만 수행.
+- `.env`, `backend/.env` 생성(키 공란, Git 제외). `npm run setup:env`는 기존 파일을 보존한다. 키는 사용자가 `backend/.env`의 `GMS_KEY`에 입력한다.
+- 화면: 관제실 사이드바, CSS 서버 랙/LED/패킷 모션, 카테고리·검색·난이도 필터, 학습 기록, 터미널 창, 모션 정지·모션 줄이기 대응, 모바일 메뉴 접근성.
+- 안정화: 손상된 localStorage 레코드 제외, health 응답 중첩 필드 검증, 원인 보기 판별 셔플/재개 시 순서 유지, native dialog의 Escape/포커스 복귀, 한글 IME Enter 중복 실행 방지, Shift+Tab 탈출, 화면 전환 시 스크롤 복귀.
+- 의존성: Vite 7.3.7 / Vitest 4.1.12 / source-map-js 1.2.2. 런타임 라이브러리 추가 없음. npm audit 5건 → 0건.
+- 검증: Vitest 214개, typecheck/build 성공. 브라우저 검색·필터·결과 없음·지식 오프라인 안내 확인. 디스크 장애 실제 UI 풀이 → S/1000점 → 학습 기록 반영. 1440px/390px 반응형에서 가로 넘침 없음.
+- 이 Mac의 기본 Python은 3.14.7이며 backend/.venv는 없음. Python 3.11 기준 실행 절차만 문서화했다. 백엔드 테스트/유료 API/색인 생성은 이번에 수행하지 않았다. 아래 Windows 결과를 이번 환경의 성공 증거로 사용하지 말 것.
+- 변경 상세·스크린샷: `10_서버실_UI_및_안정화.md`, `evidence/server-room/`.
+- 다음 작업: 사용자 디자인 피드백 반영. 이후 Python 3.11 백엔드 설치 및 사용자가 키를 입력한 뒤 RAG 연결·100건 색인 검증. 공급자 5xx 재시도와 추가 코치 품질 검증은 미완료.
+
+## 이전 상태 — ALB 실습 fail-open 정합성 수정 (2026-10-21 18시대, 아래 기록보다 우선)
 
 - 문제: 실습 `aws-alb-healthcheck`가 "모든 타깃 unhealthy → 503"을 전제로 했다. AWS 문서(target-group-health-checks)에 따르면 모든 활성 AZ의 모든 타깃이 헬스체크에 실패하면 ALB는 fail-open한다. 그래서 코치(공식 문서 근거)와 실습 설명이 반대되는 말을 할 수 있었다.
 - 선택: 원인(헬스체크 경로 /healthz), 장애 주입, 모범 풀이, 복구 판정, ID는 유지하고 증상을 공식 동작으로 바꿨다(B안). 엔진에 타깃 등록 기능을 추가해야 하는 "등록 타깃 없음" 시나리오(A안)는 택하지 않았다.
