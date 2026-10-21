@@ -2,10 +2,13 @@
 
 backend 폴더에서 실행(8000 서버가 떠 있어야 함):
   .venv/Scripts/python.exe -X utf8 -m scripts.compare_rag
+  .venv/Scripts/python.exe -X utf8 -m scripts.compare_rag --rag-only --output f2015_results_v2.json
+    (--rag-only: RAG 없음 답변은 기존 결과 파일의 것을 그대로 쓰고 RAG 쪽만 다시 받는다. 프롬프트 변경 재비교용)
 - RAG 없음: 질문만 직접 모델에 보낸다(유료 생성 1회).
 - RAG 있음: 실제 서비스 경로인 POST /api/chat을 쓴다. 색인에 쓰는 프로세스를 서버 하나로 유지하기 위해서다.
 결과 원본: data/evaluation/f2015_results.json. 채점은 사람이 정답 기준과 대조해 따로 한다.
 """
+import argparse
 import json
 import sys
 import time
@@ -34,16 +37,28 @@ def ask_server(item_id, question):
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rag-only", action="store_true", help="RAG 없음 답변은 기존 결과를 재사용")
+    parser.add_argument("--output", default="f2015_results.json")
+    args = parser.parse_args()
     settings = load_settings()
+    folder = settings.chroma_path.parent / "evaluation"
     questions = json.loads(QUESTIONS.read_text(encoding="utf-8"))["questions"]
+    baseline = {}
+    if args.rag_only:
+        previous = json.loads((folder / "f2015_results.json").read_text(encoding="utf-8"))["results"]
+        baseline = {r["id"]: r["no_rag"] for r in previous}
     results = []
     for q in questions:
-        start = time.monotonic()
-        try:
-            plain = {"answer": generate(settings, q["question"], NO_RAG_INSTRUCTIONS, 2000), "error": None}
-        except ProviderError as exc:
-            plain = {"answer": "", "error": str(exc)}
-        plain["seconds"] = round(time.monotonic() - start, 1)
+        if args.rag_only:
+            plain = baseline[q["id"]]
+        else:
+            start = time.monotonic()
+            try:
+                plain = {"answer": generate(settings, q["question"], NO_RAG_INSTRUCTIONS, 2000), "error": None}
+            except ProviderError as exc:
+                plain = {"answer": "", "error": str(exc)}
+            plain["seconds"] = round(time.monotonic() - start, 1)
 
         start = time.monotonic()
         job = ask_server(q["item_id"], q["question"])
@@ -53,8 +68,7 @@ def main() -> int:
         print(json.dumps({"id": q["id"], "no_rag_s": plain["seconds"], "no_rag_error": plain["error"],
                           "rag_s": rag["seconds"], "rag_status": rag["status"], "rag_error": rag["error"],
                           "citations": len(rag.get("citations", []))}, ensure_ascii=False), flush=True)
-    save_json(settings.chroma_path.parent / "evaluation" / "f2015_results.json",
-              {"model": settings.llm_model, "results": results})
+    save_json(folder / args.output, {"model": settings.llm_model, "rag_only_rerun": args.rag_only, "results": results})
     return 0
 
 

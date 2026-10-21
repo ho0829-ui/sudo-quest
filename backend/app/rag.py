@@ -11,7 +11,7 @@ from app.corpus import check_manifest
 from app.graphs import build_graph
 from app.providers import generate, embed
 
-PROMPT_VERSION = "discovery-1"
+PROMPT_VERSION = "discovery-2"
 CITATION = re.compile(r"\[근거\s*([\d,\s]+)\]")
 
 
