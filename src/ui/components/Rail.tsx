@@ -6,6 +6,7 @@ import { THEMES } from "../campus/themes";
 import { OPEN_CATEGORIES } from "../categories";
 import { Icon, type IconName } from "./Icon";
 import { BrandMark } from "./BrandLogo";
+import { useBoardCount } from "../community/useBoardCount";
 
 export type Workspace = "game" | "knowledge" | "records" | "community";
 
@@ -32,9 +33,11 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
   const rank = operatorRank(cleared.length, scenarios.length);
   const xp = cleared.reduce((sum, s) => sum + progress[s.id].bestScore, 0);
   const open = scenarios.length - cleared.length;
+  const posts = useBoardCount(workspace);
   // 배지는 짧게(숫자 위주) 두고 뜻은 aria-label로 알린다. 좁은 레일에서도 한 줄에 들어가야 한다.
   const badge: Record<Workspace, { text: string; label: string }> = {
-    community: { text: "", label: "질문과 경험 공유" },
+    // 다른 메뉴처럼 실제 숫자(게시글 수)를 단다. 서버가 꺼져 있으면 "–".
+    community: posts === null ? { text: "–", label: "게시판 서버 연결 안 됨" } : { text: String(posts), label: `게시글 ${posts}개` },
     game: { text: String(open), label: `미해결 ${open}건` },
     knowledge: { text: "AI", label: "AI 근거 답변" },
     records: { text: String(cleared.length), label: `해결 ${cleared.length}건` },
