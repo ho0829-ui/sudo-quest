@@ -2,7 +2,24 @@
 
 갱신: 2026-10-21 · 단계: 구현·검증·제출 문서 완료. 셀프 체크리스트·상호 점검·제출은 사용자 몫
 
-## 최신 상태 — SUDO QUEST 이름 확정, 경보등 수정, 원인 노출·du 깊이 수정, 본질 다듬기 로드맵 (2026-10-21 23시대, Mac)
+## 최신 상태 — 명령 커버리지 완료, 뒤로가기·세션 보존·스크롤 수정, 확장 계획 (2026-10-22, Mac)
+
+- 브랜치 `feature/sudo-quest`(push 안 함). 이번 커밋: `460010a` 엔진 커버리지, `34876a2` UI 수정. vitest **325**, typecheck·build 통과.
+- 엔진(`460010a`): 파이프(|), grep/head/sort/wc 신규(기본 묶음), tail·cat·sed 파이프 입력, systemctl reload·nginx -s reload/-T/-v, openssl s_client, mysql SHOW PROCESSLIST/DATABASES·1064, 게임식 안내 → 실제 도구 오류 형식(aws CLI v2 Invalid choice 등), /etc/hosts. 상설 테스트 `tests/command-coverage.test.ts`(시나리오 문구·풀이 명령이 "미지원"으로 거절되면 실패).
+- UI(`34876a2`): 해시 라우트(`ui/route.ts`, #/mission/N[/play|/report], 시나리오 ID 미노출)로 뒤로/앞으로 가기. 진행 중 실습을 sessionStorage에 두고 입력 명령을 엔진에 재실행해 복원(`ui/sessionStore.ts`), 브리핑 "조사 이어서 하기". 코치·지식 대화도 탭 저장소(`ui/useStoredState.ts`), 대기 중 이탈 질문은 재질문 안내. 근거 링크는 `ExternalLink`(새 탭·noopener). 지식 목록 호버 transform 제거·scrollbar-gutter·가로 넘침 차단(레일 메뉴도).
+- 브라우저 검증(실제): 홈→브리핑→실습→뒤로(브리핑, "이어서")→앞으로(명령 유지)→뒤로×2(홈). 외부 페이지로 이동 후 뒤로: 실습·명령·코치 답변 복원, 대기 질문 안내. 지식 목록 가로 넘침 0, 선택 항목·#/knowledge 새로고침 유지, 건너뛰기 링크가 주소 불변. 테스트용 sessionStorage는 지움.
+- 공식 문서 재점검: validate_catalog 실패 0, 189개 절의 원본 8페이지 모두 200·리디렉션 없음. 내용 변경(해시 비교)은 미확인.
+- 확장 조사·계획: `11_확장_계획_도커_K8s_시나리오.md`. K8s 문서 CC BY 4.0·Docker 문서 Apache 2.0(원본 LICENSE 확인). 제안: 대비(분류 레지스트리·빠짐 검사·시나리오 근거 필드·라이선스 허용 목록·작성 가이드) → K8s → Docker → Linux·Web, 13→24개. **사용자 결정 대기**(도커/K8s 여부, 범위·순서, 근거 필드 필수).
+- 실행 중: 5173(dev), 8000(api-mac). 커밋 안 된 것: 이 문서들(HANDOFF/TASKS/11_).
+
+## 이전 상태 — 의미 단위 커밋 7개, 로드맵 1단계(명령 커버리지) 진행 중 (2026-10-21 23시대, Mac, 사용량 한도로 중단)
+
+- 커밋: 브랜치 `feature/sudo-quest`(master에서 분기, push 안 함) 7개 — chore(setup) / feat(engine,coach) / fix(ui 안정화) / feat(ui 코치) / feat(report) / feat(ui SUDO QUEST) / docs. 임시 worktree에서 커밋마다 typecheck·vitest 통과 확인(197→278). 중간 커밋이 PlayScreen 때문에 typecheck 실패해 그 3개만 단계별 PlayScreen으로 다시 만들었고 최종 트리는 동일. `tsconfig.tsbuildinfo`는 추적 해제·.gitignore. 키 값 검사 0건. master 반영: `git switch master && git merge --ff-only feature/sudo-quest`(사용자 결정).
+- 커버리지 조사(임시 probe, 삭제함): 시나리오 문구·풀이·실무 점검 명령을 엔진에 실행. 실제 결함: ① grep 없음·파이프 미지원(linux-oom 문구가 `dmesg | grep -i oom`을 권함) ② systemctl reload 미지원(web-nginx-config 포스트모템이 reload를 권함) ③ nginx -s reload/-T 미지원 ④ /etc/hosts 없음(13개 전부) ⑤ "이 시뮬레이터는 …만 지원합니다" 같은 게임식 오류 문구(nginx·openssl·mysql·cat·tail, CLAUDE.md 5절 위반) ⑥ aws s3/logs 미지원.
+- 이번에 고침(미커밋): `services.reloadService`(실행 중일 때만, 설정 오류면 거부하고 기존 프로세스 유지, 포트 재적용, 설정 없는 서비스는 not applicable), `systemctl reload`(권한·비활성·거부 메시지 실제 형식), 테스트 1개. vitest 279, typecheck 통과.
+- 다음 할 일(순서): 파이프라인(`|`, 따옴표 인식 분리, CommandContext.stdin) + grep/head/sort/wc 새 명령(1파일=1명령, DEFAULT_COMMANDS 추가) + tail/cat stdin → coachPrompts의 SHELL_OPERATORS에서 `|` 허용·supportsInvocation이 각 단계 검사 → nginx -s reload/-T → /etc/hosts → 게임식 오류 문구를 실제 형식으로 → 시나리오 문구 속 명령이 "미지원"이면 실패하는 커버리지 테스트 상설화 → 커밋.
+
+## 이전 상태 — SUDO QUEST 이름 확정, 경보등 수정, 원인 노출·du 깊이 수정, 본질 다듬기 로드맵 (2026-10-21 23시대, Mac)
 
 - 사용자 결정: 앱 이름 **SUDO QUEST(수도퀘스트)**. 디자인·레벨 시스템 만족. 경보등 박스가 무너진 것 수정 요청. 이후 디자인은 보류하고 실질적인 내용 다듬기 계획을 세우고, 이미 알던 결함은 바로 고쳐도 됨.
 - 경보등: 벽 뒤 모서리 위에 바로 얹혀 네온 이음새를 가리던 것을 가는 기둥 위로 올림(`RoomShell`). 같은 모서리에 있던 보안 카메라를 왼쪽 벽 [0.05, 1.4, 3.3]으로 옮김.
