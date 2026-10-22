@@ -5,8 +5,10 @@ import { buildInitialState } from "../src/engine/scenario/build";
 import { ubuntuWeb } from "../src/engine/state/hosts";
 import { kubernetesImagePull as scenario } from "../src/scenarios/kubernetes-image-pull";
 import type { SystemState } from "../src/engine/state/types";
-import { createSession, execute, isCleared, submitCause } from "../src/engine/session/session";
-import { restoreSession, serializeSession } from "../src/ui/sessionStore";
+import { createSession, isCleared, submitCause } from "../src/engine/session/session";
+import { execute } from "../src/engine/session/execute";
+import { serializeSession } from "../src/ui/sessionStore";
+import { restoreSession } from "../src/ui/sessionReplay";
 import { buildReportMarkdown, EMPTY_REFLECTION } from "../src/ui/report";
 
 const run = (line: string, state: SystemState = buildInitialState(scenario)) =>

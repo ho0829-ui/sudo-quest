@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildCoachRequest, clip, MAX_OBSERVATIONS } from "../src/api/coach";
-import { createSession, execute, revealHint } from "../src/engine/session/session";
+import { createSession, revealHint } from "../src/engine/session/session";
+import { execute } from "../src/engine/session/execute";
 import { scenarios } from "../src/scenarios";
 
 const T0 = 1_000_000_000_000;

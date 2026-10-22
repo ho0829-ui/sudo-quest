@@ -1,11 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { scenarios } from '../scenarios';
 import type { Scenario } from '../engine/scenario/types';
-import { createSession, execute, isCleared, revealHint, submitCause, type Session } from '../engine/session/session';
+import { createSession, isCleared, revealHint, submitCause, type Session } from '../engine/session/session';
 import { calculateScore } from '../engine/session/score';
 import { ScenarioList } from './screens/ScenarioList';
 import { TicketScreen } from './screens/TicketScreen';
-import { PlayScreen } from './screens/PlayScreen';
 import { ReportScreen } from './screens/ReportScreen';
 import { clearProgress, loadProgress, saveClear, type Progress } from './storage';
 import { BackendStatus } from './components/BackendStatus';
@@ -14,7 +13,7 @@ import { Icon } from './components/Icon';
 import { Rail, type Workspace } from './components/Rail';
 import { CampusDefs } from './campus/RoomVignette';
 import { formatRoute, parseRoute, type Route } from './route';
-import { loadActiveSession, saveActiveSession } from './sessionStore';
+import { readSavedSession, saveActiveSession } from './sessionStore';
 import './styles.css';
 import './command-center.css';
 import './coach.css';
@@ -23,6 +22,8 @@ import { missionDraft } from './community/postFormat';
 
 // 게시판 화면은 처음 들어갈 때 불러온다. 회고 양식(missionDraft)은 작은 순수 함수라 바로 가져온다.
 const CommunityScreen = lazy(() => import('./community/CommunityScreen').then(m => ({ default: m.CommunityScreen })));
+// 실습 화면(터미널·코치)과 명령 실행 엔진은 실습에 들어갈 때 불러온다. 홈 첫 화면을 가볍게 하려는 분할이다.
+const PlayScreen = lazy(() => import('./screens/PlayScreen').then(m => ({ default: m.PlayScreen })));
 
 /**
  * 화면은 주소(해시 라우트)에서 정해진다. 이동할 때 브라우저 기록에 쌓아 두므로
@@ -33,7 +34,9 @@ export function App() {
   const [route, setRoute] = useState<Route>(() => parseRoute(window.location.hash, scenarios.length));
   const [knowledgeVisited, setKnowledgeVisited] = useState(route.kind === 'knowledge');
   const [motion, setMotion] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const [session, setSession] = useState<Session | null>(() => loadActiveSession(scenarios));
+  const [session, setSession] = useState<Session | null>(null);
+  // 새로고침 전 실습이 있으면 엔진을 불러와 입력을 다시 실행한다. 끝나기 전에는 저장·주소 보정을 멈춘다.
+  const [restoring, setRestoring] = useState(() => readSavedSession() !== null);
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
 
   const workspace: Workspace = route.kind === 'community' ? 'community' : route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
@@ -62,15 +65,26 @@ export function App() {
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  useEffect(() => { saveActiveSession(session); }, [session]);
+  useEffect(() => {
+    const saved = readSavedSession();
+    if (!saved) return;
+    let cancelled = false;
+    import('./sessionReplay')
+      .then(({ restoreSession }) => { if (!cancelled) setSession(restoreSession(saved, scenarios)); })
+      .catch(() => { /* 조각을 못 받으면 새 실습으로 시작한다 */ })
+      .finally(() => { if (!cancelled) setRestoring(false); });
+    return () => { cancelled = true; };
+  }, []);
+  // 복원 중에 빈 세션을 저장하면 저장본이 지워지므로, 복원이 끝난 뒤부터 저장한다.
+  useEffect(() => { if (!restoring) saveActiveSession(session); }, [session, restoring]);
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [route]);
 
   // 주소는 실습 중인데 그 실습의 세션이 없으면(직접 입력·오래된 기록) 브리핑으로 돌려보낸다.
   useEffect(() => {
-    if (route.kind !== 'mission' || route.stage === 'briefing') return;
+    if (restoring || route.kind !== 'mission' || route.stage === 'briefing') return;
     const ready = route.stage === 'play' ? ownSession : ownSession && isCleared(ownSession) ? ownSession : null;
     if (!ready) go({ ...route, stage: 'briefing' }, true);
-  }, [route, ownSession]);
+  }, [route, ownSession, restoring]);
 
   useEffect(() => {
     if (!ownSession || stage !== 'play' || !isCleared(ownSession) || route.kind !== 'mission') return;
@@ -120,10 +134,11 @@ export function App() {
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
           {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
           {stage === 'briefing' && scenario && <TicketScreen scenario={scenario} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
-          {stage === 'play' && ownSession && <PlayScreen session={ownSession}
-            onCommand={input => setSession(current => current ? execute(current, input) : current)}
+          {restoring && stage !== 'briefing' && <p role="status" className="small muted">진행 중이던 실습을 이어서 불러오는 중…</p>}
+          {stage === 'play' && ownSession && <Suspense fallback={<p role="status" className="small muted">실습 터미널을 준비하는 중…</p>}><PlayScreen session={ownSession}
+            onUpdate={change => setSession(current => current ? change(current) : current)}
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
-            onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} />}
+            onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} /></Suspense>}
           {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
             onShare={() => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })} />}
         </div>

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildReportMarkdown, EMPTY_REFLECTION, loadReflection, saveReflection, reportFilename, REFLECTION_LIMIT } from '../src/ui/report';
-import { createSession, execute, submitCause } from '../src/engine/session/session';
+import { createSession, submitCause } from '../src/engine/session/session';
+import { execute } from '../src/engine/session/execute';
 import { scenarios } from '../src/scenarios';
 
 const now = 1_000_000_000_000;

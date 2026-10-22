@@ -4,8 +4,8 @@
  * "지금 이 시나리오를 푸는 중인 한 판"의 전부를 담는다.
  * React를 모르는 순수 TypeScript라서 브라우저 없이 테스트할 수 있다.
  * UI는 이 함수들을 부르고 결과를 화면에 그리기만 한다.
+ * 명령 실행(execute)은 명령 구현 전체를 끌어오므로 execute.ts에 따로 둔다. 홈 화면은 이 파일만 읽는다.
  */
-import { runCommand } from "../run";
 import { buildInitialState } from "../scenario/build";
 import type { Scenario } from "../scenario/types";
 import type { SystemState } from "../state/types";
@@ -63,35 +63,11 @@ export function isCleared(session: Session): boolean {
 }
 
 /** 클리어 시점을 한 번만 기록한다. */
-function stampFinish(session: Session, now: number): Session {
+export function stampFinish(session: Session, now: number): Session {
   if (session.finishedAt === undefined && isCleared(session)) {
     return { ...session, finishedAt: now };
   }
   return session;
-}
-
-/** 명령어 한 줄을 실행하고 새 세션을 돌려준다. */
-export function execute(session: Session, input: string, now: number = Date.now()): Session {
-  const result = runCommand(session.state, input, { available: session.scenario.commands });
-
-  const next: Session = {
-    ...session,
-    state: result.state,
-    lines: [
-      ...session.lines,
-      {
-        input,
-        stdout: result.stdout,
-        stderr: result.stderr,
-        exitCode: result.exitCode,
-        cwd: session.state.cwd, // 명령 실행 "전"의 위치
-      },
-    ],
-    // 빈 입력은 기록하지 않는다 (엔터만 친 경우)
-    commands: input.trim() ? [...session.commands, input.trim()] : session.commands,
-  };
-
-  return stampFinish(next, now);
 }
 
 /** 다음 힌트를 연다. 이미 다 봤으면 그대로 둔다. */

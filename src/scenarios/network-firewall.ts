@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, firewallAllows, serviceIsActive } from "../engine/judge";
 import { logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";

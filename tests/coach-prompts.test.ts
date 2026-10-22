@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { coachNudge, HYPOTHESIS_TEMPLATE, quickPrompts, runnableCommands } from "../src/ui/coachPrompts";
 import { DEFAULT_COMMANDS } from "../src/engine/commands";
-import { createSession, execute } from "../src/engine/session/session";
+import { createSession } from "../src/engine/session/session";
+import { execute } from "../src/engine/session/execute";
 import { scenarios } from "../src/scenarios";
 
 const T0 = 1_000_000_000_000;

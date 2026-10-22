@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import type { Scenario } from "../engine/scenario/types";
 import { writeFile } from "../engine/state/fs";
 import { addDeployment, changeTemplate } from "../engine/state/kubernetes/history";

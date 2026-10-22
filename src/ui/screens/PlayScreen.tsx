@@ -3,6 +3,7 @@ import { Terminal } from "../components/Terminal";
 import { Sidebar } from "../components/Sidebar";
 import { CauseDialog } from "../components/CauseDialog";
 import type { Session } from "../../engine/session/session";
+import { execute } from "../../engine/session/execute";
 import { shuffleChoices } from "../shuffleChoices";
 import { MissionHud } from "../components/MissionHud";
 import { THEMES } from "../campus/themes";
@@ -10,7 +11,8 @@ import { scenarios } from "../../scenarios";
 
 interface PlayScreenProps {
   session: Session;
-  onCommand: (input: string) => void;
+  /** 세션을 바꾸는 함수를 넘긴다. 명령 실행(execute)은 이 화면 조각 안에 있어 App이 명령 구현을 가져오지 않는다. */
+  onUpdate: (change: (current: Session) => Session) => void;
   onRevealHint: () => void;
   onSubmitCause: (choiceId: string) => { correct: boolean; whyWrong?: string };
   onGiveUp: () => void;
@@ -18,11 +20,12 @@ interface PlayScreenProps {
 
 export function PlayScreen({
   session,
-  onCommand,
+  onUpdate,
   onRevealHint,
   onSubmitCause,
   onGiveUp,
 }: PlayScreenProps) {
+  const onCommand = (input: string) => onUpdate((current) => execute(current, input));
   const [causeOpen, setCauseOpen] = useState(false);
   // 모달을 다시 열거나 오답을 고르더라도 한 판 안에서는 순서를 유지한다.
   const [choices] = useState(() => shuffleChoices(session.scenario.rootCause.choices));

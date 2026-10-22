@@ -72,14 +72,7 @@ export function supportsInvocation(line: string, available: string[]): boolean {
   });
 }
 
-/** 시나리오가 commands를 지정하지 않으면 쓰이는 기본 명령어 묶음 (리눅스 기본) */
-export const DEFAULT_COMMANDS = [
-  "help", "ls", "cat", "cd", "pwd", "tail", "head", "grep", "sort", "wc", "df", "du", "rm", "systemctl", "journalctl",
-];
-
-/** 기본 묶음에 시나리오별 명령어를 더한다. 시나리오 파일에서 쓴다. */
-export function withCommands(...extra: string[]): string[] {
-  return [...DEFAULT_COMMANDS, ...extra];
-}
+// 명령 이름 목록은 등록부(구현 전체)를 끌어오지 않는 names.ts에 있다. 시나리오는 그쪽을 쓴다.
+export { DEFAULT_COMMANDS, withCommands } from "./names";
 
 export type { Command, CommandContext, CommandResult } from "./types";

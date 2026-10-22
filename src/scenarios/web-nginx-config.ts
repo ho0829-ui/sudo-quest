@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, nginxConfigIsValid, serviceIsActive } from "../engine/judge";
 import { crashService, logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";

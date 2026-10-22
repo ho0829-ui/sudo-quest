@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, portIsListening, serviceIsActive } from "../engine/judge";
 import { logLine, putFile, restartedAt } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";

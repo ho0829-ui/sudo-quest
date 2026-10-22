@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import type { Scenario } from "../engine/scenario/types";
 import { portOwner } from "../engine/state/derived";
 import { createContainer, startContainer } from "../engine/state/docker/lifecycle";

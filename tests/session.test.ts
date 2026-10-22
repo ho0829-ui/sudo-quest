@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   createSession,
   elapsedSeconds,
-  execute,
   isCleared,
   revealHint,
   submitCause,
 } from "../src/engine/session/session";
+import { execute } from "../src/engine/session/execute";
 import { calculateScore, formatDuration } from "../src/engine/session/score";
 import { complete } from "../src/engine/complete";
 import { linuxDiskFull } from "../src/scenarios/linux-disk-full";

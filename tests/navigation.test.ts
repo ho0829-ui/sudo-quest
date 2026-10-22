@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { formatRoute, parseRoute, type Route } from "../src/ui/route";
-import { restoreSession, serializeSession } from "../src/ui/sessionStore";
-import { createSession, execute, revealHint, submitCause } from "../src/engine/session/session";
+import { serializeSession } from "../src/ui/sessionStore";
+import { restoreSession } from "../src/ui/sessionReplay";
+import { createSession, revealHint, submitCause } from "../src/engine/session/session";
+import { execute } from "../src/engine/session/execute";
 import { scenarios } from "../src/scenarios";
 
 describe("해시 라우트", () => {
