@@ -1,0 +1,57 @@
+.quest-dialog { padding: 0; margin: auto; width: min(960px, calc(100vw - 40px)); max-width: none; max-height: calc(100dvh - 40px); border: 1px solid #354654; border-radius: 18px; background: #0c111b; color: #e9eef5; box-shadow: 0 36px 150px #000c, 0 0 65px #00baff12; overflow-x: hidden; overflow-y: auto; }
+.quest-dialog::backdrop { background: #03060cdc; backdrop-filter: blur(7px); }
+.quest-topline { height: 51px; padding: 0 25px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #273543; }
+.quest-topline > span { display: flex; align-items: center; gap: 9px; color: #91a5ba; font: 10px monospace; letter-spacing: .16em; }.quest-topline b { color: var(--quest-accent); font-weight: 500; }
+.quest-topline i { height: 5px; width: 5px; border-radius: 50%; background: var(--quest-accent); box-shadow: 0 0 9px var(--quest-accent); }
+.quest-topline button { border: 0; background: transparent; padding: 5px 0 5px 12px; font-size: 12px; color: #b2bfcc; }.quest-topline button span { font: 9px monospace; border: 1px solid #344351; border-radius: 3px; padding: 3px 5px; margin-left: 8px; }
+.quest-scene { position: relative; height: clamp(215px, 34vh, 340px); overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 44% 50%, #203f50, #090f18 65%); }
+.quest-set { position: absolute; inset: 0; animation: quest-room-push 1.6s cubic-bezier(.22,.68,.25,1) both; }
+.quest-rack { position: absolute; top: 40px; width: 118px; bottom: 5px; border: 7px solid #25323f; border-radius: 4px; background: #0b121c; display: flex; flex-direction: column; justify-content: space-around; padding: 10px; opacity: .7; box-shadow: 14px 12px 0 #101c28; }
+.quest-rack.left { left: 8%; transform: perspective(400px) rotateY(22deg); }.quest-rack.right { right: 8%; transform: perspective(400px) rotateY(-22deg); }
+.quest-rack > span { height: 24px; background: #1d2c3a; border-bottom: 2px solid #080f18; display: flex; align-items: center; gap: 5px; padding: 0 8px; }
+.quest-rack i { width: 3px; height: 3px; border-radius: 50%; background: #5ed2be; box-shadow: 0 0 5px #5ed2be88; }.quest-rack i:nth-child(2) { background: #d1a667; }.quest-rack b { margin-left: auto; width: 30px; height: 4px; background: repeating-linear-gradient(90deg,#0b1420 0 2px,transparent 2px 4px); }
+.quest-ceiling { position: absolute; width: 45%; left: 28%; top: 18px; height: 2px; background: #9cd4dc; box-shadow: 0 0 35px #7bd7e6; opacity: .45; }
+.quest-horizon { position: absolute; left: 0; right: 0; bottom: 60px; height: 1px; background: #42a4bc33; box-shadow: 0 0 20px #3cb3d5; }
+.quest-floor { position: absolute; left: -30%; right: -30%; bottom: -100px; height: 200px; transform: perspective(120px) rotateX(50deg); background-image: linear-gradient(#3a779922 1px,transparent 1px),linear-gradient(90deg,#3a779922 1px,transparent 1px); background-size: 50px 50px; }
+.quest-actor { position: absolute; left: 31%; top: 20px; height: 100%; aspect-ratio: 2 / 3; transform-origin: 50% 12%; animation: quest-camera-push 1.6s cubic-bezier(.22,.68,.25,1) both; }
+.quest-officer { display: block; height: 100%; width: 100%; overflow: visible; filter: drop-shadow(14px 6px 22px #02071299); }
+.quest-letterbox { position: absolute; left: 0; right: 0; height: 20px; background: #060a10; z-index: 2; pointer-events: none; }.quest-letterbox.top { top: 0; }.quest-letterbox.bottom { bottom: 0; }
+.quest-scene::after { content: ''; pointer-events: none; position: absolute; inset: 0; background: linear-gradient(0deg,#0c111b 0%,transparent 26%),repeating-linear-gradient(transparent 0 3px,#060c1110 3px 4px); z-index: 1; }
+.quest-scene-caption { position: absolute; z-index: 3; top: 30px; left: 25px; right: 25px; display: flex; justify-content: space-between; color: #6f8c9c; font: 9px monospace; letter-spacing: .1em; }
+.quest-scene-label { position: absolute; left: 70%; top: 42%; display: grid; gap: 9px; z-index: 2; animation: quest-label-in 1.6s ease both; }.quest-scene-label span { color: #7f9caf; font: 8px monospace; letter-spacing: .2em; }.quest-scene-label strong { color: #d4e1e9; font: 22px monospace; letter-spacing: .15em; }.quest-scene-label small { font-size: 10px; color: #8dabbc; }
+.quest-skip { position: absolute; bottom: 30px; right: 25px; z-index: 4; background: #08121cbf; border-color: #476171; color: #b8d2df; font-size: 11px; }
+.quest-conversation { position: relative; z-index: 4; padding: 23px 32px 27px; background: linear-gradient(120deg,#131d2b,#0e1520); border-top: 1px solid #374555; }
+.quest-speaker { display: flex; gap: 11px; align-items: center; margin-bottom: 21px; }.quest-speaker-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid #446877; border-radius: 8px; color: #79ced8; background: #1c3442; font: 15px monospace; }.quest-speaker > div { display: flex; gap: 10px; align-items: baseline; }.quest-speaker strong { font-size: 15px; }.quest-speaker div span { font-size: 11px; color: #7f94a7; }.quest-dialogue-count { font: 10px monospace; color: #738b9b; letter-spacing: .1em; margin-left: auto; }
+.quest-lines { animation: quest-text-in .25s ease-out; }.quest-lines h2 { font-size: 20px; letter-spacing: -.025em; margin: 0 0 12px; line-height: 1.5; color: #edf4fa; outline-offset: 5px; }.quest-lines h2:focus { outline: none; }.quest-lines p { white-space: pre-wrap; margin: 0; line-height: 1.85; font-size: 14px; color: #b6c5d3; overflow-wrap: anywhere; }
+.quest-actions { margin-top: 25px; padding-top: 18px; border-top: 1px solid #283643; display: flex; gap: 12px; justify-content: flex-end; }.quest-actions button { font-size: 13px; padding: 11px 17px; }.quest-actions > button:first-child { margin-right: auto; border-color: transparent; color: #a4b7c7; background: transparent; }.quest-actions .primary { background: #8de2e6; border-color: #8de2e6; color: #071923; box-shadow: 0 0 22px #6ad1e61a; }.quest-accept span { margin-left: 15px; opacity: .6; }.quest-wait { min-height: 132px; display: grid; place-content: center; }
+@keyframes quest-camera-push { from { transform: scale(1); } to { transform: scale(2.1); } }
+@keyframes quest-room-push { from { transform: scale(1); opacity: .85; } to { transform: scale(1.09); opacity: .6; } }
+@keyframes quest-label-in { 0%,60% { opacity: 0; transform: translateX(-8px); } 100% { opacity: 1; transform: none; } }
+@keyframes quest-text-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.quest-dialog.is-ready .quest-actor, .quest-dialog.no-motion .quest-actor { animation: none; transform: scale(2.1); }
+.quest-dialog.is-ready .quest-set, .quest-dialog.no-motion .quest-set { animation: none; transform: scale(1.09); opacity: .6; }
+.quest-dialog.is-ready .quest-scene-label, .quest-dialog.no-motion .quest-scene-label { animation: none; }
+.quest-dialog.no-motion .quest-lines { animation: none; }
+@media (max-width: 600px) { .quest-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: 12px; }.quest-topline { padding: 0 16px; }.quest-scene { height: 230px; }.quest-actor { left: 22%; }.quest-scene-label { left: 68%; top: 52%; }.quest-scene-label small { display: none; }.quest-scene-label strong { font-size: 15px; }.quest-scene-label span { font-size: 6px; letter-spacing: 0; }.quest-scene-caption { left: 16px; right: 16px; font-size: 8px; }.quest-scene-caption span:last-child { display: none; }.quest-rack { width: 70px; padding: 5px; border-width: 4px; }.quest-rack.left { left: -5%; }.quest-rack.right { right: -7%; }.quest-conversation { padding: 20px; }.quest-speaker div { flex-direction: column; gap: 4px; }.quest-lines h2 { font-size: 18px; }.quest-lines p { font-size: 13px; }.quest-actions { flex-wrap: wrap; }.quest-actions button { font-size: 12px; }.quest-accept span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .quest-actor { animation: none; transform: scale(2.1); }.quest-set, .quest-lines, .quest-scene-label { animation: none; } }
+/* 짧은 화면에서도 수락 버튼은 남기고 긴 신고 내용만 스크롤한다. */
+.quest-dialog[open] { display: flex; flex-direction: column; }
+.quest-topline, .quest-scene, .quest-speaker, .quest-actions { flex-shrink: 0; }
+.quest-conversation { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.quest-lines { overflow-y: auto; min-height: 0; overscroll-behavior: contain; padding-right: 8px; }
+.quest-lines:focus-visible { outline: 1px solid #7ebfc9; outline-offset: 4px; }
+@media (max-height: 600px) {
+  .quest-dialog { max-height: calc(100dvh - 16px); }
+  .quest-topline { height: 40px; }
+  .quest-scene { height: 120px; }
+  .quest-scene-label { top: 36%; }
+  .quest-scene-label small, .quest-scene-caption { display: none; }
+  .quest-letterbox { height: 10px; }
+  .quest-actor { top: 12px; }
+  .quest-conversation { padding: 12px 20px; }
+  .quest-speaker { margin-bottom: 10px; }
+  .quest-speaker-mark { width: 26px; height: 26px; }
+  .quest-actions { margin-top: 12px; padding-top: 10px; }
+  .quest-actions button { padding: 8px 12px; }
+  .quest-wait { min-height: 60px; }
+}

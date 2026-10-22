@@ -1,3 +1,4 @@
+import { TerminalLoader } from "../components/TerminalLoader";
 import { useEffect, useRef, useState } from "react";
 import { getItems, getJob, startChat, type Item } from "../../api/knowledge";
 import { ConditionSearch } from "../components/ConditionSearch";
@@ -140,7 +141,7 @@ export function KnowledgeScreen() {
               </>}
             </article>)}
           </div>
-          {pending && <p role="status">{pending.item === selected ? stages[pending.stage] || "처리 중" : "다른 항목의 답변을 처리 중입니다."}</p>}
+          {pending && <TerminalLoader label={pending.item === selected ? stages[pending.stage] || "처리 중" : "다른 항목의 답변을 처리 중입니다."} />}
           <form onSubmit={e => { e.preventDefault(); void submit(); }}>
             <label htmlFor="knowledge-question">공식 문서에 질문하기</label>
             {/* 예시는 입력창에 채우기만 한다. 유료 호출이므로 보내기는 사용자가 직접 누른다. */}

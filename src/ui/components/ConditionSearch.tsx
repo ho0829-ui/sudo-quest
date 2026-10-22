@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { TerminalLoader } from "./TerminalLoader";
 import { getJob, startSearch, type ExploreResult } from "../../api/knowledge";
 
 const stages: Record<string, string> = {
@@ -48,7 +49,7 @@ export function ConditionSearch({ ready, onSelect }: { ready: boolean; onSelect:
         placeholder="예: curl에서 인증서 검증과 관련된 오류" />
       <button className="small" disabled={!ready || !!stage || !query.trim()}>조건으로 찾기</button>
     </form>
-    {stage && <p role="status">{stages[stage] || "처리 중"}</p>}
+    {stage && <TerminalLoader label={stages[stage] || "처리 중"} />}
     {error && <p role="alert">{error}</p>}
     {result && <div className="condition-results">
       <p className="muted small">

@@ -1,3 +1,4 @@
+import { TerminalLoader } from "../components/TerminalLoader";
 import { useState, type FormEvent } from 'react';
 import { BOARD_CATEGORIES, boardRequest, isPost, isComment, isCommentPage } from '../../api/community';
 import { BoardError, BoardTime, Pagination, loadNickname, saveNickname, useBoard } from './shared';
@@ -31,7 +32,7 @@ export function PostDetail({ id, adminKey, onDeleted }: PostDetailProps) {
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }
-  if (post.loading) return <p role="status" className="board-empty">이야기를 불러오고 있어요…</p>;
+  if (post.loading) return <div className="board-empty"><TerminalLoader label="이야기를 불러오고 있어요…" /></div>;
   if (post.error) return <BoardError message={post.error} retry={post.reload} />;
   if (!post.data) return null;
   const item = post.data;
@@ -49,7 +50,7 @@ export function PostDetail({ id, adminKey, onDeleted }: PostDetailProps) {
         : <PostBody text={item.body} />}
     </article>
     <section className="board-panel" aria-label="댓글"><h3>함께 나누는 이야기 {comments.data && <span>{comments.data.total}</span>}</h3>
-      {comments.loading && <p role="status">댓글을 불러오고 있어요…</p>}
+      {comments.loading && <TerminalLoader label="댓글을 불러오고 있어요…" />}
       {comments.error && <BoardError message={comments.error} retry={comments.reload} />}
       {comments.data && <>
         {comments.data.items.length === 0 && <p className="board-note">첫 번째 응원을 남겨 주세요.</p>}

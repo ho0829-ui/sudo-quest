@@ -7,6 +7,7 @@ import { ScenarioList } from './screens/ScenarioList';
 import { TicketScreen } from './screens/TicketScreen';
 import { ReportScreen } from './screens/ReportScreen';
 import { clearProgress, loadProgress, saveClear, type Progress } from './storage';
+import { TerminalLoader } from './components/TerminalLoader';
 import { BackendStatus } from './components/BackendStatus';
 import { KnowledgeScreen } from './screens/KnowledgeScreen';
 import { Icon } from './components/Icon';
@@ -124,7 +125,7 @@ export function App() {
       <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
       <main className="app" id="main-content" tabIndex={-1}>
         <BackendStatus />
-        {route.kind === 'community' && <Suspense fallback={<p role="status">카페 문을 여는 중…</p>}><CommunityScreen postId={route.postId} writing={!!route.write}
+        {route.kind === 'community' && <Suspense fallback={<TerminalLoader label="카페 문을 여는 중…" />}><CommunityScreen postId={route.postId} writing={!!route.write}
           preset={route.mission ? missionDraft(route.mission, scenarios[route.mission - 1].title) : undefined}
           onOpen={postId => go({ kind: 'community', postId })} onWrite={() => go({ kind: 'community', write: true })}
           onCreated={postId => go({ kind: 'community', postId }, true)} /></Suspense>}
@@ -133,9 +134,9 @@ export function App() {
         <div hidden={workspace !== 'game'}>
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
           {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
-          {stage === 'briefing' && scenario && <TicketScreen scenario={scenario} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
-          {restoring && stage !== 'briefing' && <p role="status" className="small muted">진행 중이던 실습을 이어서 불러오는 중…</p>}
-          {stage === 'play' && ownSession && <Suspense fallback={<p role="status" className="small muted">실습 터미널을 준비하는 중…</p>}><PlayScreen session={ownSession}
+          {stage === 'briefing' && scenario && <TicketScreen key={scenario.id} scenario={scenario} motion={motion} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
+          {restoring && stage !== 'briefing' && <TerminalLoader label="진행 중이던 실습을 이어서 불러오는 중…" />}
+          {stage === 'play' && ownSession && <Suspense fallback={<TerminalLoader label="실습 터미널을 준비하는 중…" />}><PlayScreen session={ownSession}
             onUpdate={change => setSession(current => current ? change(current) : current)}
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
             onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} /></Suspense>}

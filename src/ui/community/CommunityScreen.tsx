@@ -1,3 +1,4 @@
+import { TerminalLoader } from "../components/TerminalLoader";
 import { useState, type FormEvent, type MouseEvent } from 'react';
 import { BOARD_CATEGORIES, isPostPage, type BoardCategory } from '../../api/community';
 import { Icon } from '../components/Icon';
@@ -60,7 +61,7 @@ function BoardList({ onOpen, onWrite }: { onOpen: (id: number) => void; onWrite:
     </div>
     <form className="board-search" onSubmit={submit}><Icon name="search" size={18} /><input aria-label="게시글 검색" maxLength={100} placeholder="제목이나 내용으로 이야기 찾기" value={search} onChange={e => setSearch(e.target.value)} />
       <button type="submit">검색</button>{query && <button type="button" aria-label="검색 초기화" onClick={() => { setSearch(''); setQuery(''); setPage(1); }}>×</button>}</form>
-    {list.loading && <div role="status" className="board-empty">이야기를 불러오고 있어요…</div>}
+    {list.loading && <div className="board-empty"><TerminalLoader label="이야기를 불러오고 있어요…" /></div>}
     {list.error && <BoardError message={list.error} retry={list.reload} />}
     {list.data && <>
       {list.data.items.length === 0 ? <div className="board-empty"><span aria-hidden="true">☕</span><h3>{query || category ? '아직 이 주제의 이야기가 없어요' : '첫 번째 테이블이 비어 있어요'}</h3>

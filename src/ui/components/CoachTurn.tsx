@@ -1,3 +1,4 @@
+import { TerminalLoader } from "./TerminalLoader";
 import type { CoachAnswer } from "../../api/coach";
 import { runnableCommands } from "../coachPrompts";
 import { RichAnswer, RichLine } from "./RichAnswer";
@@ -17,7 +18,7 @@ export function CoachTurn({ turn, available, onUseCommand }: CoachTurnProps) {
   return <article className="coach-turn">
     <p className="coach-question"><span>YOU</span>{turn.question}</p>
     {turn.error && <p role="alert" className="coach-error">{turn.error}</p>}
-    {!turn.error && !result && <p className="coach-pending" aria-hidden="true"><i /><i /><i /></p>}
+    {!turn.error && !result && <TerminalLoader label="코치가 기록을 살펴보고 있어요…" />}
     {result && <div className="coach-answer">
       <span className="coach-label">COACH</span>
       <RichAnswer text={result.answer} />
