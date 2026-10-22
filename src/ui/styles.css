@@ -375,6 +375,11 @@ button.primary {
   font-family: var(--mono);
 }
 
+/* 소요 시간·명령어 칸의 짧은 평(점수와 무관). 감점 줄과 같은 높이로 칸을 맞춘다. */
+.score-item .score-note {
+  color: #8fd8ea;
+}
+
 .grade {
   font-size: 46px;
   font-weight: 700;

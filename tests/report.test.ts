@@ -91,3 +91,15 @@ describe('Markdown 리포트', () => {
     expect(reportFilename(session)).toBe(`sudo-quest-${scenarios[0].id}-2026-10-22-0906.md`);
   });
 });
+
+describe("리포트 시간·명령어 칸의 짧은 평", () => {
+  it("시간은 3분·10분을 경계로, 명령 수는 모범 풀이 길이와 비교해 긍정적인 말만 고른다", async () => {
+    const { commandNote, timeNote } = await import("../src/ui/reportNotes");
+    expect(timeNote(120)).toContain("빠른 복구");
+    expect(timeNote(300)).toContain("차근차근");
+    expect(timeNote(900)).toContain("끈기");
+    expect(commandNote(5, 9)).toContain("군더더기 없이");
+    expect(commandNote(15, 9)).toContain("꼼꼼한 확인");
+    expect(commandNote(30, 9)).toContain("넓게 탐색");
+  });
+});

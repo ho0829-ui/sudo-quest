@@ -4,6 +4,7 @@ import type { EvidenceKind } from "../../engine/scenario/types";
 import { InvestigationReview } from "../components/InvestigationReview";
 import { ExternalLink } from "../components/ExternalLink";
 import type { PartyNotice } from "../party";
+import { commandNote, timeNote } from "../reportNotes";
 
 const EVIDENCE_LABEL: Record<EvidenceKind, string> = { "official-doc": "공식 문서", postmortem: "공개 포스트모템", survey: "업계 조사" };
 
@@ -37,8 +38,8 @@ export function ReportScreen({ session, onBackToList, onRetry, onShare, next, pa
         <div style={{ fontSize: 22, fontWeight: 600, marginTop: 6 }}>{score.total}점</div>
 
         <div className="score-grid">
-          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} />
-          <ScoreItem label="명령어" value={`${commands.length}회`} />
+          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} note={timeNote(score.elapsedSeconds)} />
+          <ScoreItem label="명령어" value={`${commands.length}회`} note={commandNote(commands.length, scenario.solutionPath.length)} />
           <ScoreItem label="힌트" value={`${session.hintsUsed}회`} penalty={score.hintPenalty} />
           <ScoreItem label="오답" value={`${session.wrongAnswers.length}회`} penalty={score.wrongPenalty} />
         </div>
@@ -139,8 +140,8 @@ function gistOf(command: string): string {
   return words.slice(0, 2).join(" ");
 }
 
-/** penalty가 없으면 점수와 무관한 기록(시간·명령 수)이라 감점 줄을 그리지 않는다. */
-function ScoreItem({ label, value, penalty }: { label: string; value: string; penalty?: number }) {
+/** penalty가 있으면 감점 줄, 없으면(시간·명령 수 — 점수와 무관) note로 짧은 평을 단다. */
+function ScoreItem({ label, value, penalty, note }: { label: string; value: string; penalty?: number; note?: string }) {
   return (
     <div className="score-item">
       <div className="small muted">{label}</div>
@@ -148,6 +149,7 @@ function ScoreItem({ label, value, penalty }: { label: string; value: string; pe
       {penalty !== undefined && <div className="small" style={{ color: penalty ? "var(--red)" : "var(--muted)" }}>
         {penalty > 0 ? `-${penalty}점` : "감점 없음"}
       </div>}
+      {note && <div className="small score-note">{note}</div>}
     </div>
   );
 }
