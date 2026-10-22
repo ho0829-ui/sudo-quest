@@ -96,7 +96,7 @@ export function run(ctx: CommandContext, tokens: string[]): CommandResult {
   const { state } = ctx;
   const docker = state.docker!;
   const name = parsed.values.name ?? `container_${hexId(`${image}@${state.clock}@${docker.containers.length}`).slice(0, 6)}`;
-  const created = createContainer(docker, { name, image, env, ports, restart, createdAt: state.clock });
+  const created = createContainer(state, { name, image, env, ports, restart, createdAt: state.clock });
   if (!created.ok) {
     if (created.error.startsWith("Unable to find image")) {
       const repository = image.split(":")[0];

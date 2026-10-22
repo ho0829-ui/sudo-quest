@@ -1,19 +1,19 @@
 import { withCommands } from "../engine/commands";
 import type { Scenario } from "../engine/scenario/types";
 import { portOwner } from "../engine/state/derived";
-import { hexId } from "../engine/state/docker/format";
 import { createContainer, startContainer } from "../engine/state/docker/lifecycle";
 import { containerView } from "../engine/state/docker/runtime";
-import type { DockerImage } from "../engine/state/docker/types";
+import { addImage, type NewImage } from "../engine/state/docker/storage";
 import { writeFile } from "../engine/state/fs";
 import type { SystemState } from "../engine/state/types";
 
 const DAY = 86_400_000;
 const ENV = { DATABASE_URL: "postgres://shop@db.internal:5432/shop", NODE_ENV: "production" };
 
-function shopApi(version: string, createdAt: number, extra: Record<string, string>): DockerImage {
+function shopApi(version: string, createdAt: number, extra: Record<string, string>): NewImage {
   return {
-    repository: "shop-api", tag: version, id: hexId(`image:shop-api:${version}`), createdAt, sizeMB: 182,
+    repository: "shop-api", tag: version, createdAt,
+    layers: [{ name: "node:20-bookworm-slim", sizeMB: 75.2 }, { name: `shop-api:${version}:deps`, sizeMB: 92.1 }, { name: `shop-api:${version}:app`, sizeMB: 14.6 }],
     cmd: ["docker-entrypoint.sh", "node", "server.js"], env: { PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", NODE_VERSION: "20.15.1" },
     profile: {
       ports: [8080], paths: ["/healthz"], requiredEnv: ["DATABASE_URL"],
@@ -53,19 +53,16 @@ export const dockerPortAllocated: Scenario = {
   host: "docker-host",
   commands: withCommands("docker", "curl", "ss", "ps"),
   faults: [(state) => {
-    const docker = state.docker!;
     const old = state.clock - 9 * DAY;
     const deploy = state.clock - 35 * 60_000;
-    docker.images.push(
-      shopApi("2.0.3", state.clock - 20 * DAY, {}),
-      shopApi("2.1.0", state.clock - DAY, { "/api/coupons": '{"coupons":[{"code":"WELCOME10","discount":10}]}' }),
-    );
+    addImage(state, shopApi("2.0.3", state.clock - 20 * DAY, {}));
+    addImage(state, shopApi("2.1.0", state.clock - DAY, { "/api/coupons": '{"coupons":[{"code":"WELCOME10","discount":10}]}' }));
     const restart = { name: "unless-stopped" as const, maximumRetryCount: 0 };
     const ports = [{ hostIp: "", hostPort: 8080, containerPort: 8080, proto: "tcp" as const }];
-    const previous = createContainer(docker, { name: "shop-api-2.0.3", image: "shop-api:2.0.3", env: ENV, ports, restart, createdAt: old });
+    const previous = createContainer(state, { name: "shop-api-2.0.3", image: "shop-api:2.0.3", env: ENV, ports, restart, createdAt: old });
     if (previous.ok) startContainer(state, previous.container, old);
     // 장애: 스크립트가 옛 컨테이너를 멈추지 않고 새 컨테이너를 같은 포트로 띄웠다. 오류 문장은 엔진이 계산한 그대로 로그에 남긴다.
-    const next = createContainer(docker, { name: "shop-api-2.1.0", image: "shop-api:2.1.0", env: ENV, ports, restart, createdAt: deploy });
+    const next = createContainer(state, { name: "shop-api-2.1.0", image: "shop-api:2.1.0", env: ENV, ports, restart, createdAt: deploy });
     const started = next.ok ? startContainer(state, next.container, deploy) : { ok: true as const };
     const error = started.ok ? "" : started.error;
     writeFile(state.fs, "/opt/deploy/deploy.sh", { mode: 0o755, mtime: state.clock - 30 * DAY, content: [

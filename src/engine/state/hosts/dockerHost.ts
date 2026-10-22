@@ -4,7 +4,7 @@
  */
 import { writeFile } from "../fs";
 import { createContainer, startContainer } from "../docker/lifecycle";
-import { hexId } from "../docker/format";
+import { addImage } from "../docker/storage";
 import type { SystemState } from "../types";
 import { ubuntuWeb } from "./ubuntuWeb";
 
@@ -28,16 +28,15 @@ export function dockerHost(): SystemState {
     { pid: 861, user: "root", cpu: 0.2, memKB: 46 * 1024, command: "/usr/bin/containerd" },
     { pid: 905, user: "root", cpu: 0.4, memKB: 78 * 1024, command: "/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock", service: "docker" },
   );
-  state.docker = {
-    images: [{
-      repository: "nginx", tag: "1.25-alpine", id: hexId("image:nginx:1.25-alpine"), createdAt: state.clock - 120 * DAY, sizeMB: 43.2,
-      cmd: ["nginx", "-g", "daemon off;"], env: { PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", NGINX_VERSION: "1.25.5" },
-      profile: { ports: [80], paths: ["/"], headers: { Server: "nginx/1.25.5", "Content-Type": "text/html" }, responses: { "/": "<html><body><h1>Status</h1><p>All systems operational</p></body></html>" },
-        log: { boot: ["/docker-entrypoint.sh: Configuration complete; ready for start up"], ready: [] } },
-    }],
-    containers: [],
-  };
-  const status = createContainer(state.docker, {
+  state.docker = { images: [], containers: [], buildCache: [] };
+  addImage(state, {
+    repository: "nginx", tag: "1.25-alpine", createdAt: state.clock - 120 * DAY,
+    layers: [{ name: "alpine:3.19", sizeMB: 7.8 }, { name: "nginx:1.25-alpine", sizeMB: 35.4 }],
+    cmd: ["nginx", "-g", "daemon off;"], env: { PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", NGINX_VERSION: "1.25.5" },
+    profile: { ports: [80], paths: ["/"], headers: { Server: "nginx/1.25.5", "Content-Type": "text/html" }, responses: { "/": "<html><body><h1>Status</h1><p>All systems operational</p></body></html>" },
+      log: { boot: ["/docker-entrypoint.sh: Configuration complete; ready for start up"], ready: [] } },
+  });
+  const status = createContainer(state, {
     name: "status-page", image: "nginx:1.25-alpine", createdAt: state.clock - 6 * DAY,
     ports: [{ hostIp: "", hostPort: 8081, containerPort: 80, proto: "tcp" }], restart: { name: "unless-stopped", maximumRetryCount: 0 },
   });

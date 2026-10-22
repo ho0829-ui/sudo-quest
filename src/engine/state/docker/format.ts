@@ -46,6 +46,18 @@ export function hexId(seed: string): string {
   return out.slice(0, 64);
 }
 
+/** docker CLI의 크기 표기(10진 단위). docker images는 유효숫자 3자리, system df·prune은 4자리를 쓴다. */
+export function humanSize(bytes: number, precision = 4): string {
+  const units = ["B", "kB", "MB", "GB", "TB"];
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1000 && unit < units.length - 1) {
+    value /= 1000;
+    unit++;
+  }
+  return `${Number(value.toPrecision(precision))}${units[unit]}`;
+}
+
 export function isoTime(ms: number): string {
   return new Date(ms).toISOString().replace(/\.\d{3}Z$/, ".000000000Z");
 }

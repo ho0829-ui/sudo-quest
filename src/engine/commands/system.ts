@@ -1,7 +1,7 @@
 /** 시스템 상태를 보는 명령어들: df, du, systemctl, journalctl, help */
 import { flagValue, hasFlag, positionals } from "../parser/parse";
 import { unknownBooleanOption } from "./booleanOptions";
-import { allDiskUsage, duKB } from "../state/derived";
+import { allDiskUsage, duKB, mountFor } from "../state/derived";
 import { isDir, lookup, walk } from "../state/fs";
 import { formatAgo, formatFullTime, formatLogTime, humanKB, table } from "../state/format";
 import { formatJournalLine } from "../state/log";
@@ -12,13 +12,19 @@ import { fail, ok, type Command, type CommandContext } from "./types";
 export const df: Command = {
   name: "df",
   summary: "디스크 사용량을 본다 (-h 읽기 쉬운 단위)",
-  usage: "df [-h]",
+  usage: "df [-h] [경로...]",
   run({ state, tokens }: CommandContext) {
     const human = hasFlag(tokens, "h", "human-readable");
     const fmt = (kb: number) => (human ? humanKB(kb) : String(Math.round(kb)));
 
     const rows = [["Filesystem", "Size", "Used", "Avail", "Use%", "Mounted on"]];
-    for (const usage of allDiskUsage(state)) {
+    // 경로를 주면 그 경로가 속한 파일시스템만 보여 준다(df -h /var/lib/docker).
+    const paths = positionals(tokens);
+    for (const path of paths) {
+      if (!lookup(state, path).node) return fail(`df: ${path}: No such file or directory`);
+    }
+    const mounts = new Set(paths.map((path) => mountFor(state, lookup(state, path).abs).mount));
+    for (const usage of allDiskUsage(state).filter((u) => !mounts.size || mounts.has(u.disk.mount))) {
       rows.push([
         usage.disk.device,
         fmt(usage.disk.totalKB),

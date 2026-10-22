@@ -8,6 +8,7 @@ import { nextPid, portOwner } from "../derived";
 import type { SystemState } from "../types";
 import { hexId } from "./format";
 import { containerView, findImage, runSpec, totalRuns } from "./runtime";
+import { containerIntact, DOCKER_ROOT, dockerAvailKB, imageIntact, removeContainerFiles, writeContainerFiles } from "./storage";
 import type { DockerContainer, DockerState, PortBinding, RestartPolicy } from "./types";
 
 export interface NewContainer {
@@ -17,9 +18,13 @@ export interface NewContainer {
   ports?: PortBinding[];
   restart?: RestartPolicy;
   createdAt: number;
+  /** 쓰기 레이어·로그 크기(MB). 없으면 아주 작다. 시나리오가 "오래 돈 컨테이너"를 만들 때 준다. */
+  rwMB?: number;
+  logMB?: number;
 }
 
-export function createContainer(docker: DockerState, spec: NewContainer): { ok: true; container: DockerContainer } | { ok: false; error: string } {
+export function createContainer(state: SystemState, spec: NewContainer): { ok: true; container: DockerContainer } | { ok: false; error: string } {
+  const docker = state.docker!;
   const image = findImage(docker, spec.image);
   if (!image) return { ok: false, error: `Unable to find image '${spec.image}' locally` };
   const taken = docker.containers.find(c => c.name === spec.name);
@@ -31,7 +36,10 @@ export function createContainer(docker: DockerState, spec: NewContainer): { ok: 
     createdAt: spec.createdAt, env: spec.env ?? {}, ports: spec.ports ?? [], restart: spec.restart ?? { name: "no", maximumRetryCount: 0 },
     state: "created", exitCode: 0, pastRuns: 0, manuallyStopped: false, error: "",
   };
+  // 컨테이너마다 쓰기 레이어 디렉터리를 만든다. 디스크가 가득 차 있으면 여기서 실패한다.
+  if (dockerAvailKB(state) < 1024) return { ok: false, error: `mkdir ${DOCKER_ROOT}/overlay2/${container.id}-init: no space left on device` };
   docker.containers.push(container);
+  writeContainerFiles(state, container, spec.rwMB ?? 0.004, spec.logMB ?? 0.001);
   return { ok: true, container };
 }
 
@@ -77,6 +85,11 @@ export function startContainer(state: SystemState, container: DockerContainer, a
   const docker = state.docker!;
   const view = containerView(container, at);
   if (view.status === "running" || view.status === "restarting") return { ok: true };
+  const image = docker.images.find(i => i.id === container.imageId);
+  // 레이어 파일을 손으로 지웠다면 overlay 마운트를 만들 수 없다(실제 dockerd 문장).
+  if (!image || !imageIntact(state, image) || !containerIntact(state, container)) {
+    return { ok: false, error: `error creating overlay mount to ${DOCKER_ROOT}/overlay2/${container.id}/merged: no such file or directory` };
+  }
   const error = portError(state, container);
   if (error) {
     container.error = error;
@@ -88,7 +101,6 @@ export function startContainer(state: SystemState, container: DockerContainer, a
   container.error = "";
   container.manuallyStopped = false;
   container.startedAt = at;
-  const image = docker.images.find(i => i.id === container.imageId)!;
   const result = runOutcome(runSpec(container, image), image.profile);
   if (result.kind === "run") {
     container.state = "running";
@@ -135,6 +147,7 @@ export function removeContainer(state: SystemState, container: DockerContainer, 
   }
   stopContainer(state, container);
   state.docker!.containers = state.docker!.containers.filter(c => c !== container);
+  removeContainerFiles(state, container);
   return { ok: true };
 }
 

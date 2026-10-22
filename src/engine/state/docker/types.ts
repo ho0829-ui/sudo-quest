@@ -10,7 +10,8 @@ export interface DockerImage {
   /** sha256 뒤 64자리. 화면에는 앞 12자리만 보인다. */
   id: string;
   createdAt: number;
-  sizeMB: number;
+  /** 아래부터 위로 쌓인 레이어 ID. 크기는 /var/lib/docker/overlay2의 레이어 파일에서 계산한다(storage.ts). */
+  layers: string[];
   /** 컨테이너를 만들 때 쓰는 기본 명령 (docker ps의 COMMAND) */
   cmd: string[];
   /** 이미지에 들어 있는 기본 환경 변수(PATH 등). docker inspect의 Config.Env에 함께 보인다. */
@@ -63,7 +64,17 @@ export interface DockerContainer {
   ip?: string;
 }
 
+/** BuildKit 빌드 캐시 한 건. 크기는 /var/lib/docker/buildkit/cache의 파일에서 계산한다. */
+export interface BuildCacheRecord {
+  id: string;
+  description: string;
+  lastUsed: number;
+  /** 어떤 이미지도 참조하지 않는 캐시. docker builder prune(기본)은 이것만, -a는 전부 지운다. */
+  dangling: boolean;
+}
+
 export interface DockerState {
   images: DockerImage[];
   containers: DockerContainer[];
+  buildCache: BuildCacheRecord[];
 }

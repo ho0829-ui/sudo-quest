@@ -8,6 +8,7 @@ import { inspect } from "./docker/inspect";
 import { lifecycle } from "./docker/lifecycle";
 import { images, logs, port, ps } from "./docker/query";
 import { run } from "./docker/run";
+import { builderPrune, containerPrune, imagePrune, rmi, systemDf, systemPrune } from "./docker/system";
 
 const usage = [
   "Usage:  docker [OPTIONS] COMMAND",
@@ -20,9 +21,14 @@ const usage = [
   "  port        List port mappings for the container",
   "  run         Create and run a new container (-d --name -p -e --env-file --restart)",
   "  start | stop | restart | rm [-f]",
+  "  rmi         Remove one or more images",
+  "  system df | system prune [-a] [-f]",
+  "  image prune [-a] [-f] [--filter until=24h] | builder prune [-a] [-f] | container prune [-f]",
 ].join("\n");
 
-const SUBCOMMANDS = ["ps", "images", "logs", "inspect", "port", "run", "start", "stop", "restart", "rm"] as const;
+const SUBCOMMANDS = ["ps", "images", "logs", "inspect", "port", "run", "start", "stop", "restart", "rm", "rmi"] as const;
+/** 두 단어로 쓰는 정리 명령. buildx prune은 builder prune과 같은 일을 한다. */
+const MANAGEMENT = ["system df", "system prune", "image prune", "image rm", "builder prune", "buildx prune", "container prune"] as const;
 const CONTAINER_ALIASES: Record<string, string> = { ls: "ps", list: "ps", ps: "ps", logs: "logs", inspect: "inspect", port: "port", run: "run", start: "start", stop: "stop", restart: "restart", rm: "rm" };
 
 export const docker: Command = {
@@ -30,7 +36,7 @@ export const docker: Command = {
   operations: [
     ...SUBCOMMANDS,
     ...Object.keys(CONTAINER_ALIASES).map(alias => `container ${alias}`),
-    "image ls", "image list",
+    "image ls", "image list", ...MANAGEMENT,
   ],
   run(ctx) {
     const { state, tokens } = ctx;
@@ -38,15 +44,27 @@ export const docker: Command = {
     let [verb, ...input] = tokens;
     if (verb === "container" && input[0] && CONTAINER_ALIASES[input[0]]) [verb, input] = [CONTAINER_ALIASES[input[0]], input.slice(1)];
     else if (verb === "image" && (input[0] === "ls" || input[0] === "list")) [verb, input] = ["images", input.slice(1)];
-    if (!(SUBCOMMANDS as readonly string[]).includes(verb)) return fail(`docker: '${tokens[0]}' is not a docker command.\nSee 'docker --help'`);
+    const pair = `${verb} ${input[0] ?? ""}`;
+    const management = (MANAGEMENT as readonly string[]).includes(pair);
+    if (!management && !(SUBCOMMANDS as readonly string[]).includes(verb)) return fail(`docker: '${tokens[0]}' is not a docker command.\nSee 'docker --help'`);
     // 데몬(dockerd)이 내려가 있으면 CLI는 소켓에 연결하지 못한다.
     if (!state.docker || findService(state, "docker")?.state !== "active") {
       return fail("Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?");
     }
     const engine = state.docker;
+    if (management) {
+      const rest = input.slice(1);
+      if (pair === "system df") return systemDf(state, rest);
+      if (pair === "system prune") return systemPrune(state, rest);
+      if (pair === "image prune") return imagePrune(state, rest);
+      if (pair === "image rm") return rmi(state, rest);
+      if (pair === "container prune") return containerPrune(state, rest);
+      return builderPrune(state, rest, pair);
+    }
     switch (verb) {
+      case "rmi": return rmi(state, input);
       case "ps": return ps(engine, input, state.clock);
-      case "images": return images(engine, input, state.clock);
+      case "images": return images(state, input);
       case "logs": return logs(engine, input, state.clock);
       case "inspect": return inspect(engine, input, state.clock);
       case "port": return port(engine, input, state.clock);

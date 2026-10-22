@@ -1,5 +1,7 @@
 /** 조회 명령: docker ps · images · logs · port. 모두 저장 상태와 시각에서 계산한다. */
-import { humanDuration, portsText, statusText } from "../../state/docker/format";
+import { humanDuration, humanSize, portsText, statusText } from "../../state/docker/format";
+import { imageKB, kbToBytes } from "../../state/docker/storage";
+import type { SystemState } from "../../state/types";
 import { containerLogs, containerView, findContainer } from "../../state/docker/runtime";
 import type { DockerState } from "../../state/docker/types";
 import { fail, ok, type CommandResult } from "../types";
@@ -40,20 +42,25 @@ export function ps(docker: DockerState, tokens: string[], clock: number): Comman
   return ok(dockerTable([header, ...rows.map(r => [r.ID, r.Image, r.Command, r.RunningFor, r.Status, r.Ports, r.Names])]));
 }
 
-/** docker는 크기를 10진 단위 세 자리 유효숫자로 보여 준다(182MB, 43.2MB, 1.21GB). */
-function sizeText(mb: number): string {
-  return mb >= 1000 ? `${Number((mb / 1000).toPrecision(3))}GB` : `${Number(mb.toPrecision(3))}MB`;
-}
-
-export function images(docker: DockerState, tokens: string[], clock: number): CommandResult {
-  const parsed = dockerFlags(tokens, { switches: { q: "quiet", quiet: "quiet", a: "all", all: "all" } }, "images");
+/** docker images [-a] [-q] [-f dangling=true|false] [REPOSITORY[:TAG]]. 크기는 레이어 파일에서 계산한다. */
+export function images(state: SystemState, tokens: string[]): CommandResult {
+  const docker = state.docker!;
+  const parsed = dockerFlags(tokens, { switches: { q: "quiet", quiet: "quiet", a: "all", all: "all" }, lists: { f: "filter", filter: "filter" } }, "images");
   if (!parsed.ok) return parsed.result;
-  const list = [...docker.images].sort((a, b) => b.createdAt - a.createdAt)
-    .filter(image => !parsed.args[0] || image.repository === parsed.args[0].split(":")[0]);
+  let dangling: boolean | undefined;
+  for (const filter of parsed.lists.filter ?? []) {
+    const match = /^dangling=(true|false)$/.exec(filter);
+    if (!match) return fail(`Error response from daemon: invalid filter '${filter.split("=")[0]}'`);
+    dangling = match[1] === "true";
+  }
+  const [repository, tag] = (parsed.args[0] ?? "").split(":");
+  const list = [...docker.images].sort((a, b) => b.createdAt - a.createdAt).filter(image =>
+    (!repository || (image.repository === repository && (!tag || image.tag === tag)))
+    && (dangling === undefined || (image.repository === "<none>") === dangling));
   if (parsed.switches.has("quiet")) return ok(list.map(image => image.id.slice(0, 12)).join("\n"));
   const header = ["REPOSITORY", "TAG", "IMAGE ID", "CREATED", "SIZE"];
   return ok(dockerTable([header, ...list.map(image => [
-    image.repository, image.tag, image.id.slice(0, 12), `${humanDuration(clock - image.createdAt)} ago`, sizeText(image.sizeMB),
+    image.repository, image.tag, image.id.slice(0, 12), `${humanDuration(state.clock - image.createdAt)} ago`, humanSize(kbToBytes(imageKB(state, image)), 3),
   ])]));
 }
 

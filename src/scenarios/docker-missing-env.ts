@@ -1,6 +1,6 @@
 import { withCommands } from "../engine/commands";
 import type { Scenario } from "../engine/scenario/types";
-import { hexId } from "../engine/state/docker/format";
+import { addImage } from "../engine/state/docker/storage";
 import { createContainer, startContainer } from "../engine/state/docker/lifecycle";
 import { containerView } from "../engine/state/docker/runtime";
 import { writeFile } from "../engine/state/fs";
@@ -33,10 +33,10 @@ export const dockerMissingEnv: Scenario = {
   host: "docker-host",
   commands: withCommands("docker", "curl", "ss", "ps"),
   faults: [(state) => {
-    const docker = state.docker!;
     const moved = state.clock - 45 * 60_000;
-    docker.images.push({
-      repository: "notify-worker", tag: "1.4.0", id: hexId(`image:${IMAGE}`), createdAt: state.clock - 14 * 86_400_000, sizeMB: 96.4,
+    addImage(state, {
+      repository: "notify-worker", tag: "1.4.0", createdAt: state.clock - 14 * 86_400_000,
+      layers: [{ name: "python:3.12-slim", sizeMB: 48.1 }, { name: "notify-worker:1.4.0:deps", sizeMB: 39.9 }, { name: "notify-worker:1.4.0:app", sizeMB: 8.4 }],
       cmd: ["python", "-m", "notify.worker"], env: { PATH: "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin", PYTHON_VERSION: "3.12.4" },
       profile: {
         ports: [], paths: [], requiredEnv: ["SMTP_HOST", "SMTP_USER", "SMTP_PASSWORD", "QUEUE_URL"],
@@ -45,7 +45,7 @@ export const dockerMissingEnv: Scenario = {
       },
     });
     // 장애: run.sh가 -e SMTP_PASSWORD처럼 값 없이 넘겼는데, 실행한 셸에 export된 값이 없어 컨테이너에 들어가지 않았다.
-    const created = createContainer(docker, { name: "notify-worker", image: IMAGE, env: SHARED, createdAt: moved,
+    const created = createContainer(state, { name: "notify-worker", image: IMAGE, env: SHARED, createdAt: moved,
       restart: { name: "on-failure", maximumRetryCount: 5 } });
     if (created.ok) startContainer(state, created.container, moved);
     writeFile(state.fs, "/opt/notify/run.sh", { mode: 0o755, owner: "ubuntu", group: "ubuntu", mtime: moved - 600_000, content: [
