@@ -137,15 +137,15 @@ function gistOf(command: string): string {
   return words.slice(0, 2).join(" ");
 }
 
-/** penalty가 없으면 점수와 무관한 기록(시간·명령 수)이다. */
+/** penalty가 없으면 점수와 무관한 기록(시간·명령 수)이라 감점 줄을 그리지 않는다. */
 function ScoreItem({ label, value, penalty }: { label: string; value: string; penalty?: number }) {
   return (
     <div className="score-item">
       <div className="small muted">{label}</div>
       <div className="value">{value}</div>
-      <div className="small" style={{ color: penalty ? "var(--red)" : "var(--muted)" }}>
-        {penalty === undefined ? "기록만 (점수 영향 없음)" : penalty > 0 ? `-${penalty}점` : "감점 없음"}
-      </div>
+      {penalty !== undefined && <div className="small" style={{ color: penalty ? "var(--red)" : "var(--muted)" }}>
+        {penalty > 0 ? `-${penalty}점` : "감점 없음"}
+      </div>}
     </div>
   );
 }
