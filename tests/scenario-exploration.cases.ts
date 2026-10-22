@@ -126,4 +126,12 @@ export const explorations: Record<string, ExplorationCase> = {
       `kubectl patch deployment payment-api -p '{"spec":{"template":{"metadata":{"labels":{"app.kubernetes.io/name":"payment"}}}}}'`],
     alternative: [`kubectl patch svc payment -p '{"spec":{"selector":{"app":null,"app.kubernetes.io/name":"payment-api"}}}'`, "kubectl get endpoints payment"],
   },
+  "docker-disk-full": {
+    inspect: ["df -h /var/lib/docker", "sudo du -sh /var/lib/docker/overlay2", "docker system df", "docker image ls --filter dangling=true",
+      "docker images shop-api", "docker ps -a --format '{{.Names}} {{.Status}}'", "journalctl -u docker", "cat /opt/deploy/build.sh",
+      "grep -c 'no space' /var/log/deploy/build-2.2.0.log"],
+    unrelated: ["docker image prune -a", "docker container prune -f", "docker image prune -f", "sudo rm -rf /var/log/nginx",
+      "docker run -d --name probe nginx:1.25-alpine", "docker restart shop-api", "sudo rm -rf /var/lib/docker/overlay2"],
+    alternative: ["docker system prune -a -f", "docker system df"],
+  },
 };

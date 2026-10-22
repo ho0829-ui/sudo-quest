@@ -3047,7 +3047,9 @@
     "source_url": "https://docs.docker.com/reference/cli/docker/system/df/#description",
     "source_section": "description",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "docker-disk-full"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -3069,7 +3071,9 @@
     "source_url": "https://docs.docker.com/engine/manage-resources/pruning/#prune-images",
     "source_section": "prune-images",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "docker-disk-full"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -3091,7 +3095,9 @@
     "source_url": "https://docs.docker.com/engine/manage-resources/pruning/#prune-build-cache",
     "source_section": "prune-build-cache",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "docker-disk-full"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
