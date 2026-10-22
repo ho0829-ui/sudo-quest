@@ -5,7 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { scenarios } from "../src/scenarios";
 import { CAST, CHAPTERS, GRAVEYARD, MUSIC_CREDIT, rollCall, SPECIAL_GUESTS } from "../src/ui/ending/creditRoll";
-import { loadMusicOn, LOOP_SIXTEENTHS, MELODY, noteFrequency, saveMusicOn, songEvents } from "../src/ui/ending/music";
+import { FADE_IN, loadMusicOn, LOOP_SIXTEENTHS, MELODY, noteFrequency, saveMusicOn, songEvents } from "../src/ui/ending/music";
+import { clampVolume, DEFAULT_VOLUME, loadVolume, saveVolume } from "../src/ui/ending/musicPrefs";
 import { advance, burst, MAX_SPARKS, rocket, seededRandom, stillFrame } from "../src/ui/ending/sparks";
 import { Credits } from "../src/ui/ending/Credits";
 import { nextSpeed, SPEEDS } from "../src/ui/ending/useCreditRoll";
@@ -85,6 +86,29 @@ describe("엔딩 음악(캉캉 8비트)", () => {
     vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
     expect(loadMusicOn()).toBe(true);
     expect(() => saveMusicOn(true)).not.toThrow();
+  });
+});
+
+describe("음악 볼륨", () => {
+  it("처음엔 작은 볼륨으로, 서서히 커지며 시작한다(갑자기 큰 소리 방지)", () => {
+    expect(DEFAULT_VOLUME).toBeLessThanOrEqual(0.4);
+    expect(FADE_IN).toBeGreaterThanOrEqual(1.5);
+  });
+
+  it("볼륨은 0~1로 잘라 기억하고, 저장이 없거나 이상하거나 막히면 기본값", () => {
+    const data = new Map<string, string>();
+    vi.stubGlobal("localStorage", { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => data.set(k, v) });
+    expect(loadVolume()).toBe(DEFAULT_VOLUME);
+    saveVolume(0.8);
+    expect(loadVolume()).toBe(0.8);
+    saveVolume(7);
+    expect(loadVolume()).toBe(1);
+    data.set("incident-game/music-volume", "abc");
+    expect(loadVolume()).toBe(DEFAULT_VOLUME);
+    expect(clampVolume(-1)).toBe(0);
+    vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
+    expect(loadVolume()).toBe(DEFAULT_VOLUME);
+    expect(() => saveVolume(0.5)).not.toThrow();
   });
 });
 

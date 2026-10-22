@@ -66,3 +66,10 @@
 .credits-keys { font: 600 10.5px var(--mono); color: #8d91a0; white-space: nowrap; }
 @media (max-width: 520px) { .credits-keys { display: none; } }
 .music-waiting { align-self: center; font-size: 12px; color: #ffe9a8; animation: iso-glow 1.6s ease-in-out infinite; }
+/* 볼륨 막대: 소리 끄기 버튼 옆. 끈 동안은 흐리게. */
+.music-volume { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 10px; background: #ffffff0d; border: 1px solid #ffffff2a; font-size: 13px; }
+.music-volume input { width: 96px; accent-color: #ffd447; cursor: pointer; }
+.music-volume-value { font: 600 11px var(--mono); color: #d6d2c8; min-width: 3.2em; text-align: right; }
+.music-volume.is-muted { opacity: .45; }
+.music-volume.is-muted input { cursor: not-allowed; }
+@media (max-width: 520px) { .music-volume input { width: 70px; } }

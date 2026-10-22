@@ -5,6 +5,8 @@
  *
  * 악보는 16분음표 단위로 적는다(2/4박자, 한 마디 = 8칸). 주선율(사각파)·베이스(삼각파)·하이햇(잡음)의 세 성부.
  */
+import { clampVolume, loadVolume } from "./musicPrefs";
+
 export type Voice = "lead" | "bass" | "hat";
 export interface NoteEvent { at: number; length: number; freq: number; voice: Voice }
 
@@ -58,14 +60,13 @@ export function songEvents(): NoteEvent[] {
   return events.sort((a, b) => a.at - b.at);
 }
 
-const PREF_KEY = "incident-game/music";
-/** 음악을 켤지. 이 브라우저에서만 기억하고, 처음엔 켬. */
-export function loadMusicOn(): boolean {
-  try { return localStorage.getItem(PREF_KEY) !== "off"; } catch { return true; }
-}
-export function saveMusicOn(on: boolean) {
-  try { localStorage.setItem(PREF_KEY, on ? "on" : "off"); } catch { /* 저장이 막혀도 이번 화면에서는 동작 */ }
-}
+// 선택 저장은 musicPrefs.ts. 예전 import 경로도 그대로 쓸 수 있게 다시 내보낸다.
+export { loadMusicOn, saveMusicOn } from "./musicPrefs";
+
+/** 볼륨 1(최대)일 때의 전체 음량. 사각파는 귀에 세게 들려 최대도 낮게 둔다. */
+const MAX_GAIN = 0.12;
+/** 시작할 때 0에서 서서히 키우는 시간(초). 소리가 갑자기 튀어나오지 않게 한다. */
+export const FADE_IN = 2.5;
 
 type AudioCtor = typeof AudioContext;
 function audioContextClass(): AudioCtor | null {
@@ -90,6 +91,14 @@ class ChipMusic {
   private noise: AudioBuffer | null = null;
   private unlock: (() => void) | null = null;
   private listeners = new Set<() => void>();
+  private volume = loadVolume();
+
+  /** 0~1. 재생 중이면 0.1초에 걸쳐 부드럽게 바꾼다. */
+  setVolume(value: number) {
+    this.volume = clampVolume(value);
+    if (this.ctx && this.master) this.master.gain.setTargetAtTime(this.volume * MAX_GAIN, this.ctx.currentTime, 0.1);
+  }
+  get currentVolume() { return this.volume; }
 
   get playing() { return this.ctx !== null; }
   /** 켜 두었지만 브라우저가 아직 소리를 막고 있다(사용자 입력 기다리는 중). */
@@ -105,7 +114,8 @@ class ChipMusic {
     const ctx = new Ctor();
     this.ctx = ctx;
     this.master = ctx.createGain();
-    this.master.gain.value = 0.09;
+    this.master.gain.setValueAtTime(0, ctx.currentTime);
+    this.master.gain.linearRampToValueAtTime(this.volume * MAX_GAIN, ctx.currentTime + FADE_IN);
     this.master.connect(ctx.destination);
     this.noise = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
     const data = this.noise.getChannelData(0);
