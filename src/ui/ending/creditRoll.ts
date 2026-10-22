@@ -40,7 +40,7 @@ export const CHAPTERS: Chapter[] = [
   { title: "안정성 점검", credit: "Claude",
     lines: ["Error Boundary 3단, 이상한 입력 퍼징, 손상된 저장소에도 흰 화면 없음"] },
   { title: "운영실 파티 · 전사 시상식", credit: "Claude · 아이디어 Choi",
-    lines: ["업타임 생일 파티 · 핑퐁 대회 · 쿼리 칵테일 바 · 루프톱 풍선 파티 · 고래 풀 파티 · 선상 보물 연회", "그리고 지금 이 피날레와 엔딩 크레딧"] },
+    lines: ["업타임 생일 파티 · 핑퐁 대회 · 쿼리 칵테일 바 · 루프톱 풍선 파티 · 고래 풀 파티 · 선상 보물 연회", "그리고 지금 이 피날레와 엔딩 크레딧", "빨리 감기 최대 8배와 위치 막대 — 지금 이 줄을 빨리 감고 있다면 들켰습니다"] },
 ];
 
 export const SPECIAL_GUESTS = [
@@ -70,6 +70,8 @@ export const GRAVEYARD: Tomb[] = [
   { name: "kubectl/mutations.ts", died: "2026-10-22", epitaph: "더 작은 파일들로 환생" },
   { name: "사이버펑크 퇴근 이벤트", died: "2026-10-22", epitaph: "태어나지도 못했다. 세기말은 우리 취향이 아니었다" },
   { name: "큰 카페의 펜던트 조명", died: "2026-10-22", epitaph: "손님 얼굴을 가린 죄로 철거" },
+  { name: "회색 9px \"해결 완료\" 글씨", died: "2026-10-22", epitaph: "너무 겸손해서 아무도 못 봤다. 초록 배지로 환생" },
+  { name: "소리 없이 시작하던 피날레", died: "2026-10-22", epitaph: "조용한 축하는 축하가 아니었다" },
 ];
 
 export interface RollCall {

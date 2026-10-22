@@ -8,6 +8,7 @@ import { CAST, CHAPTERS, GRAVEYARD, MUSIC_CREDIT, rollCall, SPECIAL_GUESTS } fro
 import { loadMusicOn, LOOP_SIXTEENTHS, MELODY, noteFrequency, saveMusicOn, songEvents } from "../src/ui/ending/music";
 import { advance, burst, MAX_SPARKS, rocket, seededRandom, stillFrame } from "../src/ui/ending/sparks";
 import { Credits } from "../src/ui/ending/Credits";
+import { nextSpeed, SPEEDS } from "../src/ui/ending/useCreditRoll";
 import { Finale } from "../src/ui/ending/Finale";
 import { ScenarioList } from "../src/ui/screens/ScenarioList";
 
@@ -139,5 +140,22 @@ describe("피날레·크레딧 화면", () => {
     expect(renderToStaticMarkup(<ScenarioList {...props} progress={all} />)).toContain("allclear-banner");
     const { [scenarios[0].id]: _, ...almost } = all;
     expect(renderToStaticMarkup(<ScenarioList {...props} progress={almost} />)).not.toContain("allclear-banner");
+  });
+
+  it("크레딧에는 빨리 감기·위치 막대가 있고, 빨리 감기는 1→2→4→8→1배로 돈다", () => {
+    const html = renderToStaticMarkup(<Credits scenarios={scenarios} motion onClose={noop} />);
+    expect(html).toContain("빨리 감기");
+    expect(html).toContain('aria-label="크레딧 위치"');
+    expect(SPEEDS.map(nextSpeed)).toEqual([2, 4, 8, 1]);
+  });
+
+  it("실습 카드: 해결한 카드는 해결 완료 배지와 큰 최고 점수, 모든 카드는 분류 색(--cat)", () => {
+    vi.stubGlobal("window", { matchMedia: () => ({ matches: false }), location: { hash: "" } });
+    const progress = { [scenarios[0].id]: { cleared: true, bestScore: 876, clearedAt: 1 } };
+    const html = renderToStaticMarkup(<ScenarioList scenarios={scenarios} progress={progress} onSelect={noop} onResetProgress={noop} onExplore={noop} onOpenRecords={noop} onCommunity={noop} />);
+    expect(html.match(/card-cleared-badge/g)).toHaveLength(1);
+    expect(html).toContain('aria-label="최고 점수 876점"');
+    expect(html).toContain("is-cleared");
+    expect(html.match(/--cat:#/g)!.length).toBeGreaterThanOrEqual(scenarios.length);
   });
 });

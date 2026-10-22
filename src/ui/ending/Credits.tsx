@@ -1,39 +1,23 @@
 /**
- * 엔딩 크레딧: 영화처럼 위로 흘러가는 화면과 캉캉. 일시정지·음악 끄기·닫기(Esc)가 있고,
- * 직접 스크롤해도 된다. 움직임을 끈 사람에게는 저절로 흐르지 않는 보통 페이지로 보인다.
- * 내용은 credits.ts에서 오고, 실습 목록은 시나리오 데이터에서 자동으로 만든다.
+ * 엔딩 크레딧: 영화처럼 위로 흘러가는 화면과 캉캉. 일시정지·빨리 감기(1·2·4·8배)·위치 막대·소리 끄기·닫기(Esc),
+ * 휠·↑↓·PageUp/Down·Home/End로 직접 옮길 수도 있다. 움직임을 끈 사람에게는 저절로 흐르지 않는 보통 페이지로 보인다.
+ * 내용은 creditRoll.ts에서 오고, 실습 목록은 시나리오 데이터에서 자동으로 만든다.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { Scenario } from "../../engine/scenario/types";
 import { CAST, CHAPTERS, GRAVEYARD, MUSIC_CREDIT, rollCall, SPECIAL_GUESTS } from "./creditRoll";
 import { Graveyard } from "./Graveyard";
-import { loadMusicOn, music } from "./music";
+import { music } from "./music";
 import { MusicToggle } from "./MusicToggle";
+import { useCreditRoll } from "./useCreditRoll";
 import { useDialog } from "./useDialog";
-
-const SPEED = 42; // px/s
 
 export function Credits({ scenarios, motion, onClose }: { scenarios: Scenario[]; motion: boolean; onClose: () => void }) {
   const close = () => { music.stop(); onClose(); };
   const ref = useDialog<HTMLDivElement>(close);
   const scroller = useRef<HTMLDivElement>(null);
-  const [rolling, setRolling] = useState(motion);
-  const [ended, setEnded] = useState(false);
   const roll = rollCall(scenarios);
-
-  // 저절로 흐르기: 매 프레임 조금씩 내린다. 끝에 닿으면 멈추고 "처음부터"를 보여 준다.
-  useEffect(() => {
-    const el = scroller.current;
-    if (!el || !rolling) return;
-    let last = performance.now();
-    let frame = requestAnimationFrame(function tick(now) {
-      el.scrollTop += SPEED * Math.min(0.05, (now - last) / 1000);
-      last = now;
-      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 2) { setRolling(false); setEnded(true); return; }
-      frame = requestAnimationFrame(tick);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [rolling]);
+  const flow = useCreditRoll(scroller, motion);
 
   // 다른 탭으로 가면 음악을 멈추고, 돌아오면 다시 켠다.
   useEffect(() => {
@@ -48,11 +32,16 @@ export function Credits({ scenarios, motion, onClose }: { scenarios: Scenario[];
 
   return <div className="credits" role="dialog" aria-modal="true" aria-label="엔딩 크레딧" ref={ref}>
     <div className="credits-controls">
-      {motion && <button type="button" className="ending-button" aria-pressed={!rolling} onClick={() => {
-        if (ended) { scroller.current?.scrollTo({ top: 0 }); setEnded(false); setRolling(true); } else setRolling(!rolling);
-      }}>{ended ? "↺ 처음부터" : rolling ? "⏸ 일시정지" : "▶ 이어 보기"}</button>}
-      <MusicToggle autoStart={loadMusicOn()} />
+      {motion && <button type="button" className="ending-button" aria-pressed={!flow.rolling} onClick={flow.toggle}>
+        {flow.ended ? "↺ 처음부터" : flow.rolling ? "⏸ 일시정지" : "▶ 이어 보기"}</button>}
+      {motion && <button type="button" className="ending-button" onClick={flow.cycleSpeed} aria-label={`빨리 감기, 지금 ${flow.speed}배`}>
+        ⏩ {flow.speed}배</button>}
+      <MusicToggle />
       <button type="button" className="ending-button" onClick={close}>✕ 닫기</button>
+    </div>
+    <div className="credits-seek">
+      <input type="range" min={0} max={1000} value={flow.progress} aria-label="크레딧 위치" onChange={e => flow.seek(Number(e.target.value))} />
+      <span className="credits-keys">휠 · ↑↓ · Space 일시정지</span>
     </div>
     <div className="credits-scroll" ref={scroller} tabIndex={0} aria-label="크레딧 내용">
       <div className="credits-body">

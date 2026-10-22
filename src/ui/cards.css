@@ -1,0 +1,18 @@
+/* 실습 카드·분류 탭의 분류 색. --cat은 캠퍼스 운영실 색(THEMES)과 같다.
+   아이콘·분류 태그·해결 표시를 그 색으로 칠해 Linux·네트워크·웹·DB·AWS·Docker·K8s 카드를 한눈에 구분한다. */
+.scenario-card .card-icon { color: var(--cat, #94c0c9); border-color: color-mix(in srgb, var(--cat, #94c0c9) 55%, transparent);
+  background: color-mix(in srgb, var(--cat, #94c0c9) 14%, transparent); box-shadow: 0 0 14px color-mix(in srgb, var(--cat, #94c0c9) 22%, transparent); }
+.scenario-card .card-category { color: color-mix(in srgb, var(--cat, #82a0a8) 80%, #ffffff); }
+.scenario-card::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; border-radius: 9px 9px 0 0;
+  background: linear-gradient(90deg, var(--cat, transparent), transparent 70%); opacity: .7; }
+.category-tabs button svg { color: var(--cat, currentColor); }
+.category-tabs button[aria-pressed="true"] { border-color: color-mix(in srgb, var(--cat, #3b6c78) 60%, transparent); }
+
+/* 해결한 카드: 아래 줄을 초록 배지 + 큰 점수로. 예전에는 9px 회색 글씨라 잘 안 보였다. */
+.scenario-card.is-cleared { border-color: #2cff8f33; }
+.card-cleared { display: flex; align-items: center; gap: 10px; }
+.card-cleared-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 7px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 750; color: #2cff8f; background: #2cff8f17; border: 1px solid #2cff8f55; }
+.card-score { font: 800 17px var(--mono); color: #f4f1ea; letter-spacing: -.3px; }
+.card-score small { font-size: 11px; font-weight: 600; color: #a9b8bd; margin-left: 2px; }
+.scenario-card.upcoming::before { opacity: .35; }

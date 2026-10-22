@@ -6,6 +6,7 @@ import { CATEGORIES, OPEN_CATEGORIES } from '../categories';
 import { IsoCampus } from '../campus/IsoCampus';
 import { upcomingScenarios } from '../../scenarios/upcoming';
 import { nextMission } from '../nextMission';
+import { THEMES } from '../campus/themes';
 
 interface ScenarioListProps {
   scenarios: Scenario[];
@@ -76,19 +77,22 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
         <label className="scenario-search"><Icon name="search" size={17} /><input aria-label="시나리오 검색" value={query} onChange={e => setQuery(e.target.value)} placeholder="시나리오 검색..." /></label></div>
       <div className="filter-row"><div className="category-tabs" role="group" aria-label="시나리오 분류">
         <button aria-pressed={category === 'all'} onClick={() => setCategory('all')}>전체 <span>{scenarios.length}</span></button>
-        {OPEN_CATEGORIES.map(({ id, icon, label }) => <button key={id} aria-pressed={category === id} onClick={() => setCategory(id)}><Icon name={icon} size={15} />{label}</button>)}
+        {OPEN_CATEGORIES.map(({ id, icon, label }) => <button key={id} aria-pressed={category === id} onClick={() => setCategory(id)} style={{ '--cat': THEMES[id].accent } as CSSProperties}><Icon name={icon} size={15} />{label}</button>)}
       </div><select aria-label="난이도 필터" value={difficulty} onChange={e => setDifficulty(e.target.value)}><option value="all">모든 난이도</option><option value="1">입문</option><option value="2">중급</option><option value="3">고급</option></select></div>
       <div className="scenario-grid">{visible.map((scenario, index) => {
         const info = CATEGORIES[scenario.category];
         const record = progress[scenario.id];
-        return <button key={scenario.id} className={`scenario-card category-${scenario.category}`} onClick={() => onSelect(scenario)} style={{ '--card-index': index } as CSSProperties}>
+        // 분류마다 캠퍼스 운영실과 같은 색(--cat)으로 아이콘·태그를 칠해 한눈에 구분되게 한다.
+        return <button key={scenario.id} className={`scenario-card category-${scenario.category}${record?.cleared ? ' is-cleared' : ''}`} onClick={() => onSelect(scenario)} style={{ '--card-index': index, '--cat': THEMES[scenario.category].accent } as CSSProperties}>
           <div className="card-top"><span className="card-icon"><Icon name={info.icon} size={21} /></span><span className={`difficulty level-${scenario.difficulty}`}><i /><i /><i />{LEVELS[scenario.difficulty]}</span></div>
           <span className="card-category">{info.wallTag} <span>/ {String(scenarios.indexOf(scenario) + 1).padStart(2, '0')}</span></span>
           <h3>{scenario.title}</h3><p className="card-description">{scenario.ticket.split('\n').find(line => line.length > 25) ?? scenario.ticket.split('\n')[0]}</p>
-          <div className="card-bottom"><span>{record?.cleared ? <><Icon name="check" size={14} /> 해결 완료 · {record.bestScore}점</> : <><span className="tiny-dot" /> {info.label} 실습</>}</span><span className="card-go"><Icon name="arrow" size={17} /></span></div>
+          <div className="card-bottom">{record?.cleared
+            ? <span className="card-cleared"><span className="card-cleared-badge"><Icon name="check" size={13} /> 해결 완료</span><span className="card-score" aria-label={`최고 점수 ${record.bestScore}점`}>{record.bestScore}<small>점</small></span></span>
+            : <span><span className="tiny-dot" /> {info.label} 실습</span>}<span className="card-go"><Icon name="arrow" size={17} /></span></div>
         </button>;
       })}
-      {upcoming.map((item, index) => <div key={item.title} className={`scenario-card upcoming category-${item.category}`} style={{ '--card-index': visible.length + index } as CSSProperties}>
+      {upcoming.map((item, index) => <div key={item.title} className={`scenario-card upcoming category-${item.category}`} style={{ '--card-index': visible.length + index, '--cat': THEMES[item.category].accent } as CSSProperties}>
         <div className="card-top"><span className="card-icon"><Icon name={CATEGORIES[item.category].icon} size={21} /></span><span className="upcoming-badge">OPENING SOON</span></div>
         <span className="card-category">{CATEGORIES[item.category].wallTag} <span>/ 준비 중</span></span>
         <h3>{item.title}</h3><p className="card-description">{item.teaser}</p>

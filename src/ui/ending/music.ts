@@ -77,7 +77,8 @@ export const audioSupported = () => audioContextClass() !== null;
 
 /**
  * 반복 연주기. 0.2초 앞까지 미리 예약하는 방식이라 타이머가 조금 늦어도 박자가 흔들리지 않는다.
- * 사용자가 버튼을 누른 뒤에만 start한다(브라우저는 클릭 없는 자동 재생을 막는다).
+ * 브라우저는 사용자의 클릭·키 입력 전에는 소리를 막는다(AudioContext가 suspended로 시작).
+ * 그래서 저절로 열린 피날레에서는 "기다리는 중"으로 두었다가 화면을 처음 누르거나 키를 누르는 순간 이어서 튼다.
  */
 class ChipMusic {
   private ctx: AudioContext | null = null;
@@ -87,8 +88,16 @@ class ChipMusic {
   private next = 0;
   private loopStart = 0;
   private noise: AudioBuffer | null = null;
+  private unlock: (() => void) | null = null;
+  private listeners = new Set<() => void>();
 
   get playing() { return this.ctx !== null; }
+  /** 켜 두었지만 브라우저가 아직 소리를 막고 있다(사용자 입력 기다리는 중). */
+  get waiting() { return this.ctx?.state === "suspended"; }
+
+  /** 재생·대기 상태가 바뀔 때 알림(버튼 문구를 맞추려고). 해제 함수를 돌려준다. */
+  subscribe(listener: () => void) { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
+  private notify() { this.listeners.forEach(fn => fn()); }
 
   start() {
     const Ctor = audioContextClass();
@@ -105,12 +114,22 @@ class ChipMusic {
     this.loopStart = ctx.currentTime + 0.08;
     this.timer = window.setInterval(() => this.schedule(), 50);
     this.schedule();
+    ctx.onstatechange = () => this.notify();
+    if (ctx.state === "suspended") {
+      const resume = () => { void ctx.resume(); this.unlock?.(); };
+      const events = ["pointerdown", "keydown", "touchend"] as const;
+      events.forEach(e => document.addEventListener(e, resume, { capture: true }));
+      this.unlock = () => { events.forEach(e => document.removeEventListener(e, resume, { capture: true })); this.unlock = null; };
+    }
+    this.notify();
   }
 
   stop() {
     window.clearInterval(this.timer);
+    this.unlock?.();
     const ctx = this.ctx;
     this.ctx = null;
+    this.notify();
     if (!ctx || !this.master) return;
     // 뚝 끊기지 않게 짧게 줄인 뒤 닫는다.
     this.master.gain.setTargetAtTime(0, ctx.currentTime, 0.05);

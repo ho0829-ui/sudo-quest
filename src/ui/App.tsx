@@ -20,6 +20,7 @@ import './styles.css';
 import './command-center.css';
 import './coach.css';
 import './game.css';
+import './cards.css';
 import { missionDraft } from './community/postFormat';
 import { partyNotice, partyState } from './party';
 
