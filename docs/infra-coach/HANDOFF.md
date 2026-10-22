@@ -8,7 +8,7 @@
 - 검증: `npm test -- --reporter=dot --testTimeout=60000` 957개/42파일 통과, `npm run typecheck`·`npm run build` 통과. 백엔드는 저장소 루트에서 잘못 호출했을 때 `ModuleNotFoundError: app`으로 실패했으나, `backend`에서 `../backend/.venv/bin/python -m unittest discover -s tests` 재실행해 87개 통과. 두 README의 로컬 링크 누락 0, `git diff --check` 통과. 유료 AI 호출 없음.
 - `feature/sudo-quest`에 `65158b6`까지 push했다. GitHub에서 브랜치 README의 메인·튜토리얼·코치 GIF, 제출 README의 GIF·표·링크 표시를 확인했다. 기본 브랜치 `master`는 아직 이전 내용이며 이 브랜치는 그보다 81커밋 앞선다. PR·병합·실서비스 배포는 하지 않았다.
 - 시작부터 떠 있던 로컬 Vite 5173·FastAPI 8000은 그대로 두었다. 작업 종료 시 상태를 다시 확인할 것. `.env`/키는 열거나 변경하지 않았다.
-- 다음: 배포용 API 주소·CORS·GitHub Actions 분기 수정과 공개 실행 방식 검토 후, PR과 배포 절차를 진행한다. 배포 후 플레이 링크를 README에 추가하고 GitHub 저장소 About 설명·웹사이트 링크를 채운다.
+- 다음: 배포용 API 주소·CORS·GitHub Actions 분기 수정 전에 공개 AI 호출의 접근 정책과 비용 상한을 정한다. 현재 `/api/chat`·`/api/coach`·`/api/items/search`에는 사용자별 인증·호출 제한이 없고, `Jobs`의 동시 2건 제한은 반복 요청의 총량을 막지 않는다. 게시판 쓰기 제한과는 별개다. 그 뒤 PR·배포를 진행하고 README 플레이 링크 및 GitHub About 설명·웹사이트 링크를 채운다.
 
 
 ## 최신 상태 — 5단계: README 재구성·시연 GIF (2026-10-23, Mac, Claude)
