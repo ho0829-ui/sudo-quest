@@ -134,4 +134,14 @@ export const explorations: Record<string, ExplorationCase> = {
       "docker run -d --name probe nginx:1.25-alpine", "docker restart shop-api", "sudo rm -rf /var/lib/docker/overlay2"],
     alternative: ["docker system prune -a -f", "docker system df"],
   },
+  "linux-too-many-files": {
+    inspect: ["ulimit -a", "ulimit -Hn", "grep -i 'open files' /proc/1340/limits", "sudo lsof -p 1340 | wc -l", "sudo lsof -i :3000 | head -n 3",
+      "cat /proc/1340/status", "systemctl show shop-api -p LimitNOFILE", "cat /etc/security/limits.conf", "ss -tlnp | grep 3000", "free -h"],
+    unrelated: ["ulimit -n 65535", "echo 'root soft nofile 200000' | sudo tee -a /etc/security/limits.conf", "sudo systemctl restart shop-api",
+      "sudo mkdir -p /etc/systemd/system/shop-api.service.d",
+      "echo -e '[Service]\\nLimitNOFILE=65535' | sudo tee /etc/systemd/system/shop-api.service.d/nofile.conf", "sudo systemctl restart shop-api"],
+    alternative: ["sudo mkdir -p /etc/systemd/system/shop-api.service.d",
+      "echo -e '[Service]\\nLimitNOFILE=8192:524288' | sudo tee /etc/systemd/system/shop-api.service.d/limits.conf",
+      "sudo systemctl daemon-reload", "sudo systemctl stop shop-api", "sudo systemctl start shop-api.service", "curl -s http://localhost:3000/health"],
+  },
 };

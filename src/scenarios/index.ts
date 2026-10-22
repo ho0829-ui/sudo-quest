@@ -24,6 +24,7 @@ import { dockerMissingEnv } from "./docker-missing-env";
 import { kubernetesReadiness } from "./kubernetes-readiness";
 import { kubernetesServiceSelector } from "./kubernetes-service-selector";
 import { dockerDiskFull } from "./docker-disk-full";
+import { linuxTooManyFiles } from "./linux-too-many-files";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -48,6 +49,7 @@ export const scenarios: Scenario[] = [
   kubernetesReadiness,
   kubernetesServiceSelector,
   dockerDiskFull,
+  linuxTooManyFiles,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

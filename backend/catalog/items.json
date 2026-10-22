@@ -3249,7 +3249,9 @@
     "source_url": "https://man7.org/linux/man-pages/man2/getrlimit.2.html#DESCRIPTION/RLIMIT_NOFILE",
     "source_section": "DESCRIPTION/RLIMIT_NOFILE",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "linux-too-many-files"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
