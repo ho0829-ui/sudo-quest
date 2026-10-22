@@ -1,6 +1,14 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-23 · 단계: 20번 정리 5단계(README·시연 GIF) 완료. 다음은 6단계(19번 로그인·배포) — 계획 먼저. 초보 관찰(21번)·평가 표본 확인은 Choi 대기
+갱신: 2026-10-23 · 단계: 포트폴리오/제출 README 분리 및 GitHub 브랜치 확인 완료. 다음은 6단계(19번 로그인·배포). 초보 관찰(21번)·평가 표본 확인은 Choi 대기
+
+## 최신 상태 — README 분리·브랜치 push (2026-10-23, Mac, Codex)
+
+- 사용자 요청: GitHub 포트폴리오용과 과제 제출용 README를 짧게 분리하고 Claude의 GIF를 활용한 뒤 push·GitHub 표시 확인. `README.md`는 48줄로 줄여 게임·구조·검증·한계 중심으로 재구성했고, `docs/submission/README.md`(25줄)를 신설해 기존 제출 문서의 안내판으로 삼았다. 기존 GIF 3개는 변경하지 않았다.
+- 검증: `npm test -- --reporter=dot --testTimeout=60000` 957개/42파일 통과, `npm run typecheck`·`npm run build` 통과. 백엔드는 저장소 루트에서 잘못 호출했을 때 `ModuleNotFoundError: app`으로 실패했으나, `backend`에서 `../backend/.venv/bin/python -m unittest discover -s tests` 재실행해 87개 통과. 두 README의 로컬 링크 누락 0, `git diff --check` 통과. 유료 AI 호출 없음.
+- `feature/sudo-quest`에 `65158b6`까지 push했다. GitHub에서 브랜치 README의 메인·튜토리얼·코치 GIF, 제출 README의 GIF·표·링크 표시를 확인했다. 기본 브랜치 `master`는 아직 이전 내용이며 이 브랜치는 그보다 81커밋 앞선다. PR·병합·실서비스 배포는 하지 않았다.
+- 시작부터 떠 있던 로컬 Vite 5173·FastAPI 8000은 그대로 두었다. 작업 종료 시 상태를 다시 확인할 것. `.env`/키는 열거나 변경하지 않았다.
+- 다음: 배포용 API 주소·CORS·GitHub Actions 분기 수정과 공개 실행 방식 검토 후, PR과 배포 절차를 진행한다. 배포 후 플레이 링크를 README에 추가하고 GitHub 저장소 About 설명·웹사이트 링크를 채운다.
 
 
 ## 최신 상태 — 5단계: README 재구성·시연 GIF (2026-10-23, Mac, Claude)
