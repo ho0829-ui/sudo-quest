@@ -19,6 +19,8 @@ interface NodeBase {
   mode: number;
   /** 마지막 수정 시각 (epoch ms) */
   mtime: number;
+  /** 심볼릭 링크면 가리키는 대상. /proc/PID/fd의 항목처럼 계산으로 만든 노드에서 쓴다. */
+  link?: string;
 }
 
 export interface FileNode extends NodeBase {
@@ -86,6 +88,16 @@ export interface Service {
   lastExitReason?: string;
   memKB: number;
   cpu: number;
+  /** 동시에 유지해야 하는 연결 수(예: 실시간 알림 접속). 연결마다 파일 디스크립터를 하나 쓴다. state/limits.ts가 계산한다. */
+  connections?: number;
+  /** 연결 말고 늘 열어 두는 파일·파이프 수(표준 입출력·로그·이벤트 루프 등). 없으면 8 */
+  baseFds?: number;
+  /** fd 한도에 막혀 새 연결을 받지 못할 때 앱이 남기는 로그 한 줄 */
+  fdExhaustedLog?: string;
+  /** 이 서비스 포트로 온 HTTP 요청의 경로별 응답(200). 없으면 우리 서버의 nginx 웹 루트를 돌려준다. */
+  http?: { responses: Record<string, string>; headers?: Record<string, string> };
+  /** systemctl daemon-reload 때 unit 파일·drop-in에서 읽은 설정. 다음 시작부터 새 프로세스에 적용된다. */
+  loaded?: { nofile?: { soft: number; hard: number }; source: string };
 }
 
 // ---------- 프로세스 ----------
@@ -102,6 +114,8 @@ export interface Process {
   service?: string;
   /** docker-proxy처럼 컨테이너로 연결을 넘기는 프로세스면 그 컨테이너 ID. 로컬 요청의 응답을 컨테이너가 만든다. */
   container?: string;
+  /** 열린 파일 수 한도(RLIMIT_NOFILE). 없으면 systemd 기본값(soft 1024, hard 524288) */
+  nofile?: { soft: number; hard: number };
 }
 
 // ---------- 로그 ----------
@@ -309,4 +323,6 @@ export interface SystemState {
   kubernetes?: KubernetesState;
   /** Docker 실습에만 있는 가상 Docker 엔진 */
   docker?: DockerState;
+  /** 이 터미널(셸)에서 ulimit로 바꾼 한도. 셸에만 적용되고 서비스에는 영향이 없다. */
+  shellLimits?: { nofile?: { soft: number; hard: number } };
 }

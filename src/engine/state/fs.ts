@@ -150,6 +150,6 @@ export function canWrite(node: FsNode, user: string): boolean {
 export function formatMode(node: FsNode): string {
   const rwx = (bits: number) =>
     `${bits & 4 ? "r" : "-"}${bits & 2 ? "w" : "-"}${bits & 1 ? "x" : "-"}`;
-  const type = node.kind === "dir" ? "d" : "-";
+  const type = node.link ? "l" : node.kind === "dir" ? "d" : "-";
   return type + rwx((node.mode >> 6) & 7) + rwx((node.mode >> 3) & 7) + rwx(node.mode & 7);
 }

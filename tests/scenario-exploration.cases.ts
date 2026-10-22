@@ -7,7 +7,7 @@ export const explorations: Record<string, ExplorationCase> = {
   "linux-disk-full": {
     inspect: ["du -h --max-depth=1 /var/log", "journalctl --unit=nginx.service --lines=3", "ls -lah /var/log/app", "systemctl is-active nginx.service"],
     unrelated: ["sudo rm -f /tmp/missing", "sudo systemctl restart nginx"],
-    alternative: ["sudo tail -n 0 /var/log/app/app.log > /var/log/app/app.log", "sudo systemctl start nginx.service"],
+    alternative: ["sudo rm -rf /var/log/app", "sudo systemctl start nginx.service"],
   },
   "linux-permission": {
     inspect: ["curl -i http://localhost", "ls -lah /var/www/html", "cat /var/log/nginx/error.log | grep -i denied", "ss -ltnp"],

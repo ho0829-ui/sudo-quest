@@ -13,7 +13,11 @@ import { chmod, chown } from "./perms";
 import { curl, ss, ufw } from "./network";
 import { mysql } from "./mysql";
 import { nginx } from "./nginx";
-import { df, du, journalctl, makeHelp, systemctl } from "./system";
+import { df, du, journalctl, makeHelp } from "./system";
+import { systemctl } from "./systemctl";
+import { lsof } from "./lsof";
+import { ulimit } from "./ulimit";
+import { echo, mkdir, tee } from "./write";
 import { sed } from "./text";
 import { grep } from "./grep";
 import { head } from "./head";
@@ -27,6 +31,7 @@ const list: Command[] = [
   df, du, systemctl, journalctl, free, ps, dmesg, kill,
   curl, ss, ufw, nginx, ping, dig, openssl, certbot,
   aws, mysql, kubectl, docker,
+  lsof, ulimit, echo, tee, mkdir,
 ];
 
 const registry = new Map<string, Command>(list.map((c) => [c.name, c]));

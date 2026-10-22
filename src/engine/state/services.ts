@@ -16,6 +16,7 @@ import { configValidators } from "./config/nginx";
 import { daemonStarted, daemonStopped } from "./docker/lifecycle";
 import { diskUsage, nextPid, portOwner } from "./derived";
 import { findNode } from "./fs";
+import { fdUsage } from "./limits";
 import { addLog } from "./log";
 import type { Service, SystemState } from "./types";
 
@@ -135,6 +136,8 @@ export function startService(state: SystemState, name: string): StartOutcome {
     command: service.execStart,
     listenPorts: effectiveListenPorts(state, service),
     service: service.name,
+    // 한도는 마지막 daemon-reload 때 읽은 unit 설정을 따른다. 파일만 고치고 reload를 안 하면 옛 값이다.
+    ...(service.loaded?.nofile ? { nofile: { ...service.loaded.nofile } } : {}),
   });
   addLog(state, {
     tag: "systemd",
@@ -144,6 +147,11 @@ export function startService(state: SystemState, name: string): StartOutcome {
   });
   // dockerd가 다시 뜨면 재시작 정책에 따라 컨테이너를 되살린다(state/docker/lifecycle.ts).
   if (service.name === "docker") daemonStarted(state);
+  // 필요한 연결이 한도보다 많으면 곧바로 다시 막힌다. 재시작만으로는 고쳐지지 않는다.
+  const started = state.processes.find((p) => p.pid === pid)!;
+  if (service.fdExhaustedLog && fdUsage(state, started).saturated) {
+    addLog(state, { tag: service.name, unit: service.name, pid, priority: "err", message: service.fdExhaustedLog });
+  }
   return { ok: true };
 }
 

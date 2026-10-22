@@ -67,8 +67,8 @@ export function runCommand(state: SystemState, input: string, options: RunOption
   let stdin: string | undefined;
   const errors: string[] = [];
   let last: RunResult = { stdout: "", stderr: "", exitCode: 0, state: next };
-  for (const stage of stages) {
-    last = runStage(next, stage, available, stdin);
+  for (const [index, stage] of stages.entries()) {
+    last = runStage(next, stage, available, stdin, index < stages.length - 1);
     if (last.stderr) errors.push(last.stderr);
     stdin = last.stdout;
   }
@@ -76,13 +76,13 @@ export function runCommand(state: SystemState, input: string, options: RunOption
 }
 
 /** 파이프 한 단계(명령 하나)를 실행한다. state는 이미 복사본이라 그대로 바꾼다. */
-function runStage(next: SystemState, input: string, available: string[], stdin?: string): RunResult {
+function runStage(next: SystemState, input: string, available: string[], stdin: string | undefined, toPipe: boolean): RunResult {
   const parsed = parse(input);
   const user = parsed.sudo ? "root" : next.user;
 
   // 명령어 없이 리다이렉션만 쓴 경우: "> /var/log/app.log" = 파일 비우기
   if (!parsed.name) {
-    if (parsed.redirect) return applyRedirect(next, "", parsed.redirect, user);
+    if (parsed.redirect) return applyRedirect(next, "", parsed.redirect, next.user);
     return { stdout: "", stderr: "", exitCode: 0, state: next };
   }
 
@@ -94,9 +94,11 @@ function runStage(next: SystemState, input: string, available: string[], stdin?:
   const command = getCommand(parsed.name)!;
   const tokens = parsed.tokens.flatMap((t) => (t.startsWith("-") ? [t] : expandGlob(next, t)));
 
-  const result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available, stdin });
+  const result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available, stdin, piped: toPipe || !!parsed.redirect });
 
-  if (parsed.redirect) return applyRedirect(next, result.stdout, parsed.redirect, user, result);
+  // 리다이렉션(>)은 sudo가 아니라 지금 셸(일반 사용자)이 연다. 그래서 sudo echo x > /etc/파일 은 권한 오류가 난다.
+  // root로 쓰려면 실제처럼 | sudo tee 를 써야 한다.
+  if (parsed.redirect) return applyRedirect(next, result.stdout, parsed.redirect, next.user, result);
   return { ...result, state: next };
 }
 

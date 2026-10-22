@@ -13,6 +13,8 @@ export interface CommandContext {
   available: string[];
   /** 파이프 앞 명령의 출력. 파일 인자가 없을 때 grep·head·tail·sort·wc·cat이 읽는다. */
   stdin?: string;
+  /** 출력이 터미널이 아니라 파이프나 파일로 간다(ls는 이때 한 줄에 하나씩 쓴다). */
+  piped?: boolean;
 }
 
 export interface CommandResult {

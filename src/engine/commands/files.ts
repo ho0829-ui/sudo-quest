@@ -5,6 +5,7 @@ import { canRead, canWrite, formatMode, isDir, lookup, removeNode, splitLast } f
 import { formatLogTime, humanKB, table } from "../state/format";
 import type { FsNode } from "../state/types";
 import { lineCount, readSources } from "./input";
+import { resolveForRead } from "../state/procfs";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
 /** ls -l 한 줄을 만든다. 실제 ls와 열 구성을 맞췄다. */
@@ -17,7 +18,7 @@ function longLine(node: FsNode, human: boolean): string[] {
     node.group,
     human ? humanKB(size / 1024) : String(size),
     formatLogTime(node.mtime),
-    node.name,
+    node.link ? `${node.name} -> ${node.link}` : node.name,
   ];
 }
 
@@ -25,7 +26,7 @@ export const ls: Command = {
   name: "ls",
   summary: "디렉터리 내용을 본다 (-l 자세히, -h 읽기 쉬운 크기, -a 숨김 파일 포함)",
   usage: "ls [-lha] [경로...]",
-  run({ state, tokens, user }: CommandContext) {
+  run({ state, tokens, user, piped }: CommandContext) {
     const long = hasFlag(tokens, "l");
     const human = hasFlag(tokens, "h");
     const all = hasFlag(tokens, "a");
@@ -36,7 +37,7 @@ export const ls: Command = {
     const errors: string[] = [];
 
     for (const path of paths) {
-      const { abs, node } = lookup(state, path);
+      const { abs, node } = resolveForRead(state, path);
       if (!node) {
         errors.push(`ls: cannot access '${path}': No such file or directory`);
         continue;
@@ -58,7 +59,8 @@ export const ls: Command = {
         const totalKB = visible.reduce((s, e) => s + (e.kind === "file" ? e.sizeKB : 4), 0);
         body = rows.length ? `total ${totalKB}\n${table(rows, ["left", "right", "left", "left", "right", "left", "left"])}` : "total 0";
       } else {
-        body = visible.map((e) => e.name).join("  ");
+        // 실제 ls처럼 터미널이 아니라 파이프·파일로 보낼 때는 한 줄에 하나씩 쓴다(ls | wc -l이 개수가 된다).
+        body = visible.map((e) => e.name).join(piped ? "\n" : "  ");
       }
       blocks.push(paths.length > 1 && isDir(node) ? `${abs}:\n${body}` : body);
     }

@@ -4,6 +4,7 @@
  * 특히 "상태를 바꾸면 출력이 따라 바뀐다"는 핵심 원칙(CLAUDE.md 4-2)을 검증한다.
  */
 import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_COMMANDS } from "../src/engine/commands";
 import { runCommand } from "../src/engine/run";
 import { ubuntuWeb } from "../src/engine/state/hosts";
 import { diskUsage } from "../src/engine/state/derived";
@@ -215,9 +216,12 @@ describe("systemctl / journalctl", () => {
 });
 
 describe("리다이렉션", () => {
-  it("> 로 파일을 비울 수 있다", () => {
+  it("리다이렉션은 sudo가 아니라 셸 사용자 권한으로 열리고, root 파일은 sudo tee로 비운다", () => {
     const sizeBefore = 4200;
-    const result = run("sudo > /var/log/syslog");
+    // 실제 bash처럼 > 는 sudo 앞의 일반 사용자 셸이 연다.
+    expect(run("sudo > /var/log/syslog").stderr).toBe("bash: /var/log/syslog: Permission denied");
+    const result = runCommand(state, "echo -n | sudo tee /var/log/syslog", { available: [...DEFAULT_COMMANDS, "echo", "tee"] });
+    state = result.state;
     expect(result.exitCode).toBe(0);
 
     const varDir = state.fs.children.find((c) => c.name === "var");

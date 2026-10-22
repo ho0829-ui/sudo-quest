@@ -10,11 +10,12 @@
  */
 import { requestInstance } from "./aws";
 import { containerResponse } from "./docker/runtime";
+import { fdUsage, serviceOf } from "./limits";
 import { listeningSockets } from "./derived";
 import { canRead, findNode } from "./fs";
 import type { FirewallRule, SystemState } from "./types";
 
-export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "reset" | "tls";
+export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "reset" | "timeout" | "tls";
 
 export interface RequestOutcome {
   ok: boolean;
@@ -117,12 +118,24 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
         message: `Failed to connect to ${target.host} port ${target.port}: Connection refused`,
       };
     }
+    const owner = state.processes.find((p) => p.pid === socket.pid);
+    // fd 한도에 막힌 프로세스는 accept를 못 해 연결이 대기열에서 기다리다 시간 초과된다.
+    if (owner && fdUsage(state, owner).saturated) {
+      return { ok: false, ip, stage: "timeout", message: "Operation timed out after 5001 milliseconds with 0 bytes received" };
+    }
     // docker-proxy가 잡은 포트면 응답은 그 컨테이너가 만든다(nginx 웹 루트가 아니다).
-    const forwarder = state.processes.find((p) => p.pid === socket.pid)?.container;
+    const forwarder = owner?.container;
     if (forwarder) {
       const reply = containerResponse(state.docker, forwarder, target.path ?? "/", state.clock);
       if (!reply) return { ok: false, ip, stage: "reset", message: "Recv failure: Connection reset by peer" };
       return { ok: true, ip, ...reply };
+    }
+    // 응답을 정의한 서비스(예: Node API)면 그 서비스가 답한다.
+    const http = owner && serviceOf(state, owner)?.http;
+    if (http) {
+      const body = http.responses[(target.path ?? "/").split("?")[0]];
+      const headers = http.headers ?? { "Content-Type": "application/json; charset=utf-8" };
+      return body === undefined ? { ok: true, ip, status: 404, body: '{"error":"not found"}', headers } : { ok: true, ip, status: 200, body, headers };
     }
     // 우리 서버의 인증서도 만료를 검사한다. 원격이든 로컬이든 규칙은 같다.
     if (target.tls) {

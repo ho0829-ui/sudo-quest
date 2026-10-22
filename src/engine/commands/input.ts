@@ -3,7 +3,8 @@
  * 파일 인자가 있으면 파일을, 없으면 파이프로 들어온 stdin을 읽는다.
  * stdin도 없으면 빈 입력으로 본다(이 시뮬레이터에는 키보드 입력을 기다리는 대화형 모드가 없다).
  */
-import { canRead, isDir, lookup, walk } from "../state/fs";
+import { canRead, isDir, walk } from "../state/fs";
+import { resolveForRead } from "../state/procfs";
 import type { CommandContext } from "./types";
 
 export interface Source {
@@ -22,7 +23,7 @@ export function readSources(ctx: CommandContext, command: string, paths: string[
   const sources: Source[] = [];
   const errors: string[] = [];
   for (const path of paths) {
-    const { abs, node } = lookup(ctx.state, path);
+    const { abs, node } = resolveForRead(ctx.state, path);
     if (!node) {
       errors.push(`${command}: ${path}: No such file or directory`);
     } else if (isDir(node)) {
