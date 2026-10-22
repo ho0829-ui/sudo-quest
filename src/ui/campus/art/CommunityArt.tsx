@@ -1,4 +1,4 @@
-import { plane, points, project } from "../iso";
+import { plane, points, project, type Point3 } from "../iso";
 import { Box, Neon, OnWall } from "../parts";
 import { WALL_HEIGHT } from "../rooms";
 import { Bubble, CafeTable, CorkBoard, Counter, MenuBoard, Mug, PEACH, PendantLamp, Sofa, Stool, WARM_LIGHT } from "./cafe";
@@ -10,7 +10,7 @@ import { CommunityPartyCake } from "../party/control";
  * 벽돌 벽과 아래 나무 판벽. 문(4~6)은 비워 두려고 벽을 구간으로 나눠 그린다.
  * top 위로는 벽돌 줄을 긋지 않는다(이름 간판이 있는 자리를 깨끗하게 둔다).
  */
-function BrickWall({ wall, from, to, top = WALL_HEIGHT }: { wall: "left" | "right"; from: number; to: number; top?: number }) {
+export function BrickWall({ wall, from, to, top = WALL_HEIGHT }: { wall: "left" | "right"; from: number; to: number; top?: number }) {
   const width = (to - from) * 22;
   const rows = [];
   for (let row = 0, y = (WALL_HEIGHT - top) * 22 + 4; y < (WALL_HEIGHT - 1.0) * 22; row++, y += 8) {
@@ -26,9 +26,9 @@ function BrickWall({ wall, from, to, top = WALL_HEIGHT }: { wall: "left" | "righ
   </OnWall>;
 }
 
-/** 왼쪽 벽 창문: 밤거리 불빛, 달, 살구색 커튼. */
-function Window() {
-  return <OnWall wall="left" at={[0, 3.6, 3.85]}>
+/** 왼쪽 벽 창문: 밤거리 불빛, 달, 살구색 커튼. 큰 카페(게시판 화면)도 같은 창문을 쓴다. */
+export function Window({ at = [0, 3.6, 3.85] }: { at?: Point3 }) {
+  return <OnWall wall="left" at={at}>
     <rect width={62} height={44} rx={3} fill="#5b3a22" />
     <rect x={3} y={3} width={56} height={38} fill="#0d1a33" />
     <circle cx={44} cy={11} r={4} fill="#fff4c2" />

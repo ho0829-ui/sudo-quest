@@ -7,6 +7,7 @@ import { PostDetail } from './PostDetail';
 import { AdminBar } from './moderation';
 import { plainExcerpt } from './postFormat';
 import { BoardError, BoardTime, Pagination, isFresh, useBoard } from './shared';
+import { CafeScene } from './cafe/CafeScene';
 import './community.css';
 
 interface CommunityScreenProps {
@@ -18,9 +19,13 @@ interface CommunityScreenProps {
   onWrite: () => void;
   /** 글을 올린 뒤 상세로. 뒤로 가기가 작성 화면으로 돌아가지 않게 주소를 바꿔 끼운다. */
   onCreated: (id: number) => void;
+  /** 앱의 모션 설정. 카페 손님이 걸어 다닐지 정한다. */
+  motion: boolean;
+  /** 모든 운영실의 장애를 해결했으면 카페도 파티 중 */
+  party: boolean;
 }
 
-export function CommunityScreen({ postId, writing, preset, onOpen, onWrite, onCreated }: CommunityScreenProps) {
+export function CommunityScreen({ postId, writing, preset, onOpen, onWrite, onCreated, motion, party }: CommunityScreenProps) {
   // 운영자 키는 이 화면의 메모리에만 둔다. 저장소에 쓰지 않으므로 새로고침하거나 게시판을 떠나면 사라진다.
   const [adminKey, setAdminKey] = useState<string | null>(null);
   return <section className="community-screen">
@@ -34,7 +39,7 @@ export function CommunityScreen({ postId, writing, preset, onOpen, onWrite, onCr
     {postId !== undefined ? <><button className="text-button board-back" onClick={() => onOpen()}>← 게시판 목록</button>
         <PostDetail key={postId} id={postId} adminKey={adminKey} onDeleted={() => onOpen()} /></>
       : writing ? <Compose preset={preset} onCancel={() => onOpen()} onCreated={onCreated} />
-      : <BoardList onOpen={onOpen} onWrite={onWrite} />}
+      : <><CafeScene motion={motion} party={party} onOpen={onOpen} onWrite={onWrite} /><BoardList onOpen={onOpen} onWrite={onWrite} /></>}
   </section>;
 }
 

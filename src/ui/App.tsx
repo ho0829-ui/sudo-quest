@@ -21,7 +21,7 @@ import './command-center.css';
 import './coach.css';
 import './game.css';
 import { missionDraft } from './community/postFormat';
-import { partyNotice } from './party';
+import { partyNotice, partyState } from './party';
 
 // 게시판 화면은 처음 들어갈 때 불러온다. 회고 양식(missionDraft)은 작은 순수 함수라 바로 가져온다.
 const CommunityScreen = lazy(() => import('./community/CommunityScreen').then(m => ({ default: m.CommunityScreen })));
@@ -135,7 +135,8 @@ export function App() {
         {route.kind === 'community' && <Suspense fallback={<TerminalLoader label="카페 문을 여는 중…" />}><CommunityScreen postId={route.postId} writing={!!route.write}
           preset={route.mission ? missionDraft(route.mission, scenarios[route.mission - 1].title) : undefined}
           onOpen={postId => go({ kind: 'community', postId })} onWrite={() => go({ kind: 'community', write: true })}
-          onCreated={postId => go({ kind: 'community', postId }, true)} /></Suspense>}
+          onCreated={postId => go({ kind: 'community', postId }, true)}
+          motion={motion} party={partyState(scenarios, progress).allClear} /></Suspense>}
         {knowledgeVisited && <div hidden={workspace !== 'knowledge'}><KnowledgeScreen /></div>}
         {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
         <div hidden={workspace !== 'game'}>
