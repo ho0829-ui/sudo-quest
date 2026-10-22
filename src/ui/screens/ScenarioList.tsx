@@ -5,6 +5,7 @@ import { Icon } from '../components/Icon';
 import { CATEGORIES, OPEN_CATEGORIES } from '../categories';
 import { IsoCampus } from '../campus/IsoCampus';
 import { upcomingScenarios } from '../../scenarios/upcoming';
+import { nextMission } from '../nextMission';
 
 interface ScenarioListProps {
   scenarios: Scenario[];
@@ -34,7 +35,8 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
     requestAnimationFrame(() => libraryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }
   const cleared = scenarios.filter(s => progress[s.id]?.cleared);
-  const next = scenarios.find(s => !progress[s.id]?.cleared) ?? scenarios[0];
+  // 이미 해결한 실습으로 보내지 않는다(모두 해결했으면 '기록 갱신'으로 바뀐다). nextMission.ts 참고.
+  const next = nextMission(scenarios, progress);
   const visible = scenarios.filter(s => (!recordsOnly || progress[s.id]?.cleared)
     && (category === 'all' || s.category === category)
     && (difficulty === 'all' || s.difficulty === Number(difficulty))
@@ -55,7 +57,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
       <div className="hero-copy"><span className="hero-kicker"><span /> YOUR NEXT ON-CALL STARTS HERE</span>
         <h2>서버에 문제가 생겼습니다.<br /><span>당신의 첫 명령어는?</span></h2>
         <p>로그 속 단서를 따라 원인을 좁히고,<br />복구의 순간까지 직접 경험하는 인프라 실습.</p>
-        <div className="hero-actions"><button className="primary" onClick={() => next && onSelect(next)}> {cleared.length ? '다음 실습 시작' : '첫 장애 해결하기'} <Icon name="arrow" size={17} /></button>
+        <div className="hero-actions"><button className="primary" onClick={() => next && onSelect(next.scenario)}> {next?.label ?? '첫 장애 해결하기'} <Icon name="arrow" size={17} /></button>
           <button className="text-button" onClick={onExplore}>지식 탐색 <Icon name="arrow" size={15} /></button></div>
         <div className="hero-note"><Icon name="shield" size={14} /> 실제 시스템에 영향 없는 가상 환경</div>
       </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} onFinale={onFinale} onCredits={onCredits} />

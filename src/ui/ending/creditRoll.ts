@@ -26,7 +26,7 @@ export const CHAPTERS: Chapter[] = [
     lines: ["2026년 9월 11일, CLAUDE.md와 첫 실습(디스크 가득 참)과 함께 태어남", "파일·프로세스·서비스·systemd·journalctl·도커·쿠버네티스·nginx·인증서 체인을 전부 메모리 안에서",
       "명령 출력은 하드코딩 금지 — 언제나 지금 상태에서 계산한다"] },
   { title: "SUDO QUEST 캠퍼스", credit: "Claude · 감독 Choi",
-    lines: ["아이소메트릭 운영실, 경보등, 출동 대기 전광판, 운영자 등급", "걷고 타이핑하는 근무자들 — 월급은 받지 않는다"] },
+    lines: ["아이소메트릭 운영실, 경보등, 출동 대기 전광판, 운영자 등급", "걷고 타이핑하는 근무자들 — 월급은 받지 않는다", "\"다음 실습\" 버튼은 이미 푼 실습으로 데려가지 않는다 — 다 풀면 기록 갱신을 권한다"] },
   { title: "AI 코치 · 지식 탐색", credit: "Choi · Claude",
     lines: ["FastAPI · Chroma · LangGraph · 공식 문서 근거 인용", "정답 정보는 절대 보내지 않는 코치 — 사실·가설·다음 점검만 말한다"] },
   { title: "정답 밖 탐색 점검", credit: "GPT (Codex)",
