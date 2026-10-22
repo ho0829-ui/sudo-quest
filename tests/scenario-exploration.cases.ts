@@ -144,4 +144,21 @@ export const explorations: Record<string, ExplorationCase> = {
       "echo -e '[Service]\\nLimitNOFILE=8192:524288' | sudo tee /etc/systemd/system/shop-api.service.d/limits.conf",
       "sudo systemctl daemon-reload", "sudo systemctl stop shop-api", "sudo systemctl start shop-api.service", "curl -s http://localhost:3000/health"],
   },
+  "web-upstream-502": {
+    inspect: ["curl -I http://localhost/api/products", "grep -c 'Connection refused' /var/log/nginx/error.log", "grep ' 502 ' /var/log/nginx/access.log",
+      "nginx -T | grep proxy_pass", "ps aux | grep node", "cat /opt/app/config.yml", "systemctl status shop-api", "curl -s http://localhost/"],
+    unrelated: ["sudo systemctl restart nginx", "sudo sed -i 's/127.0.0.1:3000/127.0.0.1:8081/' /etc/nginx/nginx.conf", "sudo systemctl reload nginx",
+      "sudo systemctl restart shop-api"],
+    alternative: ["sudo sed -i 's/port: 8080/port: 3000/' /opt/app/config.yml", "sudo systemctl restart shop-api", "curl -s http://localhost/api/health"],
+  },
+  "web-tls-chain": {
+    inspect: ["openssl s_client -connect shop.example.com:443 -showcerts", "openssl x509 -in /etc/nginx/ssl/shop.example.com.crt -noout -dates",
+      "grep -c BEGIN /etc/nginx/ssl/shop.example.com.crt", "nginx -T | grep ssl_", "cat /etc/nginx/ssl/README.txt", "sudo certbot certificates",
+      "ss -tlnp | grep 443", "tail -n 1 /var/log/nginx/error.log"],
+    unrelated: ["sudo certbot renew --force-renewal", "sudo systemctl reload nginx",
+      "cat /etc/nginx/ssl/ExampleTrustCA.crt /etc/nginx/ssl/shop.example.com.crt | sudo tee /etc/nginx/ssl/bundle.crt",
+      "sudo sed -i 's#ssl/shop.example.com.crt#ssl/bundle.crt#' /etc/nginx/nginx.conf", "sudo systemctl reload nginx", "sudo systemctl restart nginx"],
+    alternative: ["cat /etc/nginx/ssl/shop.example.com.crt /etc/nginx/ssl/ExampleTrustCA.crt | sudo tee /etc/nginx/ssl/chained.crt",
+      "sudo sed -i 's#/etc/nginx/ssl/shop.example.com.crt#/etc/nginx/ssl/chained.crt#' /etc/nginx/nginx.conf", "sudo nginx -s reload", "curl -I -s https://shop.example.com"],
+  },
 };

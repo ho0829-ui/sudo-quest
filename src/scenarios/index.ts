@@ -25,6 +25,8 @@ import { kubernetesReadiness } from "./kubernetes-readiness";
 import { kubernetesServiceSelector } from "./kubernetes-service-selector";
 import { dockerDiskFull } from "./docker-disk-full";
 import { linuxTooManyFiles } from "./linux-too-many-files";
+import { webUpstream502 } from "./web-upstream-502";
+import { webTlsChain } from "./web-tls-chain";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -50,6 +52,8 @@ export const scenarios: Scenario[] = [
   kubernetesServiceSelector,
   dockerDiskFull,
   linuxTooManyFiles,
+  webUpstream502,
+  webTlsChain,
 ];
 
 export function getScenario(id: string): Scenario | undefined {
