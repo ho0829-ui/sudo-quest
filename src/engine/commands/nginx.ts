@@ -7,6 +7,7 @@
  */
 import { flagValue, hasFlag } from "../parser/parse";
 import { validateNginxConf } from "../state/config/nginx";
+import { nginxTlsProblem } from "../state/config/nginxSites";
 import { findNode } from "../state/fs";
 import { findService, reloadService, startService, stopService } from "../state/services";
 import type { SystemState } from "../state/types";
@@ -32,6 +33,9 @@ function testConfig(state: SystemState): { failure: CommandResult | null; conten
       content: node.content,
     };
   }
+  // 서비스 시작과 같은 함수로 인증서·키도 검사한다.
+  const tls = nginxTlsProblem(state, node.content);
+  if (tls) return { failure: fail(`nginx: ${tls}\nnginx: configuration file ${CONF_PATH} test failed`), content: node.content };
   return { failure: null, content: node.content };
 }
 

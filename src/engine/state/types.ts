@@ -79,7 +79,9 @@ export interface Service {
    * 이게 있으면 listenPorts의 주소 대신 설정 파일의 값을 쓴다.
    * "설정을 고치고 재시작하면 바인딩이 바뀐다"가 여기서 재현된다.
    */
-  bindConfig?: { path: string; key: string };
+  bindConfig?: { path: string; key: string; portKey?: string };
+  /** 설정 파일을 쓰는 서비스(nginx)가 마지막으로 시작·reload할 때 읽은 내용. 요청 처리는 이것을 따른다. */
+  configSnapshot?: string;
   /** 문법을 검사할 설정 파일 경로 */
   configPath?: string;
   /** 그 파일을 어떤 검증기로 볼지. configValidators의 키. */
@@ -187,6 +189,8 @@ export interface Network {
   /** 가상 인터넷의 DNS 레코드: 도메인 → IP */
   records: Record<string, string>;
   world: RemoteHost[];
+  /** 이 서버(curl·openssl)가 믿는 루트 인증서의 주체 DN. 중간 인증서는 없다(실제 OS CA 묶음과 같다). */
+  trustedRoots?: string[];
 }
 
 // ---------- 데이터베이스 ----------
@@ -212,6 +216,15 @@ export interface Certificate {
   issuer: string;
   notBefore: number;
   notAfter: number;
+  /** 주체 DN(예: "CN = shop.example.com"). 없으면 CN = domain으로 본다. */
+  subject?: string;
+  /**
+   * PEM 본문(가짜 base64)의 식별 문자열. 파일 내용에 이 문자열이 들어 있으면 그 파일에 이 인증서가 있는 것이다.
+   * 그래서 cat a.crt b.crt | tee chain.crt 로 만든 파일의 체인이 따로 기록하지 않아도 계산된다(state/certs.ts).
+   */
+  pem?: string;
+  /** 짝이 되는 개인 키의 식별 문자열. 키 파일 내용에 있어야 nginx가 이 인증서를 쓸 수 있다. */
+  keyId?: string;
 }
 
 // ---------- AWS ----------

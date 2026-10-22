@@ -11,8 +11,15 @@
 import { requestInstance } from "./aws";
 import { containerResponse } from "./docker/runtime";
 import { fdUsage, serviceOf } from "./limits";
+import { verifyChain } from "./certs";
+import { loadedConfig, pickServer, route } from "./config/nginxSites";
+import { proxy, serveLocal, servedChain } from "./webServer";
+
+// 예전부터 network.ts에서 가져가던 이름들은 그대로 쓸 수 있게 다시 내보낸다.
+export { certificateFor, servedChain, serveLocal, WEB_ROOT, WEB_USER } from "./webServer";
+export { configuredNameserver, resolveHost, type ResolveOutcome } from "./dns";
 import { listeningSockets } from "./derived";
-import { canRead, findNode } from "./fs";
+import { resolveHost } from "./dns";
 import type { FirewallRule, SystemState } from "./types";
 
 export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "reset" | "timeout" | "tls";
@@ -28,45 +35,6 @@ export interface RequestOutcome {
   message?: string;
   /** 응답 헤더. 없으면 우리 서버의 nginx 기본 헤더를 쓴다. */
   headers?: Record<string, string>;
-}
-
-const IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
-
-/** /etc/resolv.conf 에 적힌 첫 번째 nameserver */
-export function configuredNameserver(state: SystemState): string | null {
-  const node = findNode(state.fs, "/etc/resolv.conf");
-  if (!node || node.kind !== "file") return null;
-  const line = node.content.split("\n").find((l) => l.trim().startsWith("nameserver"));
-  return line ? (line.trim().split(/\s+/)[1] ?? null) : null;
-}
-
-export interface ResolveOutcome {
-  ip?: string;
-  stage?: FailureStage;
-  message?: string;
-  /** 어떤 DNS 서버에 물어봤는가 (dig 출력에 쓴다) */
-  nameserver?: string;
-}
-
-/** 이름 해석. 설정된 nameserver가 살아 있어야 하고, 레코드도 있어야 한다. */
-export function resolveHost(state: SystemState, host: string): ResolveOutcome {
-  if (IPV4.test(host) || host === "localhost") {
-    return { ip: host === "localhost" ? "127.0.0.1" : host };
-  }
-
-  const nameserver = configuredNameserver(state);
-  if (!nameserver) {
-    return { stage: "dns", message: "Temporary failure in name resolution" };
-  }
-  // 설정된 DNS 서버가 실제로 응답하는 서버가 아니면 타임아웃된다.
-  // resolv.conf를 잘못 고쳤을 때 실제로 벌어지는 일이다.
-  if (!state.network.dnsServers.includes(nameserver)) {
-    return { stage: "dns", nameserver, message: "Temporary failure in name resolution" };
-  }
-
-  const ip = state.network.records[host];
-  if (!ip) return { stage: "dns", nameserver, message: "Name or service not known" };
-  return { ip, nameserver };
 }
 
 /** 이 주소가 우리 서버 자신인가 */
@@ -95,6 +63,8 @@ export interface RequestTarget {
   tls?: boolean;
   /** 요청 경로. 경로별로 응답이 다른 대상(EC2 인스턴스)에서 쓴다 */
   path?: string;
+  /** nginx가 다시 넘긴 횟수. 자기 자신으로 넘기는 설정이 끝없이 돌지 않게 막는다. */
+  hops?: number;
 }
 
 export function request(state: SystemState, target: RequestTarget): RequestOutcome {
@@ -137,13 +107,22 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
       const headers = http.headers ?? { "Content-Type": "application/json; charset=utf-8" };
       return body === undefined ? { ok: true, ip, status: 404, body: '{"error":"not found"}', headers } : { ok: true, ip, status: 200, body, headers };
     }
-    // 우리 서버의 인증서도 만료를 검사한다. 원격이든 로컬이든 규칙은 같다.
+    // 우리 서버의 인증서: nginx가 보내는 체인으로 만료와 루트까지 이어지는지를 검사한다.
     if (target.tls) {
-      const cert = certificateFor(state, target.host);
-      if (cert && cert.notAfter < state.clock) {
-        return { ok: false, ip, stage: "tls", message: "SSL certificate problem: certificate has expired" };
+      const chain = servedChain(state, target.host, target.port);
+      const verdict = chain.length ? verifyChain(state, chain) : null;
+      if (verdict && !verdict.ok) {
+        const problem = verdict.code === 10 ? "certificate has expired" : "unable to get local issuer certificate";
+        return { ok: false, ip, stage: "tls", message: `SSL certificate problem: ${problem}` };
       }
     }
+    // nginx면 읽어 둔 설정의 location에 따라 정적 파일을 주거나 upstream으로 넘긴다.
+    const nginx = owner && serviceOf(state, owner)?.name === "nginx" ? serviceOf(state, owner) : undefined;
+    const config = nginx && loadedConfig(state, nginx);
+    const server = config ? pickServer(config, target.port, target.host) : undefined;
+    const path = target.path ?? "/";
+    const plan = config && server ? route(config, server, path) : { kind: "static" as const };
+    if (plan.kind === "proxy") return proxy(ip, plan.targets, plan.path, (target.hops ?? 0) + 1, (next) => request(state, next));
     return { ok: true, ip, ...serveLocal(state) };
   }
 
@@ -188,33 +167,4 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
   }
 
   return { ok: true, ip, status: service.status ?? 200, body: service.body ?? "" };
-}
-
-/** 이 도메인을 담당하는 인증서를 찾는다. */
-export function certificateFor(state: SystemState, domain: string) {
-  return state.certificates.find((cert) => cert.domain === domain);
-}
-
-/** nginx가 파일을 읽을 때 쓰는 계정. 이 계정이 읽을 수 없으면 403이 난다. */
-export const WEB_USER = "www-data";
-export const WEB_ROOT = "/var/www/html/index.html";
-
-/**
- * 우리 서버의 웹 응답을 만든다.
- *
- * 웹 루트 파일의 퍼미션을 실제로 검사한다.
- * 그래서 chmod 한 번으로 403 ↔ 200 이 오간다. 시나리오가 응답 코드를 정하지 않는다.
- */
-export function serveLocal(state: SystemState): { status: number; body: string } {
-  const node = findNode(state.fs, WEB_ROOT);
-  if (!node || node.kind !== "file") {
-    return { status: 404, body: "<html>\n<head><title>404 Not Found</title></head>\n</html>\n" };
-  }
-  if (!canRead(node, WEB_USER)) {
-    return {
-      status: 403,
-      body: "<html>\n<head><title>403 Forbidden</title></head>\n<body>\n<center><h1>403 Forbidden</h1></center>\n<hr><center>nginx/1.24.0</center>\n</body>\n</html>\n",
-    };
-  }
-  return { status: 200, body: node.content };
 }

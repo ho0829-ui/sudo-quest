@@ -115,6 +115,8 @@ function applyRedirect(
   }
 
   const { abs, node } = lookup(state, redirect.path);
+  // /dev/null은 누구나 쓸 수 있고 쓴 내용은 버려진다(… | sudo tee 파일 > /dev/null 처럼 화면 출력을 감출 때 쓴다).
+  if (abs === "/dev/null") return { ...base, stdout: "", state };
   const parentNode = lookup(state, splitLast(abs).parent).node;
 
   if (node && !canWrite(node, user)) {

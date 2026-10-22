@@ -16,11 +16,11 @@ interface Substitution {
   global: boolean;
 }
 
-/** "s/old/new/g" 를 뜯는다. 구분자는 / 만 지원한다. */
+/** "s/old/new/g" 를 뜯는다. 경로를 바꿀 때 흔히 쓰는 s#old#new# 처럼 다른 구분자도 받는다(실제 sed와 같다). */
 function parseScript(script: string): Substitution | null {
   if (!script.startsWith("s")) return null;
   const delimiter = script[1];
-  if (delimiter !== "/") return null;
+  if (!delimiter || /[A-Za-z0-9\\\s]/.test(delimiter)) return null;
 
   const parts: string[] = [];
   let current = "";
@@ -51,7 +51,7 @@ function escapeRegex(text: string): string {
 export const sed: Command = {
   name: "sed",
   summary: "파일 내용을 치환한다 (-i 파일에 바로 반영)",
-  usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>",
+  usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>  (구분자는 / 대신 # | 등도 가능)",
   run({ state, tokens, user, stdin }: CommandContext) {
     const unknown = unknownBooleanOption(tokens, "i", ["in-place"]);
     if (unknown) return fail(`sed: unrecognized option '${unknown}'`);

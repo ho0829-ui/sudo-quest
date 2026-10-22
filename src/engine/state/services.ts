@@ -13,6 +13,7 @@
  * 시나리오는 원인만 심어두면 되고, "그래서 서비스가 뜨지 못한다"는 판단은 엔진이 한다.
  */
 import { configValidators } from "./config/nginx";
+import { nginxTlsProblem } from "./config/nginxSites";
 import { daemonStarted, daemonStopped } from "./docker/lifecycle";
 import { diskUsage, nextPid, portOwner } from "./derived";
 import { findNode } from "./fs";
@@ -53,7 +54,15 @@ function configProblem(state: SystemState, service: Service): string | null {
   if (!check.ok && check.error) {
     return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
   }
-  return null;
+  // 문법이 맞아도 인증서·키를 읽지 못하면 시작하지 못한다.
+  return service.configValidator === "nginx" ? nginxTlsProblem(state, node.content) : null;
+}
+
+/** 시작·reload에 성공한 순간의 설정 내용을 기억한다. 이후 요청은 이 내용으로 처리한다. */
+function snapshotConfig(state: SystemState, service: Service) {
+  if (!service.configPath) return;
+  const node = findNode(state.fs, service.configPath);
+  if (node?.kind === "file") service.configSnapshot = node.content;
 }
 
 function portProblem(state: SystemState, ports: { addr: string; port: number }[], ownPid?: number): string | null {
@@ -81,10 +90,11 @@ function effectiveListenPorts(state: SystemState, service: Service) {
   const node = findNode(state.fs, service.bindConfig.path);
   if (!node || node.kind !== "file") return ports;
 
-  // "host: 0.0.0.0" 또는 "host = 0.0.0.0" 형태를 읽는다
-  const pattern = new RegExp(`^\\s*${service.bindConfig.key}\\s*[:=]\\s*([^\\s#]+)`, "m");
-  const matched = pattern.exec(node.content);
-  return matched ? ports.map((listen) => ({ ...listen, addr: matched[1] })) : ports;
+  // "host: 0.0.0.0" 또는 "host = 0.0.0.0" 형태를 읽는다. portKey가 있으면 포트도 설정 파일 값을 쓴다.
+  const read = (key: string) => new RegExp(`^\\s*${key}\\s*[:=]\\s*([^\\s#]+)`, "m").exec(node.content)?.[1];
+  const addr = read(service.bindConfig.key);
+  const port = service.bindConfig.portKey ? Number(read(service.bindConfig.portKey)) : NaN;
+  return ports.map((listen) => ({ ...listen, addr: addr ?? listen.addr, port: Number.isInteger(port) && port > 0 ? port : listen.port }));
 }
 
 export function startService(state: SystemState, name: string): StartOutcome {
@@ -124,6 +134,7 @@ export function startService(state: SystemState, name: string): StartOutcome {
   }
 
   const pid = nextPid(state);
+  snapshotConfig(state, service);
   service.state = "active";
   service.mainPid = pid;
   service.since = state.clock;
@@ -200,6 +211,7 @@ export function reloadService(state: SystemState, name: string): ReloadOutcome {
 
   const process = state.processes.find((p) => p.pid === service.mainPid);
   if (process) process.listenPorts = ports;
+  snapshotConfig(state, service);
   addLog(state, { tag: "systemd", pid: 1, unit: service.name, message: `Reloaded ${service.name}.service - ${service.description}.` });
   return { ok: true };
 }

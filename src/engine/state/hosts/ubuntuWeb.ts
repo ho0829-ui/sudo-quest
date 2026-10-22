@@ -132,6 +132,8 @@ export function ubuntuWeb(): SystemState {
         requiresFreeKB: 20 * 1024,
         configPath: "/etc/nginx/nginx.conf",
         configValidator: "nginx",
+        // 지금 떠 있는 nginx가 읽은 설정. 파일만 고치면 reload 전까지 이 내용으로 요청을 처리한다.
+        configSnapshot: NGINX_CONF,
         memKB: 42 * 1024,
         cpu: 0.3,
       },
@@ -146,7 +148,7 @@ export function ubuntuWeb(): SystemState {
         since: BASE_CLOCK - 86400_000 * 6,
         listenPorts: [{ addr: "0.0.0.0", port: 3000 }],
         // 바인드 주소는 설정 파일이 정한다. 설정을 고치고 재시작하면 실제로 바뀐다.
-        bindConfig: { path: "/opt/app/config.yml", key: "host" },
+        bindConfig: { path: "/opt/app/config.yml", key: "host", portKey: "port" },
         requiresFreeKB: 10 * 1024,
         memKB: 210 * 1024,
         cpu: 1.4,
@@ -192,6 +194,8 @@ export function ubuntuWeb(): SystemState {
           { port: 443, proto: "tcp", action: "allow", comment: "HTTPS" },
         ],
       },
+      // 우분투 ca-certificates처럼 루트 인증서만 믿는다. 중간 인증서는 서버가 보내야 한다.
+      trustedRoots: ["C = US, O = Internet Security Research Group, CN = ISRG Root X1", "C = US, O = Example Trust, CN = Example Trust Root R1"],
       dnsServers: ["10.0.0.2"], // VPC 기본 리졸버
       records: {
         "api.payments.example.com": "203.0.113.40",
