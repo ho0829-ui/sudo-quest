@@ -14,6 +14,7 @@ from app.collectors import digest, save_json
 from app.contracts import CoachAnswer, SearchTerms
 from app.corpus import check_manifest
 from app.graphs import build_graph
+from app.timing import StageClock
 from app.providers import embed
 from app.rag import citation_numbers, json_call
 
@@ -74,6 +75,7 @@ def unsupported_commands(answer, available, operations=None):
 
 
 def coach(settings, collections, request, progress=lambda stage: None):
+    progress = StageClock(progress)
     manifest = check_manifest(settings)
     if request.item_id and request.item_id not in ITEM_BY_ID:
         raise ValueError("unknown_item")
@@ -89,7 +91,7 @@ def coach(settings, collections, request, progress=lambda stage: None):
     cache_path = settings.chroma_path.parent / "coach" / (key + ".json")
     if cache_path.exists():
         progress("cache")
-        return {**json.loads(cache_path.read_text(encoding="utf-8")), "cache_hit": True}
+        return {**json.loads(cache_path.read_text(encoding="utf-8")), "cache_hit": True, "timings": progress.finish()}
     if settings.missing("generation") or settings.missing("embedding"):
         raise ValueError("provider_not_configured")
     warnings = []
@@ -155,4 +157,5 @@ def coach(settings, collections, request, progress=lambda stage: None):
 
     result = build_graph(retrieve, generate_node).invoke({"question": request.question})["result"]
     save_json(cache_path, result)
-    return result
+    # 소요 시간은 이번 요청의 값이라 캐시에 넣지 않는다(캐시 적중이면 그때 잰 값을 붙인다).
+    return {**result, "timings": progress.finish()}

@@ -9,6 +9,7 @@ from app.collectors import digest, save_json
 from app.contracts import Answer, SearchTerms, Selection
 from app.corpus import check_manifest
 from app.graphs import build_graph
+from app.timing import StageClock
 from app.providers import generate, embed
 
 PROMPT_VERSION = "discovery-2"
@@ -35,6 +36,7 @@ def json_call(settings, system, payload, schema):
 
 
 def respond(settings, collections, request, progress=lambda stage: None):
+    progress = StageClock(progress)
     manifest = check_manifest(settings)
     item = ITEM_BY_ID[request.item_id]
     payload = {"item": item.model_dump(), "question": request.question,
@@ -46,7 +48,7 @@ def respond(settings, collections, request, progress=lambda stage: None):
     if cache_path.exists():
         progress("cache")
         result = json.loads(cache_path.read_text(encoding="utf-8"))
-        return {**result, "cache_hit": True}
+        return {**result, "cache_hit": True, "timings": progress.finish()}
     if settings.missing("generation") or settings.missing("embedding"):
         raise ValueError("provider_not_configured")
     warnings = []
@@ -135,4 +137,5 @@ def respond(settings, collections, request, progress=lambda stage: None):
 
     result = build_graph(retrieve, generate_node).invoke({"question": request.question})["result"]
     save_json(cache_path, result)
-    return result
+    # 소요 시간은 이번 요청의 값이라 캐시에 넣지 않는다(캐시 적중이면 그때 잰 값을 붙인다).
+    return {**result, "timings": progress.finish()}

@@ -11,6 +11,7 @@ SAFE_ERRORS = {
     "provider_not_configured": "API 키 설정이 없어 새 답변을 만들 수 없습니다. backend/.env의 GMS_KEY(또는 LLM_API_KEY·EMBEDDING_API_KEY)를 확인해주세요.",
     "generation_request_failed": "생성 요청에 실패했습니다. 키·모델·네트워크를 확인해주세요.",
     "embedding_request_failed": "임베딩 요청에 실패했습니다. 키·모델·네트워크를 확인해주세요.",
+    "invalid_embedding_response": "임베딩 응답 형식을 검증하지 못했습니다. 잠시 후 다시 시도해주세요.",
     "incomplete_or_empty_generation": "모델 응답이 완성되지 않았습니다. 잠시 후 다시 시도해주세요.",
     "citation_validation_failed": "답변의 인용을 검증하지 못했습니다. 답변을 표시하지 않습니다.",
     "invalid_document_selection": "문서 선별 결과를 검증하지 못했습니다.",
