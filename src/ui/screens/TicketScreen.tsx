@@ -4,6 +4,8 @@ import { scenarios } from "../../scenarios";
 import { THEMES } from "../campus/themes";
 import { CATEGORIES } from "../categories";
 import { TerminalLoader } from "../components/TerminalLoader";
+import { questDomain } from '../quest/cast';
+import { nextPresentation, type QuestPresentation } from '../quest/presentation';
 import { RoomVignette } from "../campus/RoomVignette";
 
 const QuestBriefing = lazy(() => import('../quest/QuestBriefing').then(m => ({ default: m.QuestBriefing })));
@@ -30,13 +32,15 @@ const FLOW: [string, string][] = [
  * 시나리오 ID(예: linux-disk-full)는 원인을 드러내므로 화면에 쓰지 않고 실습 번호만 쓴다.
  */
 export function TicketScreen({ scenario, resumable, onStart, onBack, motion = true }: TicketScreenProps) {
-  const [talking, setTalking] = useState(false);
+  const [talking, setTalking] = useState<QuestPresentation | null>(null);
+  const domain = questDomain(scenario.category, scenario.commands);
+  const openBriefing = () => setTalking(nextPresentation(domain));
   const missionNo = String(scenarios.indexOf(scenario) + 1).padStart(2, "0");
   return (
     <div className="briefing" style={{ "--room": THEMES[scenario.category].accent } as CSSProperties}>
-      {talking && <Suspense fallback={<TerminalLoader label="퀘스트 담당자와 연결 중…" />}><QuestBriefing title={scenario.title} ticket={scenario.ticket} room={CATEGORIES[scenario.category].room}
+      {talking && <Suspense fallback={<TerminalLoader label="퀘스트 담당자와 연결 중…" />}><QuestBriefing key={talking.take} presentation={talking} domain={domain} onReplay={openBriefing} title={scenario.title} ticket={scenario.ticket} room={CATEGORIES[scenario.category].room}
         accent={THEMES[scenario.category].accent} mission={missionNo} motion={motion}
-        onClose={() => setTalking(false)} onAccept={() => { setTalking(false); onStart(); }} /></Suspense>}
+        onClose={() => setTalking(null)} onAccept={() => { setTalking(null); onStart(); }} /></Suspense>}
       <div className="briefing-alert" role="status"><span className="alert-beacon" /> INCOMING INCIDENT · 긴급 출동 요청 <span className="alert-stripes" aria-hidden="true" /></div>
       <div className="briefing-grid">
         <section className="briefing-ticket">
@@ -61,7 +65,7 @@ export function TicketScreen({ scenario, resumable, onStart, onBack, motion = tr
           </p>
           <div className="row end">
             <button onClick={onBack}>목록으로</button>
-            <button className="primary" onClick={() => resumable ? onStart() : setTalking(true)}>{resumable ? "조사 이어서 하기" : "조사 시작"}</button>
+            <button className="primary" onClick={() => resumable ? onStart() : openBriefing()}>{resumable ? "조사 이어서 하기" : "조사 시작"}</button>
           </div>
         </section>
         <aside className="briefing-site" aria-label={`출동 장소 ${CATEGORIES[scenario.category].room}`}>

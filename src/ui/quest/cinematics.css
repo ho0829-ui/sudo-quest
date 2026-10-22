@@ -1,0 +1,55 @@
+/* 도착 지점은 모두 기존 상반신 구도. 연출만 바꾸고 대화 흐름은 공유한다. */
+.quest-dialog[data-domain="linux"] .quest-scene { background: radial-gradient(ellipse at 44% 48%, #504535, #171d25 75%); }
+.quest-dialog[data-domain="network"] .quest-scene { background: radial-gradient(ellipse at 44% 48%, #28515b, #111f2b 75%); }
+.quest-dialog[data-domain="web"] .quest-scene { background: radial-gradient(ellipse at 44% 48%, #355664, #16222e 75%); }
+.quest-dialog[data-domain="database"] .quest-scene { background: radial-gradient(ellipse at 44% 48%, #55465a, #24202f 75%); }
+.quest-dialog[data-domain="docker"] .quest-scene { background: linear-gradient(#263e50, #315b68 65%, #163749); }
+.quest-dialog[data-domain="kubernetes"] .quest-scene { background: linear-gradient(#162639, #314f69 70%, #1c2d42); }
+.quest-dialog[data-domain="aws"] .quest-scene { background: linear-gradient(#2e4055, #52667b 65%, #1d3046); }
+.quest-backdrop { display: block; width: 100%; height: 100%; }
+.quest-atmosphere { position: absolute; inset: 0; background: radial-gradient(ellipse at 43% 56%, transparent 12%, #040c1833 80%); }
+.quest-dialog.is-ready .quest-set, .quest-dialog.no-motion .quest-set { opacity: .85; }
+.quest-scene-label { max-width: 28%; }
+.quest-scene-label strong { font-size: clamp(15px, 2vw, 22px); letter-spacing: .1em; }
+.quest-scene-label small { line-height: 1.6; }
+.quest-replay { position: absolute; bottom: 30px; right: 25px; z-index: 4; background: #0c1925c9; border: 1px solid #567084; border-radius: 5px; color: #c1d4e0; font-size: 10px; padding: 5px 9px; }
+.quest-name { border: none; padding: 0; background: transparent; font-size: 15px; font-weight: 700; color: #e9eef5; }
+.quest-name > span { color: var(--quest-accent); }
+.quest-clue { flex-shrink: 0; margin: -6px 0 14px; padding: 10px 14px; border-left: 2px solid var(--quest-accent); background: #ffffff04; color: #c1d1dc; font-size: 12px; line-height: 1.6; }
+.quest-clue small { display: block; font-size: 10px; color: #96a9b9; }
+.quest-dialog[data-entrance="dolly"] .quest-actor { animation-name: quest-dolly; }
+.quest-dialog[data-entrance="rise"] .quest-actor { animation-name: quest-rise; }
+.quest-dialog[data-entrance="focus"] .quest-actor { animation-name: quest-focus; }
+.quest-dialog[data-entrance="hologram"] .quest-actor { animation-name: quest-hologram; }
+.quest-dialog[data-entrance="dolly"] .quest-set { animation-name: quest-set-dolly; }
+.quest-dialog[data-entrance="focus"] .quest-set { animation-name: quest-set-focus; }
+.quest-dialog[data-entrance="hologram"] .quest-scene::before { content: ''; position: absolute; z-index: 2; left: 19%; right: 29%; height: 2px; background: #90dde4; box-shadow: 0 0 16px #90dde4; animation: quest-scan 1.6s ease-out both; pointer-events: none; }
+.quest-dialog.is-ready .quest-scene::before, .quest-dialog.no-motion .quest-scene::before { display: none; }
+.quest-signal { animation: quest-packets 12s linear infinite; stroke-dasharray: 8 12; }
+.quest-water { animation: quest-tide 9s ease-in-out infinite alternate; }
+@keyframes quest-dolly { from { transform: translateX(-160px) scale(1.65); opacity: 0; } 30% { opacity: 1; } to { transform: translateX(0) scale(2.1); opacity: 1; } }
+@keyframes quest-rise { from { transform: translateY(155px) scale(1.5); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(0) scale(2.1); opacity: 1; } }
+@keyframes quest-focus { from { transform: scale(2.25); filter: blur(13px); opacity: .2; } to { transform: scale(2.1); filter: blur(0); opacity: 1; } }
+@keyframes quest-hologram { from { transform: scale(2.1); clip-path: inset(0 0 100%); opacity: .15; filter: saturate(.1); } 70% { opacity: .65; filter: saturate(.4); } to { transform: scale(2.1); clip-path: inset(0); opacity: 1; filter: saturate(1); } }
+@keyframes quest-set-dolly { from { transform: translateX(30px) scale(1.12); opacity: 1; } to { transform: translateX(0) scale(1.09); opacity: .85; } }
+@keyframes quest-set-focus { from { transform: scale(1); opacity: 1; } to { transform: scale(1.09); opacity: .85; } }
+@keyframes quest-scan { from { top: 10%; opacity: 0; } 25% { opacity: .8; } to { top: 100%; opacity: 0; } }
+@keyframes quest-packets { to { stroke-dashoffset: -120; } }
+@keyframes quest-tide { to { transform: translateX(12px); opacity: .5; } }
+.quest-dialog.is-ready .quest-actor, .quest-dialog.no-motion .quest-actor { animation: none; transform: scale(2.1); filter: none; clip-path: none; }
+.quest-dialog.no-motion .quest-signal, .quest-dialog.no-motion .quest-water { animation: none; }
+@media (max-width: 600px) {
+  .quest-backdrop { width: 650px; max-width: none; position: absolute; left: 50%; transform: translateX(-50%); }
+  .quest-scene-label { left: 68%; max-width: 30%; }
+  .quest-scene-label strong { font-size: 13px; }
+  .quest-replay { right: 15px; font-size: 9px; }
+}
+@media (max-height: 600px) { .quest-replay { bottom: 15px; }.quest-clue { margin-bottom: 8px; padding: 6px 10px; } }
+@media (prefers-reduced-motion: reduce) {
+  .quest-dialog[data-entrance] .quest-actor { animation: none; transform: scale(2.1); filter: none; clip-path: none; }
+  .quest-dialog[data-entrance] .quest-set, .quest-signal, .quest-water { animation: none; }
+  .quest-dialog .quest-scene::before { display: none; }
+}
+/* 밝은 지도·도면 위에서도 캡션과 명찰이 읽히도록 얇은 바탕을 둔다. */
+.quest-scene-caption span { background: #091522ba; padding: 4px 7px; border-radius: 3px; color: #a4bbc8; }
+.quest-scene-label { text-shadow: 0 1px 5px #07111e, 0 0 12px #07111e; }
