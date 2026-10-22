@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     environment: "node", // 엔진은 브라우저가 필요 없다
-    include: ["tests/**/*.test.ts"],
+    // .tsx 테스트(React 화면 렌더링)도 함께 돌린다.
+    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
   },
 }));
