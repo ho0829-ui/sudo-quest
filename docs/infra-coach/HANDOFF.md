@@ -1,8 +1,26 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: K8s readiness·service selector 실습 완료(시나리오 20개), 다음은 Docker 디스크 가득 또는 Linux too many open files
+갱신: 2026-10-22 · 단계: Docker 디스크 가득 참 실습 완료(시나리오 21개), 다음은 Linux too many open files 또는 번들 분할
 
-## 최신 상태 — K8s readiness probe·service selector 실습 2개 (2026-10-22, Mac, Claude)
+## 최신 상태 — Docker 디스크 가득 참 실습 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 Docker 디스크 가득 참 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (/var/lib/docker 별도 디스크 포함)
+- 엔진(왜: Docker 데이터도 df·du·rm과 같은 기준으로 계산해, rm으로 지웠을 때의 결과까지 실제처럼 보이게):
+  - `state/docker/storage.ts`(새): 이미지 레이어(`overlay2/<id>/diff/.layer`, 이름이 같은 레이어는 공유)·컨테이너 쓰기 레이어·json 로그·빌드 캐시(`buildkit/cache`)를 가상 파일로 둠. `addImage`·`addBuildCache`·`releaseLayers`(마지막 사용 이미지가 지워질 때만 레이어 삭제). `/var/lib/docker` 권한 710.
+  - `state/docker/prune.ts`(새): system df 요약(공유 레이어 한 번만, RECLAIMABLE), 컨테이너·이미지(dangling / -a / until)·빌드 캐시(dangling / -a) 정리, 이미지 삭제 줄.
+  - `lifecycle.ts`: `createContainer(state, …)`로 바뀜(파일 생성). 디스크 여유 1MB 미만이면 `mkdir …-init: no space left on device`, 레이어 파일이 없으면 시작 시 `error creating overlay mount … no such file or directory`. 삭제 시 파일 정리.
+  - `DockerImage.sizeMB` → `layers`. 기존 docker-host·미션 17·18 이미지를 레이어 방식으로 바꿈(ID·크기 표기 동일, 182MB 등).
+- 명령: `docker system df`, `system prune`·`image prune`·`builder prune`(=`buildx prune`)·`container prune`(-a, -f, --filter until=Nh), `rmi`·`image rm`(실행 중 이미지는 -f로도 거절, 멈춘 컨테이너 이미지는 -f로 untag), `images -f dangling=true`. -f 없으면 실제 경고와 [y/N]만 출력하고 지우지 않음(대화형 입력 없음). `df`가 경로 인자를 받아 그 파일시스템만 보여 줌.
+- 시나리오 `docker-disk-full`(21, 중급): app-01에서 30분마다 직접 빌드(dev 태그 덮어쓰기)해 <none> 이미지 25개·빌드 캐시 140건(26GB)·옛 릴리스 14개가 /dev/nvme1n1(/var/lib/docker)을 100%로 채움(루트는 26%). 빌드 로그 ENOSPC, journal dockerd 오류. 판정: /var/lib/docker ≤80% + shop-api·status-page 실행 중 + 이미지·쓰기 레이어 온전. dangling만 정리하면 84%로 부족, builder prune(38%)·image prune -a(54%, 멈춘 컨테이너가 2.0.8·2.0.9를 붙잡음)·system prune -a로 복구. `rm -rf /var/lib/docker/overlay2`는 51%가 되지만 재시작 불가로 미복구.
+- 카탈로그: docker-system-df·docker-prune-images·docker-prune-build-cache → 21. HTTP 0, validate 실패 0. 남은 planned: linux-too-many-files(1).
+- 실행한 검사(이 Mac): typecheck 통과, vitest **694개/29파일**(새 docker-storage 14), build 통과(본체 JS 642kB), diff --check 통과. 엔진 커밋은 시나리오 없이도 666개 통과를 따로 확인. 백엔드 코드 변경 없음.
+- 브라우저: 확인 직전 Vite(PID 61243, 이전 세션부터)가 꺼져 있었음(원인 미확인, 이 단계에서 종료하지 않음) → `.claude/launch.json` "dev"로 다시 띄움(현재 PID 87647, localhost:5173). 미션 21 — df에서 nvme1n1 100%, system df, image prune -f 뒤에도 미복구, builder prune 뒤 38%·HUD 복구 켜짐. 새 콘솔 오류 없음(남은 것은 이전 HMR 기록과 서버가 꺼진 동안의 진단 import). 원인 제출·리포트는 학습 기록 보존을 위해 하지 않음. 저장소 정리(비어 있음).
+- 한계: docker build·볼륨·`system df -v`·로그 회전·BuildKit gc 설정은 재현하지 않음. `src/engine/commands/system.ts`는 267줄(이번 df 변경 전부터 200줄 초과) — 분리 후보.
+- 유료 호출: 없음. 실행 중: Vite 5173(PID 87647, preview "dev"), API 8000(PID 74575, api-mac).
+- 커밋: feat(docker) 엔진·feat(docker) 실습 21·docs 3개. push·master 병합 없음.
+- 다음 후보: (1) Linux too many open files(ulimit·/proc/PID/limits·lsof 모델 필요) (2) 번들 분할(642kB) (3) system.ts 분리. 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — K8s readiness probe·service selector 실습 2개 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "다음은 K8s readiness probe·service selector 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (readiness 실습의 rollout undo 대체 풀이 포함)
 - 엔진(왜: "엔드포인트가 비었다"를 Ready 문제와 셀렉터 문제로 가를 수 있게, 출력은 상태에서 계산):

@@ -214,7 +214,7 @@ const breakSomething: Fault = (state) => {
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
-| Docker | `docker ps`(-a, -q, --format) · `images` · `logs`(--tail) · `inspect`(-f) · `port` · `start` · `stop` · `restart` · `rm`(-f) · `run`(-d --name -p -e --env-file --restart), `docker container ls` 같은 묶음 형태 |
+| Docker | `docker ps`(-a, -q, --format) · `images`(-f dangling=true) · `logs`(--tail) · `inspect`(-f) · `port` · `start` · `stop` · `restart` · `rm`(-f) · `rmi`(-f) · `run`(-d --name -p -e --env-file --restart), `system df` · `system prune` · `image prune` · `builder prune`(`buildx prune`) · `container prune`(-a, -f, --filter until=…), `docker container ls` 같은 묶음 형태 |
 | Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/endpointslices/events/nodes, 이름·별칭·wide, `-l` 셀렉터, `--show-labels`), `describe pod/deploy/svc`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests) · `set selector`(Service), `patch deployment|svc -p '<JSON>'`(strategic·merge), `rollout status` · `history` · `undo`(--to-revision) |
 
 ### 호스트 프리셋
@@ -358,11 +358,12 @@ Deployment 셀렉터는 만든 뒤 바꿀 수 없으므로(`selectorOf`), patch�
 fault에서는 docker 명령과 같은 함수(`state/docker/lifecycle.ts`)로 컨테이너를 만들고 띄웁니다. 오류 문장도 엔진이 계산하므로, 배포 로그 같은 파일에 넣을 때는 그 결과를 그대로 씁니다.
 
 ```ts
-state.docker!.images.push({ repository: "shop-api", tag: "2.1.0", id: hexId("image:shop-api:2.1.0"), createdAt, sizeMB: 182,
-  cmd: ["node", "server.js"], profile: { ports: [8080], paths: ["/healthz"], requiredEnv: ["DATABASE_URL"],
+addImage(state, { repository: "shop-api", tag: "2.1.0", createdAt, cmd: ["node", "server.js"],
+  layers: [{ name: "node:20-bookworm-slim", sizeMB: 75.2 }, { name: "shop-api:2.1.0:app", sizeMB: 106 }], // 이름이 같은 레이어는 공유
+  profile: { ports: [8080], paths: ["/healthz"], requiredEnv: ["DATABASE_URL"],
     responses: { "/version": '{"version":"2.1.0"}' }, headers: { "Content-Type": "application/json" },
     log: { boot: ["starting"], ready: ["listening on :8080"] } } });
-const created = createContainer(state.docker!, { name: "shop-api", image: "shop-api:2.1.0", env, ports, restart, createdAt });
+const created = createContainer(state, { name: "shop-api", image: "shop-api:2.1.0", env, ports, restart, createdAt });
 if (created.ok) startContainer(state, created.container, startedAt); // at: 과거에 띄운 컨테이너
 ```
 
@@ -370,8 +371,12 @@ if (created.ok) startContainer(state, created.container, startedAt); // at: 과�
 - 포트가 이미 잡혀 있으면 다른 컨테이너일 때 `port is already allocated`, 일반 프로세스일 때 `address already in use`로 시작이 실패하고, 새로 만든 컨테이너는 `Created`로 남습니다.
 - 재시작 정책(`no`·`always`·`unless-stopped`·`on-failure:N`)으로 반복 종료하는 컨테이너는 100ms부터 두 배(상한 1분) 간격으로 재시작 횟수와 Restarting/Exited를 시각에서 계산합니다. `docker logs`는 실행마다 로그를 이어 붙입니다.
 - `systemctl stop docker`는 컨테이너를 모두 멈추고, 다시 시작하면 `always`·(손으로 멈추지 않은) `unless-stopped`만 되살립니다.
+- 디스크 사용량의 기준은 `/var/lib/docker` 아래 가상 파일입니다(`state/docker/storage.ts`). 이미지 레이어는 `overlay2/<id>/diff/.layer`, 컨테이너 쓰기 레이어·로그는 `overlay2/<컨테이너 id>`·`containers/<id>`, 빌드 캐시는 `buildkit/cache`(`addBuildCache`). 그래서 `df`·`du`·`rm`과 `docker system df`가 같은 값을 봅니다. `docker images`의 SIZE는 공유 레이어를 이미지마다 다시 세고, `system df`는 한 번만 셉니다.
+- Docker 데이터용 디스크를 따로 두려면 `state.disks`에 `mount: "/var/lib/docker"`를 더하면 됩니다(디스크 모델은 여러 마운트를 지원).
+- 디스크가 가득 차면 컨테이너 생성이 `no space left on device`로 실패하고, 레이어 파일이 지워진 이미지로는 시작이 `error creating overlay mount`로 실패합니다.
+- prune은 실제 규칙을 따릅니다: 멈춘 컨테이너도 이미지를 붙잡고, `image prune`은 dangling만(-a는 쓰지 않는 전부), `builder prune`은 dangling 캐시만(-a는 전부). `-f`가 없으면 확인 질문만 띄우고 지우지 않습니다.
 - 환경 변수는 컨테이너를 만든 뒤 바꿀 수 없습니다. `-e KEY`(값 없음)는 가상 셸에 export된 값이 없으므로 넣지 않습니다.
-- 지원하지 않는 것: 이미지 받기·빌드, 네트워크·볼륨, compose, exec, `--rm`, 실시간 로그(`-f`는 지금까지의 로그만), 컨테이너 안 프로세스의 `ps` 표시.
+- 지원하지 않는 것: 이미지 받기·빌드, 네트워크·볼륨(`volume prune` 포함), compose, exec, `--rm`, 실시간 로그(`-f`는 지금까지의 로그만), 컨테이너 안 프로세스의 `ps` 표시, `system df -v`.
 
 새 시나리오는 `tests/scenario-exploration.cases.ts`에도 조회·무관한 조치·대체 풀이를 추가해야 합니다. `solutionPath`를 복사해 채우지 말고 실제 사용자가 시도할 다른 경로를 작성하세요.
 

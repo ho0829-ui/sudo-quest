@@ -127,7 +127,9 @@
 - [x] K8s CrashLoopBackOff(15)·OOMKilled(16) 실습: 종료 방식 상태 계산(runtime)·revision 기록(history), kubectl logs·set env/resources·rollout history/undo, grep -A/-B/-C. 롤백도 대체 풀이로 인정(사용자 승인). 시나리오 16개.
 - [x] Docker 실습 2개: 포트 충돌(17)·환경 변수 누락(18). 가상 Docker 엔진(docker-proxy 포트·재시작 정책·데몬 재시작), docker 명령 10종, 컨테이너 실행 규칙 K8s와 공용화. 시나리오 18개.
 - [x] K8s readiness probe(19)·service selector(20) 실습: probe 판정·접근 로그 계산, get -l·--show-labels·endpointslices, describe svc, set selector, patch(strategic·merge). 시나리오 20개.
-- [ ] 후속 문제 보강: Docker 디스크 가득(이미지 크기의 df·docker system df 반영 필요) → Linux too many open files → Web. 새 시나리오마다 탐색 검사 추가.
-- [ ] 번들 625kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
+- [x] Docker 디스크 가득 참(21): /var/lib/docker 가상 파일 디스크 모델(레이어 공유), system df·prune 4종·rmi, df 경로 인자. 시나리오 21개.
+- [ ] 후속 문제 보강: Linux too many open files(ulimit·lsof 모델 필요) → Web. 새 시나리오마다 탐색 검사 추가.
+- [ ] `src/engine/commands/system.ts` 267줄 — df/du와 systemctl/journalctl로 분리.
+- [ ] 번들 642kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).
