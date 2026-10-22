@@ -1,6 +1,18 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-23 · 단계: 20번 정리 3단계(튜토리얼·용어 풀이·관찰 양식) 완료. 다음은 Choi의 초보 관찰(21번 양식) 또는 4단계(RAG 근거) — 계획 먼저
+갱신: 2026-10-23 · 단계: 20번 정리 4단계(RAG 근거) 완료. 다음은 5단계(README·시연 GIF) — 계획 먼저. 초보 관찰(21번)은 Choi 진행 대기
+
+
+## 최신 상태 — 4단계: RAG 근거(실패 처리·지연·평가 v2·ADR·검증 목록) (2026-10-23, Mac, Claude)
+
+- 사용자 결정: "4단계 계획대로 진행해줘. 기본값도 그대로 좋아." (평가 모델 gpt-6-luna, 재시도 5xx·시간 초과만 1회·1초, 질문 24개, 채점 Claude + 사람 표본 5개)
+- 4-a: `providers.with_retry`(생성·임베딩 5xx·시간 초과·연결 끊김만 1회, 4xx·형식 오류는 바로 실패, 수집 429는 재시도 안 함), `timing.StageClock`(chat·coach 결과에 `timings` 단계별 초, 캐시에 저장 안 함), `invalid_embedding_response` 안전 문장. 고장 주입 테스트 17개(`test_resilience.py`·`test_source_faults.py`). 22번 문서 1절 실패 처리 표·2절 측정 방법.
+- 4-b: `backend/evaluation/rag_eval_v2.json`(문서 안 18·밖 3·코치 3, 정답 절·사실·원문 문구 사전 고정), `coach_requests_v2.json`(엔진 실행 + buildCoachRequest), `scripts/evaluate_v2.py`. 결과(gpt-6-luna): 검색 Hit@4 18/18·MRR 0.944·원문 문구 32/33·전체 Hit@4 18/18·항목 자동 선택 18/18 / 답변 23/24(A2 인용 검증 2회 실패, W1은 2회차 통과)·정답 절 인용 17/17·오답 0·정확 12·부분 5·문서 밖 보류 3/3(사람 기준, 자동 2/3)·코치 Hit@3 3/3 / 지연 p50 11.8초·p95 15.1초, 선별 단계가 가장 김(p50 5.2초), 캐시 적중 2ms 이하. 실행 중 GMS 503 1회를 재시도가 흡수. 유료 호출 생성 약 77·임베딩 27.
+- 4-c: `docs/infra-coach/adr/` 7장(작업 폴링, 컬렉션 2개, SQLite, 인용 검증·후보 ID, 코치 정답 차단, 캐시·manifest, 재시도), `23_정기_검증_체크리스트.md`.
+- 검사: backend unittest **87개** OK, vitest·typecheck 통과(크레딧 변경). 결과 원본 `docs/infra-coach/evaluation/rag_eval_v2_*.json`.
+- 사람 확인 필요: 채점 표본 C1·D2·K3·O1·P2. 개선 후보 3개(긴 절 인용 실패, 오류 코드 뜻 생략, 보류 자동 판정)는 아직 안 고침.
+- API 서버(8000)는 4-a 이전 코드로 떠 있음 — 재시작해야 재시도·timings가 반영됨. 커밋 3개, push 없음.
+
 
 
 ## 최신 상태 — 3단계: 튜토리얼·힌트 용어 풀이·초보 관찰 양식 (2026-10-23, Mac, Claude)
