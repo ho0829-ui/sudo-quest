@@ -108,4 +108,22 @@ export const explorations: Record<string, ExplorationCase> = {
     alternative: ["docker rm -f notify-worker",
       "docker run -d --name notify-worker --restart=on-failure:5 -e SMTP_HOST=smtp.example.com -e SMTP_USER=noreply@shop.example.com -e SMTP_PASSWORD=from-vault -e QUEUE_URL=redis://queue.internal:6379/0 notify-worker:1.4.0"],
   },
+  "kubernetes-readiness": {
+    inspect: ["kubectl get po -o wide", "kubectl get pods -l app=search-api --show-labels", "kubectl describe deploy search-api",
+      "kubectl get events | grep Unhealthy", "kubectl logs deploy/search-api --tail=1", "kubectl describe svc search-api",
+      "kubectl get endpointslices -l kubernetes.io/service-name=search-api", "grep -n healthz /home/ubuntu/search-api/RELEASE_NOTES.md"],
+    unrelated: [`kubectl patch deployment search-api -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","readinessProbe":{"httpGet":{"path":"/healthz","port":8081}}}]}}}}'`,
+      "kubectl set resources deployment/search-api --limits=memory=1Gi", `kubectl patch deployment search-api -p '{"spec":{"replicas":3}}'`,
+      "kubectl set selector svc search-api app=search"],
+    alternative: ["kubectl rollout undo deployment/search-api", "kubectl rollout status deploy/search-api"],
+  },
+  "kubernetes-service-selector": {
+    inspect: ["kubectl get svc -o wide", "kubectl get ep payment", "kubectl get endpointslices -l kubernetes.io/service-name=payment",
+      "kubectl describe deploy payment-api", "kubectl get pods -l app.kubernetes.io/name=payment-api", "kubectl describe svc payment | grep Selector",
+      "kubectl logs deploy/payment-api", "cat /home/ubuntu/payment-api/MIGRATION.md"],
+    unrelated: [`kubectl patch svc payment -p '{"spec":{"selector":{"app.kubernetes.io/name":"payment-api"}}}'`, "kubectl rollout undo deployment/payment-api",
+      "kubectl set selector deployment payment-api app=payment",
+      `kubectl patch deployment payment-api -p '{"spec":{"template":{"metadata":{"labels":{"app.kubernetes.io/name":"payment"}}}}}'`],
+    alternative: [`kubectl patch svc payment -p '{"spec":{"selector":{"app":null,"app.kubernetes.io/name":"payment-api"}}}'`, "kubectl get endpoints payment"],
+  },
 };

@@ -55,3 +55,8 @@ export function addDeployment(cluster: KubernetesState, app: NewDeployment) {
   });
   if (app.service) cluster.services.push({ name: app.name, selector: { ...app.labels }, createdAt: app.createdAt, ...app.service });
 }
+
+/** Deployment 셀렉터(만든 뒤 바뀌지 않는다). 따로 적지 않았으면 처음 템플릿 라벨과 같다. */
+export function selectorOf(deployment: KubeDeployment): Record<string, string> {
+  return deployment.selector ?? deployment.history[0]?.template.labels ?? deployment.template.labels;
+}

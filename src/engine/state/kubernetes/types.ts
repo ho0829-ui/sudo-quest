@@ -36,6 +36,8 @@ export interface KubeDeployment {
   strategy: "Recreate";
   template: PodTemplate;
   history: DeploymentRevision[];
+  /** 만든 뒤 바꿀 수 없는 파드 셀렉터. 없으면 템플릿 라벨과 같다. 템플릿 라벨은 늘 이것을 포함해야 한다. */
+  selector?: Record<string, string>;
 }
 
 export interface KubeContainer extends ContainerSpec {

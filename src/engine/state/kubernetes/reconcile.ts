@@ -1,8 +1,11 @@
+import { readiness } from "./probe";
 import { outcome } from "./runtime";
 import type { KubeContainer, KubeDeployment, KubePod, KubernetesState, KubeService } from "./types";
 
 export const podReady = (pod: KubePod): boolean =>
   pod.phase === "Running" && pod.containers.length > 0 && pod.containers.every(c => c.ready);
+
+const podIp = (deploymentIndex: number, i: number) => `10.244.${deploymentIndex}.${i + 10}`;
 
 export function deploymentPods(cluster: KubernetesState, deployment: KubeDeployment): KubePod[] {
   return cluster.pods.filter(p => p.deployment === deployment.name && p.revision === deployment.revision);
@@ -36,7 +39,6 @@ export function reconcileKubernetes(cluster: KubernetesState, clock: number): vo
       const node = nodes[i % nodes.length];
       const containers: KubeContainer[] = deployment.template.containers.map(spec => {
         const image = Object.hasOwn(cluster.images, spec.image) ? cluster.images[spec.image] : undefined;
-        const probe = spec.readinessProbe;
         const before = old?.containers.find(c => c.name === spec.name);
         const result = outcome(spec, image);
         const base = { ...structuredClone(spec), restartCount: before?.restartCount ?? 0 };
@@ -48,12 +50,12 @@ export function reconcileKubernetes(cluster: KubernetesState, clock: number): vo
           return { ...base, state: "Waiting", reason: "CrashLoopBackOff", ready: false, lastState: result.last,
             crashingSince: before?.crashingSince ?? clock };
         }
-        return { ...base, state: "Running", ready: !probe || (image!.ports.includes(probe.port) && image!.paths.includes(probe.path)) };
+        return { ...base, state: "Running", ready: readiness(spec, image!, podIp(deploymentIndex, i)).ok };
       });
       const pod: KubePod = {
         name, deployment: deployment.name, revision: deployment.revision,
         labels: { ...deployment.template.labels }, createdAt: old?.createdAt ?? clock,
-        node: node?.name, ip: node ? `10.244.${deploymentIndex}.${i + 10}` : undefined,
+        node: node?.name, ip: node ? podIp(deploymentIndex, i) : undefined,
         // 반복 종료 중인 컨테이너가 있어도 파드는 노드에서 실행 중(Running)이다. 이미지를 못 받으면 Pending.
         phase: containers.every(c => c.state === "Running" || c.reason === "CrashLoopBackOff") ? "Running" : "Pending", containers,
       };
@@ -77,7 +79,10 @@ export function reconcileKubernetes(cluster: KubernetesState, clock: number): vo
             event("Started", `Started container ${container.name}`, false, container.name);
             if (container.reason === "CrashLoopBackOff") {
               event("BackOff", `Back-off restarting failed container ${container.name} in pod ${pod.name}_default`, true, container.name);
-            } else if (!container.ready) event("Unhealthy", "Readiness probe failed", true, container.name);
+            } else if (!container.ready) {
+              const result = readiness(container, cluster.images[container.image], pod.ip);
+              if (!result.ok) event("Unhealthy", result.message, true, container.name);
+            }
           }
         }
       }

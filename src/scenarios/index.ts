@@ -21,6 +21,8 @@ import { kubernetesCrashloop } from "./kubernetes-crashloop";
 import { kubernetesOom } from "./kubernetes-oom";
 import { dockerPortAllocated } from "./docker-port-allocated";
 import { dockerMissingEnv } from "./docker-missing-env";
+import { kubernetesReadiness } from "./kubernetes-readiness";
+import { kubernetesServiceSelector } from "./kubernetes-service-selector";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -42,6 +44,8 @@ export const scenarios: Scenario[] = [
   kubernetesOom,
   dockerPortAllocated,
   dockerMissingEnv,
+  kubernetesReadiness,
+  kubernetesServiceSelector,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

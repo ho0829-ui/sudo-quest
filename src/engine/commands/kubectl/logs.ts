@@ -3,6 +3,7 @@
  * 로그 내용은 이미지 정보와 컨테이너 설정으로 계산한다(runtime.runLog). 시나리오에 출력 문장을 적지 않는다.
  */
 import { deploymentPods } from "../../state/kubernetes/reconcile";
+import { probeAccessLog } from "../../state/kubernetes/probe";
 import { runLog } from "../../state/kubernetes/runtime";
 import type { KubePod, KubernetesState } from "../../state/kubernetes/types";
 import { fail, type CommandResult } from "../types";
@@ -29,7 +30,7 @@ function pickPod(cluster: KubernetesState, target: string): { pod: KubePod; note
   return { error: `error: cannot get the logs from ${kind}: selector for ${kind} not implemented` };
 }
 
-export function logs(cluster: KubernetesState, tokens: string[]): CommandResult {
+export function logs(cluster: KubernetesState, tokens: string[], clock: number): CommandResult {
   const parsed = parseFlags(tokens, { values: { c: "container", container: "container", tail: "tail" }, switches: { p: "previous", previous: "previous" } });
   if (!parsed.ok) return fail(parsed.error);
   if (parsed.args.length !== 1) return fail(USAGE);
@@ -58,6 +59,8 @@ export function logs(cluster: KubernetesState, tokens: string[]): CommandResult 
   const image = cluster.images[container.image];
   // 반복 종료 중이면 지금 컨테이너는 다음 재시작을 기다리는 중이라, 마지막 실행의 로그가 그대로 보인다.
   let lines = image ? runLog(container, image) : [];
+  // 실행 중이고 접근 로그를 남기는 앱이면 kubelet의 readiness 요청과 응답 코드가 이어서 찍힌다.
+  if (image && !crashed) lines = [...lines, ...probeAccessLog(container, image, cluster.nodes.find(n => n.name === pod.node)?.ip ?? "10.0.2.1", clock)];
   if (tail !== undefined && Number(tail) >= 0) lines = Number(tail) === 0 ? [] : lines.slice(-Number(tail));
   // deploy/NAME로 고른 파드·기본 컨테이너 안내는 실제 kubectl처럼 stderr로 낸다(종료 코드 0).
   return { stdout: lines.join("\n"), stderr: notes.join("\n"), exitCode: 0 };

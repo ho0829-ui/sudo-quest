@@ -58,9 +58,9 @@ describe("kubectl 조사와 복구", () => {
   });
 
   it.each([
-    "kubectl get pods --watch", "kubectl get pods -o json", "kubectl get pods -o", "kubectl get pods -o wide -o wide",
+    "kubectl get pods --watch", "kubectl get pods -o json", "kubectl get pods -o", "kubectl get pods -l =web",
     "kubectl get secrets", "kubectl get pods missing", "kubectl get pods one two", "kubectl get pods/",
-    "kubectl describe svc", "kubectl describe pod missing", "kubectl describe deploy missing",
+    "kubectl describe svc missing", "kubectl describe pod missing", "kubectl describe deploy missing",
     "kubectl logs shop-web", "kubectl rollout undo deployment/shop-web --to-revision=9", "kubectl rollout undo deploy/missing",
     "kubectl rollout status deployment/shop-web extra",
     "kubectl set image", "kubectl set image pod/shop-web web=image:1", "kubectl set image deploy/missing web=image:1",

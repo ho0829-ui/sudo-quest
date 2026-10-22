@@ -3,6 +3,7 @@ export const RESOURCE_ALIASES = {
   deployment: "deployments", deployments: "deployments", deploy: "deployments",
   service: "services", services: "services", svc: "services",
   endpoints: "endpoints", ep: "endpoints",
+  endpointslice: "endpointslices", endpointslices: "endpointslices",
   event: "events", events: "events", ev: "events",
   node: "nodes", nodes: "nodes", no: "nodes",
 } as const;
@@ -15,11 +16,15 @@ export function resourceOf(name: string): Resource | undefined {
 export const notFound = (resource: string, name: string): string =>
   `Error from server (NotFound): ${resource} "${name}" not found`;
 
+/** kubectl의 AGE 표기. 이틀이 넘으면 일 단위(5d, 3d4h)로 바꾼다(kubectl HumanDuration과 같은 경계). */
 export function age(createdAt: number, clock: number): string {
   const seconds = Math.max(0, Math.floor((clock - createdAt) / 1000));
   if (seconds < 60) return `${seconds}s`;
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-  return `${Math.floor(seconds / 3600)}h`;
+  const hours = Math.floor(seconds / 3600);
+  if (hours < 48) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return hours % 24 && days < 8 ? `${days}d${hours % 24}h` : `${days}d`;
 }
 
 export const labels = (values: Record<string, string>): string =>

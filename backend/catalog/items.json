@@ -2666,7 +2666,9 @@
     "source_url": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#readiness-probe",
     "source_section": "readiness-probe",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-readiness"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2689,7 +2691,9 @@
     "source_url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes",
     "source_section": "define-readiness-probes",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-readiness"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2820,7 +2824,9 @@
     "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/#does-the-service-have-any-endpointslices",
     "source_section": "does-the-service-have-any-endpointslices",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-service-selector"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {
@@ -2843,7 +2849,9 @@
     "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/#is-the-service-defined-correctly",
     "source_section": "is-the-service-defined-correctly",
     "applies_to_version": "수집 문서의 product_version·본문 해시 참조",
-    "scenario_ids": [],
+    "scenario_ids": [
+      "kubernetes-service-selector"
+    ],
     "annotation_origin": "원문 절 추출(영문) + Claude가 원문을 읽고 쓴 한국어 제목·증상·요약(사람 검수 대기)"
   },
   {

@@ -16,6 +16,8 @@ export interface ImageProfile {
   responses?: Record<string, string>;
   /** 그 응답의 헤더(Server, Content-Type 등). 앱 종류마다 다르다. */
   headers?: Record<string, string>;
+  /** 요청마다 접근 로그를 남기는 앱인가. 남기면 kubelet의 readiness 요청도 로그에 찍힌다(kubectl logs). */
+  accessLog?: boolean;
 }
 
 /** 직전 실행이 끝난 모습. kubectl describe의 Last State, docker inspect의 State가 쓴다. */
