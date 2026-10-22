@@ -1,8 +1,26 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: CLI 로더·퀘스트 담당자 연출 완료, 기존 미커밋 Web 확장 보존
+갱신: 2026-10-22 · 단계: Web 실습 2개(nginx upstream 502·TLS 체인) 완료(시나리오 24개), 다음은 퀘스트 연출 피드백 반영 또는 메타데이터 검수
 
-## 최신 상태 — 도트 CLI 로딩·퀘스트 담당자 연출 (2026-10-22, Mac, Codex)
+## 최신 상태 — Web 실습 2개: nginx upstream 502·TLS 체인 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 Web 실습(nginx upstream·TLS 체인 등)이야. 계획 먼저 보여줘." → "계획대로 진행해줘." 도중 세션이 끊겨 "다시 시도해 주세요"로 이어서 마무리. 그사이 Codex가 UI 커밋 2개(`bbed91f` 퀘스트 연출, `e7cfcf7` 문서)를 남겼고, 이 Web 작업 파일과 겹치지 않음을 확인했다(아래 Codex 항목의 "기존 미커밋 Web 확장"이 이 작업).
+- 엔진(왜: nginx 뒤 연결 실패와 인증서 체인 누락을 설정·파일 내용에서 계산하려고):
+  - `Service.configSnapshot`: nginx가 시작·reload에 성공할 때 읽은 설정. 요청은 이것을 따른다(ubuntuWeb 프리셋에 초기값). `bindConfig.portKey`로 앱 포트도 config.yml에서 읽는다.
+  - `state/config/nginxSites.ts`(새): server·location(=·접두사)·upstream·proxy_pass·root·ssl_certificate(_key) 해석, server 선택(이름→default_server→첫 번째), URI 치환 규칙, nginx 오류 페이지, 인증서·키 문제(`nginxTlsProblem`: 파일 없음 BIO_new_file, key values mismatch) — 시작·reload·`nginx -t`가 같은 함수를 씀.
+  - `state/certs.ts`(새): 파일 내용의 PEM으로 인증서 목록·순서, 루트(`network.trustedRoots`)까지 체인 검증(만료 10, 중간 누락 20/21), 키 짝 검사. PEM 없는 예전 인증서는 도메인으로 찾고 만료만(기존 web-ssl-expired 그대로).
+  - `state/webServer.ts`(새, network.ts에서 분리): proxy(502 연결 거부 / 504 시간 초과, Server 헤더는 nginx), servedChain, serveLocal. `state/dns.ts`(새): 이름 해석 분리. network.ts 265→171줄, 예전 이름은 다시 내보냄.
+  - 명령: openssl s_client(체인 목록·depth·return code·-servername·-showcerts), x509(파일의 첫 장, -dates), certbot은 /etc/letsencrypt만 관리, sed 구분자 자유(s#…#), `> /dev/null` 허용(브라우저 확인 중 발견: `… | sudo tee f > /dev/null`이 권한 오류였음).
+- 시나리오: `web-upstream-502`(23, 중급 — 2.4.0이 기본 포트를 8080으로 바꿨는데 proxy_pass는 127.0.0.1:3000; 정답 sed+nginx -t+reload, 대체 config.yml 3000+restart; 파일만 고치기·nginx restart·잘못된 포트·앱 재시작은 미복구), `web-tls-chain`(24, 고급 — 유료 인증서 교체 때 서버 인증서 한 장만 지정, PC 크롬만 정상·안드로이드/PG 웹훅/curl 실패; 정답 cat leaf CA | sudo tee fullchain → ssl_certificate 변경 → -t → reload; 거꾸로 합치기는 key mismatch로 reload 거부·restart 시 nginx 실패, certbot renew 무관). 근거 문서는 시나리오 evidence(nginx proxy_pass·upstream·HTTPS 체인·ssl_certificate, OpenSSL s_client, curl SSL, MDN 502). 카탈로그 추가·임베딩은 하지 않음.
+- 실행한 검사(이 Mac): typecheck 통과, vitest **768개/32파일**(새 web 12, 기존 테스트 회귀 없음), build 경고 없음(index 약 339kB), diff --check 통과. 엔진 커밋만으로 723개 통과를 따로 확인.
+- **발견·수정:** Codex가 넣은 `tests/quest-presentation.test.tsx`(5개)는 vitest include가 `tests/**/*.test.ts`라 **한 번도 실행되지 않고 있었다**(Codex 기록의 762개에도 빠져 있음). 따로 돌리면 5개 모두 통과해, `vite.config.ts` include에 `*.test.tsx`를 더함(별도 커밋). 이제 전체 실행에 포함.
+- 브라우저: 세션 재개 시 Vite·API·탭이 모두 꺼져 있었음(원인 미확인, 종료하지 않음) → launch "dev"·"api-mac"으로 다시 띄움(API /api/health 200). 미션 23 — 502 → sed·-t·reload → 200·HUD 복구. 미션 24 — Codex의 퀘스트 대화(도윤)로 입장 → curl 60·s_client 21 → `> /dev/null` 합치기·sed·reload → 체인 2장·Verify 0·HUD 복구. 검사 탭 저장소 정리(localStorage 비어 있음). 이전 탭에 있던 미션 1 진행 세션은 브라우저 창이 닫히며 사라진 상태였음(복원 불가).
+- 한계: 실제 TLS 핸드셰이크·SNI 여러 개·OCSP·브라우저 AIA는 재현하지 않음. nginx는 위 지시어만 해석. 고객 요청 로그는 fault에서 미리 넣음(플레이어 curl은 로그를 늘리지 않음).
+- 유료 호출: 없음. 실행 중: Vite 5173·API 8000(preview "dev"·"api-mac", 이번에 다시 띄움).
+- 커밋: feat(web) 엔진·feat(web) 실습 23·24·docs. push·master 병합 없음.
+- 다음 후보: (1) 퀘스트 연출 사용자 피드백(Codex 항목) (2) 31건 메타데이터 검수 (3) Web 근거 문서를 카탈로그에 넣고 재색인(라이선스 확인 필요 — nginx 문서는 이전에 제외). 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — 도트 CLI 로딩·퀘스트 담당자 연출 (2026-10-22, Mac, Codex)
 
 - 최신 사용자 요청: 작은 CLI 모양 로딩 + 첨부 픽셀 초상의 안경·수염 캐릭터를 아이소메트릭 그림체로 + 전신→상반신 줌인/문제 설명/도움 요청/수락→CLI. 제공 영상은 브라우저에서 직접 확인(도트 실루엣). 재첨부 `/Users/jaeho/Downloads/0.png`의 아래 줄 인물을 참고해 자체 SVG로 그림.
 - Claude의 게시판 2단계·번들 분할 완료를 최신 코드에서 확인했다. 과거 대화의 게시판 미구현 상태로 되돌리지 않음.

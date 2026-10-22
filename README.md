@@ -102,7 +102,7 @@ Set-Location backend
 브라우저 안의 가상 터미널에서 명령어를 입력하며, 일부러 망가뜨린 가상 서버의 **장애 원인을 찾고 복구하는 학습 게임**입니다.
 
 정답을 알려주는 게임이 아니라 **사고 과정을 훈련하는 게임**입니다.
-증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 22개 시나리오로 반복해서 익힙니다.
+증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 24개 시나리오로 반복해서 익힙니다.
 
 > **▶️ 플레이하기:** https://\<GitHub-사용자명\>.github.io/\<저장소명\>/
 > *(저장소를 push하고 Settings → Pages → Source를 "GitHub Actions"로 바꾸면 자동 배포됩니다)*
@@ -145,7 +145,7 @@ Filesystem Size Used Avail Use% Mounted on
 
 ---
 
-## 시나리오 22개
+## 시나리오 24개
 
 | ID | 카테고리 | 난이도 | 증상 | 핵심 학습 |
 |---|---|---|---|---|
@@ -159,6 +159,8 @@ Filesystem Size Used Avail Use% Mounted on
 | `network-bind-localhost` | 네트워크 | 중급 | 안에서만 됨 | 바인딩 주소가 접근 범위를 결정한다 |
 | `web-nginx-config` | 웹/DB | 초급 | 설정 변경 후 다운 | restart와 reload의 차이 |
 | `web-ssl-expired` | 웹/DB | 중급 | 브라우저 보안 경고 | 자동화를 믿지 말고 자동화를 감시하라 |
+| `web-upstream-502` | 웹/DB | 중급 | 배포 뒤 API만 Bad Gateway | 502는 nginx가 답한 것, 뒤쪽(upstream) 주소와 앱 포트를 비교하라 |
+| `web-tls-chain` | 웹/DB | 고급 | 일부 고객만 인증서 오류 | 브라우저가 된다고 체인이 온전한 건 아니다, 중간 인증서를 함께 보내라 |
 | `db-max-connections` | 웹/DB | 고급 | 특정 시간대만 500 | 스케일 아웃은 공짜가 아니다 |
 | `aws-security-group` | AWS | 초급 | 새 EC2 접속 불가 | timeout과 refused의 차이 |
 | `aws-alb-healthcheck` | AWS | 중급 | 헬스 알람이 울리는데 사이트는 열림 | 모든 타깃이 unhealthy면 ALB는 fail-open한다 (AWS 문서 기준) |
@@ -307,7 +309,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**723개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 22개를 순회하며 검사합니다.
+**768개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 24개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가

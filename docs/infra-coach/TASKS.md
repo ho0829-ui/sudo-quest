@@ -111,7 +111,7 @@
 - [x] 작은 도트 CLI 로더: 최초 JS/화면 지연 로드/복원/게시판/health/코치·지식 대기에 적용. 모션 설정 존중, 인위적인 요청 지연 없음.
 - [x] 퀘스트 담당자(안경·수염 SVG 도윤): 조사 시작 → 1.6초 줌인 → 공개 신고 설명 → 도움 요청 → 수락 → CLI. 이어하기 생략, 취소/Esc/포커스/모바일/모션 끄기 확인. 이번 UI 검사 5개, 전체 작업 트리 762개 통과. `15_CLI_로딩_퀘스트_연출.md`.
 - [ ] 퀘스트 얼굴·이름·줌인 속도·대사에 대한 사용자 피드백 반영.
-- [ ] 기존 미커밋 Web 확장(nginx upstream 502·TLS 체인, 작업 트리 24개)의 검토·근거/문서·별도 커밋 완료. 전체 diff --check의 network.ts EOF 빈 줄도 해당 작업에서 정리.
+- [x] Web 확장(nginx upstream 502·TLS 체인) 검토·근거·문서·커밋 완료(Claude). network.ts는 webServer.ts·dns.ts로 나눠 171줄, diff --check 통과.
 - [x] Claude용 현재 상태 시작 프롬프트 저장: `16_Claude_이어가기_프롬프트.md`.
 
 - [x] GPT 재개 점검: 작업 트리 clean·feature/sudo-quest·master보다 18커밋 앞섬 확인. 이번 Mac에서 Vitest 358/백엔드 40/typecheck/build 재검증.
@@ -136,7 +136,9 @@
 - [x] Docker 디스크 가득 참(21): /var/lib/docker 가상 파일 디스크 모델(레이어 공유), system df·prune 4종·rmi, df 경로 인자. 시나리오 21개.
 - [x] Linux too many open files(22): fd 한도 계산, /proc, systemd unit·drop-in·daemon-reload, lsof·ulimit·echo·tee·mkdir, 리다이렉션 권한 실제화. 시나리오 22개, 예정 근거 문서 모두 연결.
 - [x] `system.ts` 분리(systemctl.ts).
-- [ ] 후속 문제 보강: Web(nginx upstream·TLS 체인 등). 새 시나리오마다 탐색 검사와 근거 문서 추가.
+- [x] Web 실습 2개: nginx upstream 502(23)·TLS 체인(24). nginx 설정 스냅숏·라우팅, 인증서 체인 검증, openssl s_client 보강. 시나리오 24개.
+- [x] vitest include에 `*.test.tsx` 추가(퀘스트 연출 테스트 5개가 실행되지 않던 문제).
+- [ ] Web 근거 문서(nginx·OpenSSL·curl)를 카탈로그에 넣을지 결정(라이선스 확인, nginx는 이전에 제외).
 - [x] 번들 분할: react-vendor 분리 + 실습 화면·명령 실행 엔진·새로고침 복원 지연 로딩. 첫 화면 665kB → 317kB(+vendor 222kB), Vite 경고 없음.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).

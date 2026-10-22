@@ -328,6 +328,13 @@ npx vitest run tests/_play.test.ts
 
 새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
 
+### nginx 라우팅·인증서 체인
+
+- nginx는 시작·reload에 성공할 때 읽은 설정(`Service.configSnapshot`)으로 요청을 처리합니다. 파일만 고치면 reload 전까지 옛 설정 그대로입니다. 설정을 바꾼 채로 시작하는 장애라면 fault에서 `configSnapshot`도 그 내용으로 맞추세요.
+- `state/config/nginxSites.ts`가 server(`listen`·`server_name`·`ssl_certificate`·`ssl_certificate_key`)·location(접두사·`=`)·`upstream`·`proxy_pass`·`root`를 해석합니다. proxy_pass에 URI가 있으면 접두사를 바꿔 넘기고, upstream이 연결을 거부하면 502, 시간 초과(fd 포화 등)면 504를 nginx 오류 페이지로 돌려줍니다.
+- 인증서는 `Certificate.pem`(파일에 들어 있으면 그 인증서가 있는 것)·`subject`·`keyId`를 주면 체인이 파일 내용에서 계산됩니다(`state/certs.ts`). 클라이언트는 `network.trustedRoots`의 루트만 믿으므로 중간 인증서가 빠지면 curl 60·s_client 21이 됩니다. 묶음의 첫 인증서가 키와 짝이 아니면 `nginx -t`·시작이 key values mismatch로 실패합니다. PEM 정보가 없는 예전 인증서는 도메인으로 찾고 만료만 봅니다.
+- `sed`는 `s#…#…#`처럼 `/` 말고 다른 구분자도 받습니다. 리다이렉션 `> /dev/null`은 누구나 쓸 수 있습니다.
+
 ### 열린 파일 수·/proc·systemd unit
 
 - 서비스에 `connections`(동시 연결 수)·`baseFds`를 주면 열린 fd를 `state/limits.ts`가 계산합니다. 필요한 fd가 프로세스 한도(`Process.nofile`, 없으면 systemd 기본 soft 1024/hard 524288)를 넘으면 그 포트로 오는 `curl`은 시간 초과(28)가 되고, 시작 때 `fdExhaustedLog`를 남깁니다.
