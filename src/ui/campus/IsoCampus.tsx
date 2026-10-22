@@ -111,9 +111,10 @@ export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords,
         <p>{touch ? "방을 누르면" : "방에 마우스를 올리면"} 어떤 장애를 다루는 곳인지 보여 줍니다.</p>
         <span className="iso-legend"><i className="alarm" /> 미해결 실습 있음 <i className="clear" /> 모두 해결
           {party.state.rooms.length > 0 && <><i className="party" /> 파티 중 {party.state.rooms.length}곳</>}</span>
-        {party.state.allClear && onFinale && <span className="iso-allclear">🎆 ALL CLEAR
-          <button type="button" className="text-button small" onClick={onFinale}>피날레 다시 보기</button>
-          <button type="button" className="text-button small" onClick={onCredits}>엔딩 크레딧</button></span>}
+        {party.state.allClear && onFinale && <span className="iso-allclear">
+          <span className="iso-allclear-item">🎆 ALL CLEAR</span>
+          <button type="button" className="iso-allclear-item" onClick={onFinale}>🎇 피날레 다시 보기</button>
+          <button type="button" className="iso-allclear-item" onClick={onCredits}>🎬 엔딩 크레딧</button></span>}
       </>}
     </div>
   </div>;

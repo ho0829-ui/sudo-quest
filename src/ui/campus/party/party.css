@@ -35,11 +35,11 @@
 .iso-hud-next { font-size: 11px; color: var(--muted); }
 .iso-legend i.party { background: #ffd447; box-shadow: 0 0 6px #ffd447; margin-left: 6px; }
 .motion-paused .party-toast { animation: none; }
-.iso-allclear { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; font: 800 11px var(--mono); letter-spacing: 1px; color: #ffd447; }
-/* 피날레·크레딧 링크: 평소엔 글자처럼, 마우스·키보드가 오면 금빛 알약으로 밝아지고 화살표가 살짝 밀려 나온다. */
-.iso-allclear .text-button { font-family: var(--sans); letter-spacing: 0; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; color: #d6dde0;
-  transition: color .15s, background .15s, border-color .15s, box-shadow .15s; }
-.iso-allclear .text-button::after { content: '→'; display: inline-block; opacity: 0; transform: translateX(-4px); transition: opacity .15s, transform .15s; }
-.iso-allclear .text-button:hover, .iso-allclear .text-button:focus-visible { color: #ffe9a8; background: #ffd4471f; border-color: #ffd44766; box-shadow: 0 0 14px #ffd44733; }
-.iso-allclear .text-button:hover::after, .iso-allclear .text-button:focus-visible::after { opacity: 1; transform: none; }
-.iso-allclear .text-button:active { background: #ffd44733; }
+/* ALL CLEAR 줄: 표시와 두 링크를 같은 글꼴·크기·이모지 형식으로 맞추고, 모두 같은 안쪽 여백을 줘서 간격이 고르다.
+   링크는 평소 글자처럼 보이다가 마우스·키보드가 오면 금빛 알약으로 밝아진다(크기·위치는 그대로라 흔들리지 않는다). */
+.iso-allclear { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0 0 -10px; }
+.iso-allclear-item { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent;
+  font: 800 11px var(--mono); letter-spacing: 1px; line-height: 1.4; color: #ffd447; background: none; }
+.iso-allclear button.iso-allclear-item { color: #e9dcae; cursor: pointer; transition: color .15s, background .15s, border-color .15s, box-shadow .15s; }
+.iso-allclear button.iso-allclear-item:hover, .iso-allclear button.iso-allclear-item:focus-visible { color: #ffe9a8; background: #ffd4471f; border-color: #ffd44766; box-shadow: 0 0 14px #ffd44733; }
+.iso-allclear button.iso-allclear-item:active { background: #ffd44733; }

@@ -72,6 +72,7 @@ export const GRAVEYARD: Tomb[] = [
   { name: "큰 카페의 펜던트 조명", died: "2026-10-22", epitaph: "손님 얼굴을 가린 죄로 철거" },
   { name: "회색 9px \"해결 완료\" 글씨", died: "2026-10-22", epitaph: "너무 겸손해서 아무도 못 봤다. 초록 배지로 환생" },
   { name: "소리 없이 시작하던 피날레", died: "2026-10-22", epitaph: "조용한 축하는 축하가 아니었다" },
+  { name: "ALL CLEAR 링크의 → 화살표", died: "2026-10-22", epitaph: "한 시간 남짓 반짝 나왔다 들어갔다. 간격이 안 맞았다" },
 ];
 
 export interface RollCall {
