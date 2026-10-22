@@ -1,7 +1,7 @@
 import { NPCS, type QuestNpc } from './cast';
 import { OfficerFace } from './OfficerFace';
 
-export function QuestOfficer({ npc = NPCS.doyun }: { npc?: QuestNpc }) {
+export function QuestOfficer({ npc = NPCS.andy }: { npc?: QuestNpc }) {
   return <svg viewBox="0 0 320 480" className="quest-officer" aria-hidden="true" focusable="false">
     <ellipse cx="160" cy="461" rx="79" ry="13" fill="#03070c" opacity=".65" />
     {/* 뒤쪽 팔·바지와 신발. 몸의 오른쪽 면은 어둡게 해서 3/4 입체감을 낸다. */}

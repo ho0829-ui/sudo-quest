@@ -72,8 +72,8 @@ describe('랜덤 등장 연출', () => {
     }
   });
   it('인물 하나인 분야는 안정적으로 유지하고 빈 목록은 거부한다', () => {
-    const draw = createShuffleBag(['도윤']);
-    expect([draw(), draw(), draw()]).toEqual(['도윤', '도윤', '도윤']);
+    const draw = createShuffleBag(['앤디']);
+    expect([draw(), draw(), draw()]).toEqual(['앤디', '앤디', '앤디']);
     expect(() => createShuffleBag([])).toThrow();
   });
   it('재렌더는 랜덤 선택을 소모하지 않고 모든 장면에서 수락 전에는 시작하지 않는다', () => {

@@ -16,7 +16,7 @@ interface QuestBriefingProps {
 
 export function QuestBriefing({ title, ticket, room, accent, mission, motion, onAccept, onClose, domain = 'aws', presentation, onReplay }: QuestBriefingProps) {
   const [ready, setReady] = useState(!motion);
-  const npc = NPCS[presentation?.npc ?? 'doyun'];
+  const npc = NPCS[presentation?.npc ?? 'andy'];
   const entrance = presentation?.entrance ?? 'push';
   const [showClue, setShowClue] = useState(false);
   const [step, setStep] = useState(0);
@@ -71,7 +71,7 @@ export function QuestBriefing({ title, ticket, room, accent, mission, motion, on
     </div>
     <section className="quest-conversation">
       <div className="quest-speaker"><span className="quest-speaker-mark">{npc.mark}</span><div><button className="quest-name" aria-expanded={showClue} aria-controls="quest-clue" onClick={() => setShowClue(v => !v)} aria-label={`${npc.name}의 작은 단서`}>{npc.name} <span>✧</span></button><span>{npc.role}</span></div><span className="quest-dialogue-count">{ready ? `0${step + 1} / 02` : 'CONNECTING'}</span></div>
-      {showClue && <p id="quest-clue" className="quest-clue">{npc.homage}{npc.id !== 'doyun' && <small>인물에게 보내는 게임 속 오마주 · 대사는 창작입니다.</small>}</p>}
+      {showClue && <p id="quest-clue" className="quest-clue">{npc.homage}<small>인물에게 보내는 게임 속 오마주 · 대사는 창작입니다.</small></p>}
       {!ready ? <div className="quest-wait"><TerminalLoader label="담당자가 다가오고 있어요…" /></div> : <>
         <div className="quest-lines" key={step} role="region" aria-label="담당자 설명" tabIndex={0}><h2 id="quest-dialog-title" ref={headingRef} tabIndex={-1}>{pages[step].heading}</h2><p>{pages[step].text}</p></div>
         <div className="quest-actions"><button onClick={step ? () => setStep(0) : onClose}>{step ? '← 상황 다시 듣기' : '잠시만요'}</button>

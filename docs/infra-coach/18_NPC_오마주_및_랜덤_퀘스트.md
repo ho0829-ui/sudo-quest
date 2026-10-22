@@ -2,6 +2,16 @@
 
 2026-10-22 · Mac · Codex
 
+## 후속 변경 — AWS 담당자 교체 (2026-10-22)
+
+사용자 요청으로 AWS 담당자를 앤디 재시 모티프의 `앤디 / ANDY`로 교체했다. 회색 짧은 머리와 넓은 이마, 안경·수염 없는 얼굴, 남색 재킷·밝은 셔츠로 표현한다. 클라우드 전망대와 다섯 등장 연출은 유지한다. 이름 단서는 “앤디 재시 · AWS의 출범과 성장을 이끈 리더”.
+
+도윤은 활성 NPC 목록과 기본값에서 제외하고 엔딩 `GRAVEYARD`로 옮겼다. 묘비: **선임 운영자 도윤 / 2026-10-22 / 모든 장애를 받던 첫 당직자. 이제 알람 없이 푹 쉬길.** 크레딧의 첫 구현 기여 기록은 과거 사실로 유지하고 현재 역할 설명·특별 출연은 앤디로 갱신했다.
+
+이 변경에서 실행한 검증: `npm run build`(타입 검사 포함) 통과, `npm test -- --maxWorkers=1 tests/quest-cast.test.tsx tests/quest-presentation.test.tsx tests/ending.test.tsx` **27개 통과**, `git diff --check` 통과. AWS #11에서 앤디·단서 표시, 콘솔 오류·경고 0 확인. 묘비는 크레딧 렌더 테스트로 확인했고 전체 올클리어 후 브라우저 재생은 다시 수행하지 않았다. 전체 912개 테스트 기록은 아래 이전 작업의 결과다.
+
+참고: [공식 초상 — Amazon Press Center](https://press.aboutamazon.com/seattle-headquarters), [AWS 이력 — Amazon 2026 Proxy, p.4](https://www.ezodproxy.com/amazon/2026/proxy/images/Amazon_Proxy2026.pdf). 사진 파일을 복제하지 않고 기존 SVG 표현을 바꿨다. [앤디 화면 증빙](evidence/quest-cast/andy-desktop.png).
+
 ## 사용자 요청과 구현
 
 기존 퀘스트 대화창 배치와 마지막 상반신 구도를 유지했다. 제안한 인물들을 이름·외형·소품으로 알아보는 이스터 에그로 추가했다. 사진 파일은 포함하지 않고 기존 코드 기반 SVG 캐릭터의 헤어라인·안경·수염·옷을 변형했다. 새 라이브러리·이미지 다운로드·유료 생성 호출은 없다.
@@ -14,7 +24,7 @@
 | DB | 몬티 | 데이터 보관소, 서랍·저장 장치와 돌고래 |
 | Docker | 솔로몬 | 컨테이너 부두, 크레인·화물선과 고래 |
 | Kubernetes | 브렌던·조·크레이그 교대 | 클러스터 항해실, 조타륜과 세 노드 지도 |
-| AWS | 기존 도윤 | 클라우드 전망대, 구름과 도시 |
+| AWS | 앤디 | 클라우드 전망대, 구름과 도시 |
 
 일반 화면에는 짧은 호칭만 나온다. 대화창 이름 옆 ✧를 누르면 전체 이름·관련 업적과 게임 속 창작 대사임을 보여 준다. 실제 인물의 발언·참여·추천을 주장하지 않는다. 배경은 모두 가상 공간 장식이며 실시간 모니터링 값이 아니다.
 
@@ -34,7 +44,7 @@
 
 ## 파일과 경계
 
-- `src/ui/quest/cast.ts`: 9명(오마주 8명 + 도윤)의 표현 데이터, 분야 배정. `web-db`는 공개 명령 목록에 `mysql`이 있는지로 나눈다. 새로운 DB 실습에 SQL 명령이 없으면 이 분류 규칙을 검토할 것.
+- `src/ui/quest/cast.ts`: 9명(모두 인물 오마주)의 표현 데이터, 분야 배정. `web-db`는 공개 명령 목록에 `mysql`이 있는지로 나눈다. 새로운 DB 실습에 SQL 명령이 없으면 이 분류 규칙을 검토할 것.
 - `presentation.ts`: 5가지 등장 연출과 셔플. React 렌더가 아닌 클릭 이벤트에서 선택해 재렌더 때 순서를 소모하지 않는다.
 - `OfficerFace.tsx`, `QuestOfficer.tsx`: 공유 인체와 인물별 외형.
 - `QuestBackdrop.tsx`, `backdrops/Workshops.tsx`, `backdrops/Harbors.tsx`: 7개 공간의 SVG.

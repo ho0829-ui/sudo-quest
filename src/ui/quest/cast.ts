@@ -1,7 +1,7 @@
 import type { Category } from '../../engine/scenario/categories';
 
 export type QuestDomain = 'linux' | 'network' | 'web' | 'database' | 'aws' | 'docker' | 'kubernetes';
-export type NpcId = 'doyun' | 'linus' | 'vint' | 'tim' | 'monty' | 'solomon' | 'brendan' | 'joe' | 'craig';
+export type NpcId = 'andy' | 'linus' | 'vint' | 'tim' | 'monty' | 'solomon' | 'brendan' | 'joe' | 'craig';
 export interface QuestNpc {
   id: NpcId; name: string; callSign: string; mark: string; role: string; clue: string; homage: string;
   hair: string; hairStyle: 'short' | 'swept' | 'bald' | 'receding' | 'curly';
@@ -9,9 +9,9 @@ export interface QuestNpc {
 }
 
 export const NPCS: Record<NpcId, QuestNpc> = {
-  doyun: { id: 'doyun', name: '도윤', callSign: 'DOYUN', mark: 'D.', role: '클라우드 온콜 엔지니어',
-    clue: '오늘도 함께, 한 단계씩', homage: 'SUDO QUEST의 오리지널 선임 운영자입니다.',
-    hair: '#182530', hairStyle: 'short', beard: '#1c2931', glasses: 'round', jacket: '#294b5b', shirt: '#0e1e2c' },
+  andy: { id: 'andy', name: '앤디', callSign: 'ANDY', mark: 'A.', role: '클라우드 전망대의 선임',
+    clue: '구름 위 첫 설계도 · 2006', homage: '앤디 재시 · AWS의 출범과 성장을 이끈 리더',
+    hair: '#777873', hairStyle: 'receding', jacket: '#343f59', shirt: '#b8c6df' },
   linus: { id: 'linus', name: '리누스', callSign: 'LINUS', mark: 'L.', role: '시스템 작업실의 선임',
     clue: '작은 펭귄 · 1991', homage: '리누스 토르발스 · Linux 커널 창시자',
     hair: '#8b7962', hairStyle: 'short', glasses: 'square', jacket: '#344c66', shirt: '#bbcbd8' },
@@ -38,7 +38,7 @@ export const NPCS: Record<NpcId, QuestNpc> = {
     hair: '#463f36', hairStyle: 'short', glasses: 'square', jacket: '#5d5867', shirt: '#c9c8d4' },
 };
 export const DOMAIN_CAST: Record<QuestDomain, readonly NpcId[]> = {
-  linux: ['linus'], network: ['vint'], web: ['tim'], database: ['monty'], aws: ['doyun'],
+  linux: ['linus'], network: ['vint'], web: ['tim'], database: ['monty'], aws: ['andy'],
   docker: ['solomon'], kubernetes: ['brendan', 'joe', 'craig'],
 };
 
