@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { runCommand } from "../src/engine/run";
 import { buildInitialState } from "../src/engine/scenario/build";
-import { scenarios } from "../src/scenarios";
+import { scenarios as listed } from "../src/scenarios";
+import { tutorialScenario } from "../src/scenarios/tutorial-first-shift";
 import { explorations } from "./scenario-exploration.cases";
 
+// 튜토리얼 연습 실습도 같은 탐색 검사를 받는다.
+const scenarios = [...listed, tutorialScenario];
 const common = ["help", "pwd", "ls -lah /var/log", "df -h", "du -sh /var/log", "cat /etc/hosts", "journalctl --lines=2"];
 
 describe("정답 경로 밖의 시나리오 탐색", () => {

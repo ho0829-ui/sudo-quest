@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState, type CSSProperties } from "react";
 import type { Scenario } from "../../engine/scenario/types";
-import { scenarios } from "../../scenarios";
+import { isTutorial } from "../../scenarios/tutorial-first-shift";
+import { missionCode } from "../missionCode";
 import { THEMES } from "../campus/themes";
 import { CATEGORIES } from "../categories";
 import { TerminalLoader } from "../components/TerminalLoader";
@@ -35,7 +36,7 @@ export function TicketScreen({ scenario, resumable, onStart, onBack, motion = tr
   const [talking, setTalking] = useState<QuestPresentation | null>(null);
   const domain = questDomain(scenario.category, scenario.commands);
   const openBriefing = () => setTalking(nextPresentation(domain));
-  const missionNo = String(scenarios.indexOf(scenario) + 1).padStart(2, "0");
+  const missionNo = missionCode(scenario);
   return (
     <div className="briefing" style={{ "--room": THEMES[scenario.category].accent } as CSSProperties}>
       {talking && <Suspense fallback={<TerminalLoader label="퀘스트 담당자와 연결 중…" />}><QuestBriefing key={talking.take} presentation={talking} domain={domain} onReplay={openBriefing} title={scenario.title} ticket={scenario.ticket} room={CATEGORIES[scenario.category].room}
@@ -45,7 +46,7 @@ export function TicketScreen({ scenario, resumable, onStart, onBack, motion = tr
       <div className="briefing-grid">
         <section className="briefing-ticket">
           <div className="briefing-meta">
-            <span className="briefing-code">TICKET · MISSION {missionNo}</span>
+            <span className="briefing-code">TICKET · {isTutorial(scenario) ? "TUTORIAL" : `MISSION ${missionNo}`}</span>
             <span className="briefing-tag">{CATEGORIES[scenario.category].tag}</span>
             <span className="briefing-level" aria-label={`난이도 ${LEVELS[scenario.difficulty]}`}>
               {[1, 2, 3].map(n => <i key={n} className={n <= scenario.difficulty ? "on" : undefined} />)} {LEVELS[scenario.difficulty]}

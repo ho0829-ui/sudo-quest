@@ -14,7 +14,11 @@ import { KnowledgeScreen } from './screens/KnowledgeScreen';
 import { Icon } from './components/Icon';
 import { Rail, type Workspace } from './components/Rail';
 import { CampusDefs } from './campus/RoomVignette';
-import { formatRoute, parseRoute, type Route } from './route';
+import { formatRoute, parseRoute, TUTORIAL_NO, type Route } from './route';
+import { missionNumber, scenarioByNumber } from './missionCode';
+import { isTutorial, tutorialScenario } from '../scenarios/tutorial-first-shift';
+import { TutorialGuide } from './tutorial/TutorialGuide';
+import { loadTutorialDone, saveTutorialDone } from './tutorial/tutorialPrefs';
 import { readSavedSession, saveActiveSession } from './sessionStore';
 import './styles.css';
 import './command-center.css';
@@ -48,9 +52,13 @@ export function App() {
   const [restoring, setRestoring] = useState(() => readSavedSession() !== null);
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
   const [ending, setEnding] = useState<'finale' | 'credits' | null>(null);
+  const [tutorialDone, setTutorialDone] = useState(loadTutorialDone);
+  // 건너뛰면 말풍선만 사라지고 연습 실습은 그대로 이어서 할 수 있다. 홈에서 다시 시작하면 다시 켠다.
+  const [guideOn, setGuideOn] = useState(true);
 
   const workspace: Workspace = route.kind === 'community' ? 'community' : route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
-  const scenario = route.kind === 'mission' ? scenarios[route.no - 1] : null;
+  const scenario = route.kind === 'mission' ? scenarioByNumber(route.no) ?? null : null;
+  const tutorial = !!scenario && isTutorial(scenario);
   const ownSession = session && scenario && session.scenario === scenario ? session : null;
   const stage = route.kind === 'mission' ? route.stage : null;
 
@@ -83,7 +91,7 @@ export function App() {
     if (!saved) return;
     let cancelled = false;
     import('./sessionReplay')
-      .then(({ restoreSession }) => { if (!cancelled) setSession(restoreSession(saved, scenarios)); })
+      .then(({ restoreSession }) => { if (!cancelled) setSession(restoreSession(saved, [...scenarios, tutorialScenario])); })
       .catch(() => { /* 조각을 못 받으면 새 실습으로 시작한다 */ })
       .finally(() => { if (!cancelled) setRestoring(false); });
     return () => { cancelled = true; };
@@ -101,12 +109,13 @@ export function App() {
 
   useEffect(() => {
     if (!ownSession || stage !== 'play' || !isCleared(ownSession) || route.kind !== 'mission') return;
-    setProgress(saveClear(ownSession.scenario.id, calculateScore(ownSession).total));
+    // 튜토리얼 연습 실습은 학습 기록·점수에 남기지 않는다.
+    if (!tutorial) setProgress(saveClear(ownSession.scenario.id, calculateScore(ownSession).total));
     // 클리어한 실습 화면 기록을 리포트로 바꿔 끼운다. 그래야 뒤로 가기가 다시 리포트로 튕기지 않는다.
     go({ ...route, stage: 'report' }, true);
   }, [ownSession, stage]);
 
-  const missionNo = (s: Scenario) => scenarios.indexOf(s) + 1;
+  const missionNo = missionNumber;
   const clearedScenarios = scenarios.filter(s => progress[s.id]?.cleared);
   const xp = clearedScenarios.reduce((sum, s) => sum + progress[s.id].bestScore, 0);
   const endingProps = { onFinale: () => setEnding('finale'), onCredits: () => setEnding('credits') };
@@ -121,6 +130,12 @@ export function App() {
     if (!scenario) return;
     if (fresh || !ownSession || isCleared(ownSession)) setSession(createSession(scenario));
     go({ kind: 'mission', no: missionNo(scenario), stage: 'play' });
+  }
+  function startTutorial() {
+    setGuideOn(true); go({ kind: 'mission', no: TUTORIAL_NO, stage: 'briefing' });
+  }
+  function finishTutorial() {
+    saveTutorialDone(); setTutorialDone(true);
   }
   function backToList() {
     setSession(null); go({ kind: 'home' });
@@ -150,7 +165,7 @@ export function App() {
         {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
         <div hidden={workspace !== 'game'}>
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
-          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
+          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onTutorial={startTutorial} tutorialDone={tutorialDone} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
           {stage === 'briefing' && scenario && <TicketScreen key={scenario.id} scenario={scenario} motion={motion} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
           {restoring && stage !== 'briefing' && <TerminalLoader label="진행 중이던 실습을 이어서 불러오는 중…" />}
           {stage === 'play' && ownSession && <Suspense fallback={<TerminalLoader label="실습 터미널을 준비하는 중…" />}><PlayScreen session={ownSession}
@@ -158,12 +173,15 @@ export function App() {
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
             onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} /></Suspense>}
           {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
-            party={partyNotice(scenarios, progress, ownSession.scenario.category)}
-            onShare={() => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })} />}
+            party={tutorial ? null : partyNotice(scenarios, progress, ownSession.scenario.category)}
+            onShare={tutorial ? undefined : () => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })}
+            next={tutorial ? { label: '1번 실습 시작하기', run: () => { finishTutorial(); setSession(null); startScenario(scenarios[0]); } } : undefined} />}
         </div>
         </ErrorBoundary>
       </main>
     </div>
+    {tutorial && guideOn && stage && !restoring && <TutorialGuide stage={stage} session={ownSession} motion={motion}
+      onSkip={() => { finishTutorial(); setGuideOn(false); }} onFinish={finishTutorial} />}
     {/* 피날레·크레딧은 화면 전체를 덮는다. 조각을 못 받으면 조용히 넘어간다(게임에는 영향 없음). */}
     {ending && <ErrorBoundary label="엔딩" resetKey={ending}><Suspense fallback={null}>
       {ending === 'finale' && <Finale cleared={clearedScenarios.length} total={scenarios.length} xp={xp} motion={motion}

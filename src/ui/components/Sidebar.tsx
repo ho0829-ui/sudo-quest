@@ -99,7 +99,7 @@ export function Sidebar({ session, onRevealHint, onOpenCause, onGiveUp, onUseCom
         document.getElementById("panel-coach")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }}>AI 코치{unread && <span className="tab-badge" aria-label="새 답변">●</span>}</button>
 
-      <button className="primary" onClick={onOpenCause} disabled={causeSolved}>
+      <button className="primary cause-submit" onClick={onOpenCause} disabled={causeSolved}>
         {causeSolved ? "원인 규명 완료" : "원인 제출하기"}
       </button>
       <button className="small" onClick={onGiveUp}>

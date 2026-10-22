@@ -30,7 +30,9 @@ function statusText(service: Service, clock: number, journalTail: string[]): str
     lines.push("      Tasks: 3 (limit: 2274)");
     lines.push(`     Memory: ${humanKB(service.memKB)}`);
   } else {
-    lines.push(`    Process: ExecStart=${service.execStart} (code=exited, status=1/FAILURE)`);
+    // 오류로 죽은 것(failed)과 누가 내린 것(inactive)은 종료 상태가 다르다.
+    const exit = service.state === "failed" ? "status=1/FAILURE" : "status=0/SUCCESS";
+    lines.push(`    Process: ExecStart=${service.execStart} (code=exited, ${exit})`);
   }
   lines.push(`     CGroup: /system.slice/${service.name}.service`);
 

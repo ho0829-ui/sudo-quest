@@ -13,7 +13,7 @@ function clock(seconds: number): string {
  * 실습 화면 머리의 미션 HUD. 경과 시간·예상 점수·퀘스트 단계는 모두 실제 세션 값이다.
  * 시나리오 ID는 원인을 드러낼 수 있어(예: linux-disk-full) 쓰지 않고 실습 번호만 보여 준다.
  */
-export function MissionHud({ session, missionNo }: { session: Session; missionNo: number }) {
+export function MissionHud({ session, code }: { session: Session; code: string }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -32,7 +32,7 @@ export function MissionHud({ session, missionNo }: { session: Session; missionNo
   return <section className="mission-hud" aria-label="미션 상황판" style={{ "--room": THEMES[scenario.category].accent } as CSSProperties}>
     <RoomVignette kind={scenario.category} className="mission-room" />
     <div className="mission-main">
-      <div className="mission-kicker"><span className="mission-live" /> MISSION {String(missionNo).padStart(2, "0")} · {CATEGORIES[scenario.category].tag} · {CATEGORIES[scenario.category].room}</div>
+      <div className="mission-kicker"><span className="mission-live" /> {code === "TUTORIAL" ? code : `MISSION ${code}`} · {CATEGORIES[scenario.category].tag} · {CATEGORIES[scenario.category].room}</div>
       <h2>{scenario.title}</h2>
       <ol className="quest-steps">
         {steps.map((step, i) => <li key={step.label} className={step.done ? "done" : i === current ? "current" : undefined}>

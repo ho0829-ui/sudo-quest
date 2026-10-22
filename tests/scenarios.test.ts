@@ -9,6 +9,7 @@ import { runCommand } from "../src/engine/run";
 import { buildInitialState } from "../src/engine/scenario/build";
 import { DEFAULT_COMMANDS, getCommand } from "../src/engine/commands";
 import { scenarios } from "../src/scenarios";
+import { tutorialScenario } from "../src/scenarios/tutorial-first-shift";
 import { isCategory } from "../src/engine";
 import type { SystemState } from "../src/engine/state/types";
 
@@ -23,13 +24,16 @@ const FAILURE_SIGNS = [
   "지원하지 않습니다",
 ];
 
+/** 튜토리얼 연습 실습은 목록 밖에 있지만 검증은 똑같이 받는다. */
+const verified = [...scenarios, tutorialScenario];
+
 describe("시나리오 데이터 스키마", () => {
   it("시나리오 id가 중복되지 않는다", () => {
-    const ids = scenarios.map((s) => s.id);
+    const ids = verified.map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it.each(scenarios)("$id 의 필수 항목이 채워져 있다", (scenario) => {
+  it.each(verified)("$id 의 필수 항목이 채워져 있다", (scenario) => {
     expect(scenario.title.length).toBeGreaterThan(0);
     expect(scenario.ticket.length).toBeGreaterThan(20);
     expect(scenario.learningObjectives.length).toBeGreaterThan(0);
@@ -39,7 +43,7 @@ describe("시나리오 데이터 스키마", () => {
     expect(scenario.faults.length).toBeGreaterThan(0);
   });
 
-  it.each(scenarios)("$id 의 정답이 보기 안에 있고, 오답에는 해설이 있다", (scenario) => {
+  it.each(verified)("$id 의 정답이 보기 안에 있고, 오답에는 해설이 있다", (scenario) => {
     const { choices, answerId } = scenario.rootCause;
     expect(choices.length).toBeGreaterThanOrEqual(3);
     expect(choices.map((c) => c.id)).toContain(answerId);
@@ -49,12 +53,12 @@ describe("시나리오 데이터 스키마", () => {
     }
   });
 
-  it.each(scenarios)("$id 의 포스트모템에 재발 방지책이 있다", (scenario) => {
+  it.each(verified)("$id 의 포스트모템에 재발 방지책이 있다", (scenario) => {
     expect(scenario.postmortem.howToPrevent.length).toBeGreaterThan(20);
   });
 
   // "실제로 자주 일어나는 장애인가"를 데이터로 남긴다. 3자 블로그만으로는 부족하고 공식 문서나 공개 포스트모템이 있어야 한다.
-  it.each(scenarios)("$id 에 실제 근거 자료가 있다", (scenario) => {
+  it.each(verified)("$id 에 실제 근거 자료가 있다", (scenario) => {
     expect(scenario.evidence.length).toBeGreaterThan(0);
     for (const item of scenario.evidence) {
       expect(["official-doc", "postmortem", "survey"]).toContain(item.kind);
@@ -64,11 +68,11 @@ describe("시나리오 데이터 스키마", () => {
     expect(scenario.evidence.some((item) => item.kind !== "survey"), "공식 문서나 포스트모템이 하나 이상 필요합니다").toBe(true);
   });
 
-  it.each(scenarios)("$id 의 분류가 엔진 분류 목록에 있다", (scenario) => {
+  it.each(verified)("$id 의 분류가 엔진 분류 목록에 있다", (scenario) => {
     expect(isCategory(scenario.category), scenario.category).toBe(true);
   });
 
-  it.each(scenarios)("$id 이 쓰는 명령어가 모두 등록되어 있다", (scenario) => {
+  it.each(verified)("$id 이 쓰는 명령어가 모두 등록되어 있다", (scenario) => {
     for (const name of scenario.commands ?? DEFAULT_COMMANDS) {
       expect(getCommand(name), `${name} 명령어가 레지스트리에 없습니다`).toBeDefined();
     }
@@ -76,12 +80,12 @@ describe("시나리오 데이터 스키마", () => {
 });
 
 describe("시나리오 플레이 가능성", () => {
-  it.each(scenarios)("$id 은 장애 주입 직후에는 복구되지 않은 상태다", (scenario) => {
+  it.each(verified)("$id 은 장애 주입 직후에는 복구되지 않은 상태다", (scenario) => {
     const state = buildInitialState(scenario);
     expect(scenario.resolution(state)).toBe(false);
   });
 
-  it.each(scenarios)("$id 은 모범 풀이대로 하면 복구된다", (scenario) => {
+  it.each(verified)("$id 은 모범 풀이대로 하면 복구된다", (scenario) => {
     let state: SystemState = buildInitialState(scenario);
 
     for (const input of scenario.solutionPath) {
@@ -96,5 +100,18 @@ describe("시나리오 플레이 가능성", () => {
     }
 
     expect(scenario.resolution(state), "모범 풀이를 다 실행했는데도 복구 판정이 false 입니다").toBe(true);
+  });
+});
+
+describe("튜토리얼 연습 실습", () => {
+  it("실습 목록에 들어가지 않아 점수·기록·파티·크레딧 실습 수에서 빠진다", () => {
+    expect(scenarios.map((s) => s.id)).not.toContain(tutorialScenario.id);
+  });
+
+  it("서비스가 죽은 것(failed)이 아니라 꺼진 것(inactive)으로 보이고 종료 상태도 성공이다", () => {
+    const status = runCommand(buildInitialState(tutorialScenario), "systemctl status nginx").stdout;
+    expect(status).toContain("inactive (dead)");
+    expect(status).toContain("status=0/SUCCESS");
+    expect(runCommand(buildInitialState(tutorialScenario), "journalctl -u nginx").stdout).toContain("Stopped nginx.service");
   });
 });

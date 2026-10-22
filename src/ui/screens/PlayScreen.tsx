@@ -10,7 +10,7 @@ import { execute } from "../../engine/session/execute";
 import { shuffleChoices } from "../shuffleChoices";
 import { MissionHud } from "../components/MissionHud";
 import { THEMES } from "../campus/themes";
-import { scenarios } from "../../scenarios";
+import { missionCode } from "../missionCode";
 
 interface PlayScreenProps {
   session: Session;
@@ -37,7 +37,7 @@ export function PlayScreen({
 
   return (
     <>
-    <MissionHud session={session} missionNo={scenarios.indexOf(session.scenario) + 1} />
+    <MissionHud session={session} code={missionCode(session.scenario)} />
     <div className="play-layout" style={{ "--room": THEMES[session.scenario.category].accent } as CSSProperties}>
       <div className="terminal-window">
       <div className="terminal-toolbar"><span className="window-dots"><i /><i /><i /></span><span>{session.state.user}@{session.state.hostname} — bash</span><span className="terminal-live"><i /> LIVE · SIMULATED</span></div>

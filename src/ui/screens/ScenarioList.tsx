@@ -20,10 +20,13 @@ interface ScenarioListProps {
   /** 모든 실습을 해결했을 때 피날레·엔딩 크레딧 열기 */
   onFinale?: () => void;
   onCredits?: () => void;
+  /** 튜토리얼 연습 실습 열기(홈에서만). 끝냈으면 버튼 이름이 "다시 보기"로 바뀐다. */
+  onTutorial?: () => void;
+  tutorialDone?: boolean;
 }
 const LEVELS = ['', '입문', '중급', '고급'];
 
-export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity, onFinale, onCredits }: ScenarioListProps) {
+export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity, onFinale, onCredits, onTutorial, tutorialDone }: ScenarioListProps) {
   const headingId = useId();
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [query, setQuery] = useState('');
@@ -59,6 +62,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
         <h2>서버에 문제가 생겼습니다.<br /><span>당신의 첫 명령어는?</span></h2>
         <p>로그 속 단서를 따라 원인을 좁히고,<br />복구의 순간까지 직접 경험하는 인프라 실습.</p>
         <div className="hero-actions"><button className="primary" onClick={() => next && onSelect(next.scenario)}> {next?.label ?? '첫 장애 해결하기'} <Icon name="arrow" size={17} /></button>
+          {onTutorial && <button className="text-button tutorial-button" onClick={onTutorial}>{tutorialDone ? '튜토리얼 다시 보기' : '처음이라면 · 5분 튜토리얼'} <Icon name="arrow" size={15} /></button>}
           <button className="text-button" onClick={onExplore}>지식 탐색 <Icon name="arrow" size={15} /></button></div>
         <div className="hero-note"><Icon name="shield" size={14} /> 실제 시스템에 영향 없는 가상 환경</div>
       </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} onFinale={onFinale} onCredits={onCredits} />

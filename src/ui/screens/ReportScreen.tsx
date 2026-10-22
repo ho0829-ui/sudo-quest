@@ -11,13 +11,15 @@ interface ReportScreenProps {
   session: Session;
   onBackToList: () => void;
   onRetry: () => void;
-  /** 커뮤니티 카페에 이 실습의 회고를 남기러 간다(풀이 포함 표시가 켜진 양식). */
-  onShare: () => void;
+  /** 커뮤니티 카페에 이 실습의 회고를 남기러 간다(풀이 포함 표시가 켜진 양식). 튜토리얼에는 없다. */
+  onShare?: () => void;
+  /** 주 버튼을 바꾼다(튜토리얼: "1번 실습 시작하기"). 없으면 "다른 시나리오 풀기". */
+  next?: { label: string; run: () => void };
   /** 이 클리어로 운영실 파티가 새로 열렸으면 그 안내. 버튼은 캠퍼스(홈)로 간다. */
   party?: PartyNotice | null;
 }
 
-export function ReportScreen({ session, onBackToList, onRetry, onShare, party }: ReportScreenProps) {
+export function ReportScreen({ session, onBackToList, onRetry, onShare, next, party }: ReportScreenProps) {
   const { scenario, commands } = session;
   const score = calculateScore(session);
   const { postmortem } = scenario;
@@ -48,7 +50,7 @@ export function ReportScreen({ session, onBackToList, onRetry, onShare, party }:
 
       <InvestigationReview key={session.scenario.id} session={session} />
 
-      <div className="panel" style={{ marginBottom: 16 }}>
+      <div className="panel report-postmortem" style={{ marginBottom: 16 }}>
         <h2 style={{ marginTop: 0, fontSize: 18 }}>포스트모템</h2>
 
         <div className="report-section">
@@ -121,10 +123,10 @@ export function ReportScreen({ session, onBackToList, onRetry, onShare, party }:
 
       <div className="row end">
         <button onClick={onRetry}>다시 풀기</button>
-        <button onClick={onShare}>커뮤니티에 회고 남기기</button>
-        <button className="primary" onClick={onBackToList}>
-          다른 시나리오 풀기
-        </button>
+        {onShare && <button onClick={onShare}>커뮤니티에 회고 남기기</button>}
+        {next
+          ? <><button onClick={onBackToList}>홈으로</button><button className="primary" onClick={next.run}>{next.label}</button></>
+          : <button className="primary" onClick={onBackToList}>다른 시나리오 풀기</button>}
       </div>
     </div>
   );

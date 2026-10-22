@@ -4,6 +4,11 @@ const sg = "sg-0f1e2d3c4b5a69788";
 const tg = "arn:aws:elasticloadbalancing:ap-northeast-2:123456789012:targetgroup/shop-tg/73e2d6bc24d8a067";
 
 export const explorations: Record<string, ExplorationCase> = {
+  "tutorial-first-shift": {
+    inspect: ["systemctl is-active nginx", "journalctl | grep maint", "ls -lah /var/log/maint", "tail -n 2 /var/log/maint/maintenance.log"],
+    unrelated: ["sudo systemctl stop nginx", "sudo rm -f /var/log/maint/maintenance.log"],
+    alternative: ["sudo systemctl restart nginx.service", "systemctl is-active nginx"],
+  },
   "linux-disk-full": {
     inspect: ["du -h --max-depth=1 /var/log", "journalctl --unit=nginx.service --lines=3", "ls -lah /var/log/app", "systemctl is-active nginx.service"],
     unrelated: ["sudo rm -f /tmp/missing", "sudo systemctl restart nginx"],

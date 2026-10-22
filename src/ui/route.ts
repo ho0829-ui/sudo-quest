@@ -13,13 +13,17 @@ export type Route =
   | { kind: "community"; postId?: number; write?: boolean; mission?: number }
   | { kind: "mission"; no: number; stage: MissionStage };
 
+/** 튜토리얼 연습 실습의 번호. 실습 목록 밖이라 0번이고, 주소는 #/tutorial이다. */
+export const TUTORIAL_NO = 0;
+
 export function formatRoute(route: Route): string {
   if (route.kind === "community") {
     if (route.write) return route.mission ? `#/community/write/${route.mission}` : "#/community/write";
     return route.postId ? `#/community/${route.postId}` : "#/community";
   }
   if (route.kind !== "mission") return route.kind === "home" ? "#/" : `#/${route.kind}`;
-  return route.stage === "briefing" ? `#/mission/${route.no}` : `#/mission/${route.no}/${route.stage}`;
+  const base = route.no === TUTORIAL_NO ? "#/tutorial" : `#/mission/${route.no}`;
+  return route.stage === "briefing" ? base : `${base}/${route.stage}`;
 }
 
 /** 모르는 주소는 홈으로. 실습 번호는 1부터 total까지만 받는다. */
@@ -39,6 +43,10 @@ export function parseRoute(hash: string, total: number): Route {
   }
   if (parts[0] === "knowledge" && parts.length === 1) return { kind: "knowledge" };
   if (parts[0] === "records" && parts.length === 1) return { kind: "records" };
+  if (parts[0] === "tutorial" && parts.length <= 2) {
+    const stage = parts[1] ?? "briefing";
+    if (stage === "briefing" || stage === "play" || stage === "report") return { kind: "mission", no: TUTORIAL_NO, stage };
+  }
   if (parts[0] === "mission" && /^\d+$/.test(parts[1] ?? "")) {
     const no = Number(parts[1]);
     const stage = parts[2] ?? "briefing";
