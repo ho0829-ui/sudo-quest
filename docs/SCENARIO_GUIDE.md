@@ -54,7 +54,7 @@ npm test
 ## 템플릿
 
 ```ts
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names"; // 등록부(명령 구현)를 끌어오지 않는 이름 목록
 import { all, diskUsageBelow, serviceIsActive } from "../engine/judge";
 import { crashService, logLine, putFile } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";

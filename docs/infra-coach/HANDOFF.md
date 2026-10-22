@@ -1,8 +1,26 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: Linux too many open files 실습 완료(시나리오 22개, 예정 근거 문서 모두 연결), 다음은 번들 분할 또는 Web 실습
+갱신: 2026-10-22 · 단계: 번들 분할 완료(첫 화면 317kB, 경고 없음), 다음은 Web 실습 또는 메타데이터 검수
 
-## 최신 상태 — Linux too many open files 실습 (2026-10-22, Mac, Claude)
+## 최신 상태 — 번들 분할: vendor 분리 + 엔진 실행부 지연 로딩 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 번들 분할(665kB 경고)이야. 계획 먼저 보여줘." → "A(vendor 분리)와 B(엔진 지연 로딩) 둘 다 계획대로 진행해줘."
+- 측정(소스맵으로 모듈별 바이트 계산, scratchpad 스크립트): react-dom 206kB, engine/commands 92kB, ui/campus 67kB, engine/state 45kB, 시나리오 약 100kB. 원인: 시나리오가 `withCommands`를 등록부(`engine/commands/index.ts`)에서 가져와 명령 구현 전체가 딸려 왔고, App이 새로고침 복원·execute를 바로 가져옴.
+- A(`vite.config.ts` manualChunks): react·react-dom·scheduler → `react-vendor`. 본체 442kB + vendor 222kB, 경고 해소. 따로 커밋.
+- B:
+  - `engine/commands/names.ts`(새): DEFAULT_COMMANDS·withCommands(등록부 import 없음). `index.ts`는 다시 내보냄. 시나리오 22개 import 경로 변경.
+  - `engine/session/execute.ts`(새): `execute`를 session.ts에서 분리(`stampFinish` export). 테스트 6개 파일은 import 경로만 바꿈.
+  - `ui/sessionReplay.ts`(새): `restoreSession`(입력 다시 실행). `sessionStore.ts`는 저장·`readSavedSession`·`isSaved`만.
+  - `App.tsx`: `PlayScreen`을 React.lazy(+Suspense), 세션은 null로 시작해 저장본이 있으면 `import('./sessionReplay')`로 복원. **복원 중(`restoring`)에는 저장(빈 세션으로 저장본을 지우지 않게)과 주소 보정(play→briefing)을 멈춤**. 조각 로드 실패 시 새 실습으로 시작.
+  - `PlayScreen`: `onCommand` 대신 `onUpdate(change)`를 받고 화면 안에서 `execute`를 부름(App이 명령 구현을 import하지 않음).
+- 결과(빌드): index 316.9kB(gzip 103) / react-vendor 221.7kB(69) / execute 106.4kB(38) / PlayScreen 20.3kB(8) / CommunityScreen 18.2kB / sessionReplay 0.5kB. 명령 오류 문장(예: docker 'is not a docker command')이 index에 없고 execute에만 있음을 확인. probe 문장은 시나리오 fault가 쓰는 state 쪽이라 index에 남음(의도).
+- 실행한 검사: typecheck 통과, vitest **723개/30파일** 통과(동작 변화 없음), build 경고 없음, diff --check 통과.
+- 브라우저(프로덕션 빌드, `.claude/launch.json` "preview" 4173 — 5173과 다른 출처라 사용자 탭 저장소와 분리): 홈은 index+vendor만, 실습 진입 시 PlayScreen+execute 로드, 명령 2개 뒤 새로고침 → sessionReplay 로드·기록 그대로 이어짐·저장본 유지, 원인 제출 → 리포트, 리포트에서 새로고침 유지, 손상된 저장본(#/mission/3/play)·저장본 없는 play 주소(#/mission/5/play) → 브리핑, 지식·게시판(조각 로드)·뒤로 가기, 콘솔 오류 0. 검사 뒤 4173 출처의 localStorage(진행 기록 1건)·sessionStorage를 지우고 preview 서버를 멈춤. 5173 개발 서버에서도 새 App 모듈 정상 컴파일, 사용자 탭의 진행 중 실습(linux-disk-full) 그대로.
+- 유료 호출: 없음. 실행 중: Vite 5173(PID 87647), API 8000(PID 74575). preview 4173은 멈춤.
+- 커밋: build(vendor)·refactor/perf(B)·docs. push·master 병합 없음.
+- 다음 후보: (1) Web 실습(nginx upstream·TLS 체인) (2) 31건 메타데이터 사람 검수 (3) 캠퍼스 그림(67kB)도 필요하면 방별 지연 로딩. 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — Linux too many open files 실습 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "다음은 Linux too many open files 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (lsof 포함)
 - 엔진(왜: "셸의 ulimit와 서비스 한도가 다르다"는 실무 함정을 상태에서 계산해 재현):

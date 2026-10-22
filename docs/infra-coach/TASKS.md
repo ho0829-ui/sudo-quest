@@ -131,6 +131,6 @@
 - [x] Linux too many open files(22): fd 한도 계산, /proc, systemd unit·drop-in·daemon-reload, lsof·ulimit·echo·tee·mkdir, 리다이렉션 권한 실제화. 시나리오 22개, 예정 근거 문서 모두 연결.
 - [x] `system.ts` 분리(systemctl.ts).
 - [ ] 후속 문제 보강: Web(nginx upstream·TLS 체인 등). 새 시나리오마다 탐색 검사와 근거 문서 추가.
-- [ ] 번들 665kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
+- [x] 번들 분할: react-vendor 분리 + 실습 화면·명령 실행 엔진·새로고침 복원 지연 로딩. 첫 화면 665kB → 317kB(+vendor 222kB), Vite 경고 없음.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).
