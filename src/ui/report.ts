@@ -67,7 +67,11 @@ export function buildReportMarkdown(session: Session, reflection: Reflection): s
   return blocks.join('\n\n') + '\n';
 }
 
+/** 예: sudo-quest-linux-disk-full-2026-10-22-0906.md (끝낸 시각, 이 컴퓨터의 시간대 기준) */
 export function reportFilename(session: Session): string {
   const id = session.scenario.id.replace(/[^a-zA-Z0-9_-]/g, '-');
-  return `infracoach-${id}-${session.finishedAt ?? session.startedAt}.md`;
+  const at = new Date(session.finishedAt ?? session.startedAt);
+  const two = (n: number) => String(n).padStart(2, '0');
+  const stamp = `${at.getFullYear()}-${two(at.getMonth() + 1)}-${two(at.getDate())}-${two(at.getHours())}${two(at.getMinutes())}`;
+  return `sudo-quest-${id}-${stamp}.md`;
 }

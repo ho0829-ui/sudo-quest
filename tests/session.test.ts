@@ -7,7 +7,7 @@ import {
   submitCause,
 } from "../src/engine/session/session";
 import { execute } from "../src/engine/session/execute";
-import { calculateScore, formatDuration } from "../src/engine/session/score";
+import { calculateScore, formatDuration, hintPenaltyAt } from "../src/engine/session/score";
 import { complete } from "../src/engine/complete";
 import { linuxDiskFull } from "../src/scenarios/linux-disk-full";
 
@@ -89,28 +89,33 @@ describe("세션", () => {
 });
 
 describe("점수", () => {
-  it("빠르고 깔끔하게 풀면 높은 점수를 준다", () => {
-    const score = calculateScore(solvedSession(T0 + 120_000), T0 + 120_000);
-    expect(score.timePenalty).toBe(20); // 2분
-    expect(score.hintPenalty).toBe(0);
-    expect(score.wrongPenalty).toBe(0);
-    expect(score.grade).toBe("S");
+  it("걸린 시간과 명령 수는 점수에 영향이 없다(연습 모드)", () => {
+    const fast = calculateScore(solvedSession(T0 + 60_000), T0 + 60_000);
+    const slow = calculateScore(solvedSession(T0 + 5 * 3600_000), T0 + 5 * 3600_000);
+    expect(fast.total).toBe(1000);
+    expect(slow.total).toBe(1000);
+    expect(slow.elapsedSeconds).toBeGreaterThan(fast.elapsedSeconds);
+    let busy = createSession(linuxDiskFull, T0);
+    for (let i = 0; i < 40; i++) busy = execute(busy, "ls /var/log", T0);
+    expect(calculateScore(busy, T0).total).toBe(1000);
   });
 
-  it("힌트와 오답이 감점된다", () => {
+  it("힌트는 단계마다 80·100·120점, 오답은 80점씩 깎인다", () => {
     let session = createSession(linuxDiskFull, T0);
+    expect(calculateScore(revealHint(session), T0).hintPenalty).toBe(80);
     session = revealHint(revealHint(session));
+    expect(calculateScore(session, T0).hintPenalty).toBe(180);
+    session = revealHint(session);
+    expect(calculateScore(session, T0).hintPenalty).toBe(300);
     session = submitCause(session, "oom", T0).session;
     const score = calculateScore(session, T0);
-    expect(score.hintPenalty).toBe(120);
     expect(score.wrongPenalty).toBe(80);
-    expect(score.total).toBe(800);
+    expect(score.total).toBe(620);
+    expect(score.grade).toBe("B");
   });
 
-  it("시간 감점에는 상한이 있다", () => {
-    const session = createSession(linuxDiskFull, T0);
-    const score = calculateScore(session, T0 + 10 * 3600_000);
-    expect(score.timePenalty).toBe(200);
+  it("다음 힌트의 감점을 미리 알 수 있다(힌트 버튼 문구)", () => {
+    expect([0, 1, 2, 3, 9].map(hintPenaltyAt)).toEqual([80, 100, 120, 120, 120]);
   });
 
   it("점수는 0 아래로 내려가지 않는다", () => {

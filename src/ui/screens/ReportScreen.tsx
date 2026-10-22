@@ -35,8 +35,8 @@ export function ReportScreen({ session, onBackToList, onRetry, onShare, party }:
         <div style={{ fontSize: 22, fontWeight: 600, marginTop: 6 }}>{score.total}점</div>
 
         <div className="score-grid">
-          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} penalty={score.timePenalty} />
-          <ScoreItem label="명령어" value={`${commands.length}회`} penalty={score.commandPenalty} />
+          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} />
+          <ScoreItem label="명령어" value={`${commands.length}회`} />
           <ScoreItem label="힌트" value={`${session.hintsUsed}회`} penalty={score.hintPenalty} />
           <ScoreItem label="오답" value={`${session.wrongAnswers.length}회`} penalty={score.wrongPenalty} />
         </div>
@@ -137,13 +137,14 @@ function gistOf(command: string): string {
   return words.slice(0, 2).join(" ");
 }
 
-function ScoreItem({ label, value, penalty }: { label: string; value: string; penalty: number }) {
+/** penalty가 없으면 점수와 무관한 기록(시간·명령 수)이다. */
+function ScoreItem({ label, value, penalty }: { label: string; value: string; penalty?: number }) {
   return (
     <div className="score-item">
       <div className="small muted">{label}</div>
       <div className="value">{value}</div>
-      <div className="small" style={{ color: penalty > 0 ? "var(--red)" : "var(--muted)" }}>
-        {penalty > 0 ? `-${penalty}점` : "감점 없음"}
+      <div className="small" style={{ color: penalty ? "var(--red)" : "var(--muted)" }}>
+        {penalty === undefined ? "기록만 (점수 영향 없음)" : penalty > 0 ? `-${penalty}점` : "감점 없음"}
       </div>
     </div>
   );

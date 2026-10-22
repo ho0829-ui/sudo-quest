@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { Session } from "../../engine/session/session";
+import { hintPenaltyAt } from "../../engine/session/score";
 import { CoachPanel } from "./CoachPanel";
 
 interface SidebarProps {
@@ -74,7 +75,7 @@ export function Sidebar({ session, onRevealHint, onOpenCause, onGiveUp, onUseCom
             </div>
           ))}
           <button onClick={onRevealHint} disabled={allHintsUsed} style={{ width: "100%" }}>
-            {allHintsUsed ? "힌트를 모두 봤습니다" : `힌트 열기 (-60점)`}
+            {allHintsUsed ? "힌트를 모두 봤습니다" : `힌트 열기 (-${hintPenaltyAt(hintsUsed)}점)`}
           </button>
         </section>
 

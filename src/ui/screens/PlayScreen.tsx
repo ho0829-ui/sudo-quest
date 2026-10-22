@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { Terminal } from "../components/Terminal";
+import { CommandGuide } from "../components/CommandGuide";
+import { DEFAULT_COMMANDS } from "../../engine/commands/names";
 import { Sidebar } from "../components/Sidebar";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { CauseDialog } from "../components/CauseDialog";
@@ -47,6 +49,7 @@ export function PlayScreen({
         onSubmit={onCommand}
       />
       <div className="terminal-help">↑ ↓ 명령 기록 · Tab 자동완성 · Shift+Tab 포커스 이동 · help 명령어 안내</div>
+      <CommandGuide available={session.scenario.commands ?? DEFAULT_COMMANDS} lines={session.lines} />
       </div>
 
       {/* 코치·힌트 패널에서 오류가 나도 터미널은 계속 쓸 수 있게 따로 막는다. */}

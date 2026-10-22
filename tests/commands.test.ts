@@ -27,7 +27,8 @@ describe("실행기", () => {
   it("모르는 명령어는 실제 셸처럼 127을 반환한다", () => {
     const result = run("kubectl get pods");
     expect(result.exitCode).toBe(127);
-    expect(result.stderr).toContain("command not found");
+    expect(result.stderr).toBe("bash: kubectl: command not found");
+    expect(run("sudo netstat -tlnp").stderr).toBe("sudo: netstat: command not found");
   });
 
   it("빈 입력은 아무 일도 하지 않는다", () => {
@@ -42,7 +43,7 @@ describe("실행기", () => {
     expect(run("cat /var/log/syslog | grep CRON | wc -l").stdout).toBe("2");
     expect(run("cat /var/log/syslog | grep zzz-없는-문자열").exitCode).toBe(1);
     // 시나리오에서 막힌 명령은 파이프 안에서도 command not found
-    expect(run("ps aux | grep nginx").stderr).toContain("ps: command not found");
+    expect(run("ps aux | grep nginx").stderr).toBe("bash: ps: command not found");
   });
 
   it("파이프 문법 오류는 bash처럼 알린다", () => {

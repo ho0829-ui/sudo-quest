@@ -24,7 +24,7 @@ export const CAST: CastMember[] = [
 export const CHAPTERS: Chapter[] = [
   { title: "가상 서버 엔진", credit: "Claude · GPT (Codex)",
     lines: ["2026년 9월 11일, CLAUDE.md와 첫 실습(디스크 가득 참)과 함께 태어남", "파일·프로세스·서비스·systemd·journalctl·도커·쿠버네티스·nginx·인증서 체인을 전부 메모리 안에서",
-      "명령 출력은 하드코딩 금지 — 언제나 지금 상태에서 계산한다"] },
+      "명령 출력은 하드코딩 금지 — 언제나 지금 상태에서 계산한다", "모르는 명령엔 실제 셸처럼 \"bash: X: command not found\" — 대신 쓸 명령은 터미널 아래 안내에서 친절하게"] },
   { title: "SUDO QUEST 캠퍼스", credit: "Claude · 감독 Choi",
     lines: ["아이소메트릭 운영실, 경보등, 출동 대기 전광판, 운영자 등급", "걷고 타이핑하는 근무자들 — 월급은 받지 않는다", "\"다음 실습\" 버튼은 이미 푼 실습으로 데려가지 않는다 — 다 풀면 기록 갱신을 권한다"] },
   { title: "AI 코치 · 지식 탐색", credit: "Choi · Claude",
@@ -72,6 +72,9 @@ export const GRAVEYARD: Tomb[] = [
   { name: "큰 카페의 펜던트 조명", died: "2026-10-22", epitaph: "손님 얼굴을 가린 죄로 철거" },
   { name: "회색 9px \"해결 완료\" 글씨", died: "2026-10-22", epitaph: "너무 겸손해서 아무도 못 봤다. 초록 배지로 환생" },
   { name: "소리 없이 시작하던 피날레", died: "2026-10-22", epitaph: "조용한 축하는 축하가 아니었다" },
+  { name: "시간 감점(1분당 10점)", died: "2026-10-22", epitaph: "천천히 배우는 사람을 재촉하던 시계. 챌린지 모드에서 다시 만나자" },
+  { name: "명령 수 감점(12개 초과)", died: "2026-10-22", epitaph: "한 번 더 확인하려는 손을 붙잡았다. 이제 마음껏 쳐 보세요" },
+  { name: "옛 리포트 파일 이름", died: "2026-10-22", epitaph: "infracoach-…-1792659960000.md, 아무도 그 숫자를 읽지 못했다" },
   { name: "ALL CLEAR 링크의 → 화살표", died: "2026-10-22", epitaph: "한 시간 남짓 반짝 나왔다 들어갔다. 간격이 안 맞았다" },
 ];
 

@@ -97,9 +97,12 @@ function runStage(next: SystemState, input: string, available: string[], stdin: 
     return { stdout: "", stderr: "", exitCode: 0, state: next };
   }
 
-  // 존재하지만 이 시나리오에서 막아둔 명령어도, 플레이어 입장에선 없는 것과 같다
+  // 존재하지만 이 시나리오에서 막아둔 명령어도, 플레이어 입장에선 없는 것과 같다.
+  // 문구는 실제와 같게: 셸이 찾지 못하면 "bash: X: …", sudo가 찾지 못하면 "sudo: X: …".
+  // 대신 쓸 명령 안내는 출력이 아니라 화면의 도움말(아코디언)에서 한다.
   if (!available.includes(parsed.name)) {
-    return { stdout: "", stderr: `${parsed.name}: command not found`, exitCode: 127, state: next };
+    const who = parsed.sudo ? "sudo" : "bash";
+    return { stdout: "", stderr: `${who}: ${parsed.name}: command not found`, exitCode: 127, state: next };
   }
 
   const command = getCommand(parsed.name)!;

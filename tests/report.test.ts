@@ -80,7 +80,14 @@ describe('Markdown 리포트', () => {
         expect(report).toContain(evidence.title);
         expect(report).toContain(evidence.url);
       }
-      expect(reportFilename(session)).toBe(`infracoach-${scenario.id}-${now}.md`);
+      expect(reportFilename(session)).toMatch(new RegExp(`^sudo-quest-${scenario.id}-\\d{4}-\\d{2}-\\d{2}-\\d{4}\\.md$`));
     }
+  });
+  it('리포트 파일 이름은 앱 이름과 읽을 수 있는 날짜·시각(이 컴퓨터 시간대)을 쓴다', () => {
+    const at = new Date(2026, 9, 22, 9, 6).getTime();
+    let session = createSession(scenarios[0], at);
+    for (const command of scenarios[0].solutionPath) session = execute(session, command, at);
+    session = submitCause(session, scenarios[0].rootCause.answerId, at).session;
+    expect(reportFilename(session)).toBe(`sudo-quest-${scenarios[0].id}-2026-10-22-0906.md`);
   });
 });
