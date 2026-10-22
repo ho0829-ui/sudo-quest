@@ -209,8 +209,8 @@ const breakSomething: Fault = (state) => {
 
 | 분야 | 명령어 |
 |---|---|
-| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep`(-A/-B/-C 문맥 포함) `sort` `wc` `rm` `sed` `chmod` `chown` |
-| 시스템 | `df` `du` `free` `ps` `dmesg` `kill` `systemctl` `journalctl` |
+| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep`(-A/-B/-C 문맥 포함) `sort` `wc` `rm` `sed` `chmod` `chown` `echo`(-e, -n) `tee`(-a) `mkdir`(-p) |
+| 시스템 | `df`(경로) `du` `free` `ps` `dmesg` `kill` `systemctl`(status·start·stop·restart·reload·cat·show -p·daemon-reload) `journalctl` `ulimit`(-n, -S, -H, -a) `lsof`(-p, -i :포트) |
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
@@ -327,6 +327,15 @@ npx vitest run tests/_play.test.ts
 5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙·준비 중 표시를 검사한다.
 
 새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
+
+### 열린 파일 수·/proc·systemd unit
+
+- 서비스에 `connections`(동시 연결 수)·`baseFds`를 주면 열린 fd를 `state/limits.ts`가 계산합니다. 필요한 fd가 프로세스 한도(`Process.nofile`, 없으면 systemd 기본 soft 1024/hard 524288)를 넘으면 그 포트로 오는 `curl`은 시간 초과(28)가 되고, 시작 때 `fdExhaustedLog`를 남깁니다.
+- `/proc/PID/limits`·`/proc/PID/fd`(root만)·`/proc/PID/status`·`/proc/sys/fs/file-nr`는 읽을 때 계산합니다(`state/procfs.ts`). `cat`·`grep`·`wc`·`ls`가 그대로 읽습니다.
+- unit 파일(`Service.unitPath`)과 drop-in(`/etc/systemd/system/NAME.service.d/*.conf`)을 가상 파일로 두고, fault 끝에 `daemonReload(state)`를 불러 "지금 systemd가 읽은 설정"을 기록하세요. 이후 파일만 고치면 `daemon-reload` 전까지 적용되지 않고 실제 경고가 나옵니다.
+- `ulimit`는 로그인 셸 한도(/etc/security/limits.conf)를 보여 줍니다. 서비스 한도와 다르다는 것이 실습 포인트입니다.
+- 서비스에 `http.responses`를 주면 그 포트로 온 요청에 그 서비스가 답합니다(주지 않으면 예전처럼 nginx 웹 루트).
+- 리다이렉션(`>`)은 sudo가 아니라 셸 사용자 권한으로 열립니다. root 파일은 `echo … | sudo tee 파일`로 씁니다.
 
 ### Kubernetes 프리셋
 

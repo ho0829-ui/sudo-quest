@@ -122,14 +122,15 @@
 - [x] 게시판 2단계: 스키마 버전(user_version 2, 기존 파일 자동 올림), 응답 열 명시(해시 미노출), 작성자 삭제 비밀번호(scrypt, 틀린 시도도 속도 제한), 운영자 모드 화면(키는 탭 메모리만), 코드 블록·인라인 코드 표시, 풀이 포함 표시(목록 미리보기 숨김·상세 펼치기), 실습 리포트 "커뮤니티에 회고 남기기", 초안 탭 보관·닉네임 기억, NEW 표시.
 - [ ] 게시판 다음 후보: 글 수정(삭제 비밀번호로), 신고·숨김 대기열, 댓글순 정렬, 캠퍼스 카페 HUD에 최근 글 표시, 백엔드 배포 시 프록시 뒤 실제 접속 주소 처리(현재 X-Forwarded-For 불신), COMMUNITY_ADMIN_KEY 실제 값 입력(사용자).
 - [x] 시나리오 근거 공식 문서 31건(K8s 16·Docker 8·AWS 5·Linux 2) 카탈로그 추가(131건), 임베딩 gemini-embedding-2 전환·`data/chroma-gemini` 색인(131/298), 레일 커뮤니티 배지·홈 히어로 버튼 정리.
-- [ ] 31건 한국어 메타데이터 사람 검수. 예정 시나리오를 만들면 `scenario_sources.json`의 planned를 scenario_ids로 옮기기(CrashLoop·OOM은 옮김).
+- [ ] 31건 한국어 메타데이터 사람 검수. (planned → scenario_ids 이동은 모두 완료)
 - [ ] (결정) 제출 문서(docs/submission)의 항목 수·임베딩 모델·RAG 비교 수치를 새 모델로 다시 잴지.
 - [x] K8s CrashLoopBackOff(15)·OOMKilled(16) 실습: 종료 방식 상태 계산(runtime)·revision 기록(history), kubectl logs·set env/resources·rollout history/undo, grep -A/-B/-C. 롤백도 대체 풀이로 인정(사용자 승인). 시나리오 16개.
 - [x] Docker 실습 2개: 포트 충돌(17)·환경 변수 누락(18). 가상 Docker 엔진(docker-proxy 포트·재시작 정책·데몬 재시작), docker 명령 10종, 컨테이너 실행 규칙 K8s와 공용화. 시나리오 18개.
 - [x] K8s readiness probe(19)·service selector(20) 실습: probe 판정·접근 로그 계산, get -l·--show-labels·endpointslices, describe svc, set selector, patch(strategic·merge). 시나리오 20개.
 - [x] Docker 디스크 가득 참(21): /var/lib/docker 가상 파일 디스크 모델(레이어 공유), system df·prune 4종·rmi, df 경로 인자. 시나리오 21개.
-- [ ] 후속 문제 보강: Linux too many open files(ulimit·lsof 모델 필요) → Web. 새 시나리오마다 탐색 검사 추가.
-- [ ] `src/engine/commands/system.ts` 267줄 — df/du와 systemctl/journalctl로 분리.
-- [ ] 번들 642kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
+- [x] Linux too many open files(22): fd 한도 계산, /proc, systemd unit·drop-in·daemon-reload, lsof·ulimit·echo·tee·mkdir, 리다이렉션 권한 실제화. 시나리오 22개, 예정 근거 문서 모두 연결.
+- [x] `system.ts` 분리(systemctl.ts).
+- [ ] 후속 문제 보강: Web(nginx upstream·TLS 체인 등). 새 시나리오마다 탐색 검사와 근거 문서 추가.
+- [ ] 번들 665kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).

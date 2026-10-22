@@ -102,7 +102,7 @@ Set-Location backend
 브라우저 안의 가상 터미널에서 명령어를 입력하며, 일부러 망가뜨린 가상 서버의 **장애 원인을 찾고 복구하는 학습 게임**입니다.
 
 정답을 알려주는 게임이 아니라 **사고 과정을 훈련하는 게임**입니다.
-증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 21개 시나리오로 반복해서 익힙니다.
+증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 22개 시나리오로 반복해서 익힙니다.
 
 > **▶️ 플레이하기:** https://\<GitHub-사용자명\>.github.io/\<저장소명\>/
 > *(저장소를 push하고 Settings → Pages → Source를 "GitHub Actions"로 바꾸면 자동 배포됩니다)*
@@ -145,7 +145,7 @@ Filesystem Size Used Avail Use% Mounted on
 
 ---
 
-## 시나리오 21개
+## 시나리오 22개
 
 | ID | 카테고리 | 난이도 | 증상 | 핵심 학습 |
 |---|---|---|---|---|
@@ -153,6 +153,7 @@ Filesystem Size Used Avail Use% Mounted on
 | `linux-permission` | 리눅스 | 초급 | 403 Forbidden | 403은 서버가 살아 있다는 뜻이다 |
 | `linux-port-conflict` | 리눅스 | 중급 | 재시작 후 기동 실패 | 원인과 증상 사이에 시간차가 있을 수 있다 |
 | `linux-oom` | 리눅스 | 중급 | 앱이 반복해서 죽음 | 죽은 프로세스가 범인이 아닐 수 있다 |
+| `linux-too-many-files` | 리눅스 | 고급 | 세일 중 API 무응답 | 셸의 ulimit와 서비스 한도는 다르다, unit을 고치면 daemon-reload |
 | `network-firewall` | 네트워크 | 초급 | 밖에서만 접속 불가 | 서버 안 헬스체크는 이 장애를 못 잡는다 |
 | `network-dns` | 네트워크 | 초급 | 외부 API 호출 실패 | 이름 해석 실패와 연결 실패는 다르다 |
 | `network-bind-localhost` | 네트워크 | 중급 | 안에서만 됨 | 바인딩 주소가 접근 범위를 결정한다 |
@@ -293,7 +294,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**694개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 21개를 순회하며 검사합니다.
+**723개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 22개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가

@@ -1,8 +1,27 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: Docker 디스크 가득 참 실습 완료(시나리오 21개), 다음은 Linux too many open files 또는 번들 분할
+갱신: 2026-10-22 · 단계: Linux too many open files 실습 완료(시나리오 22개, 예정 근거 문서 모두 연결), 다음은 번들 분할 또는 Web 실습
 
-## 최신 상태 — Docker 디스크 가득 참 실습 (2026-10-22, Mac, Claude)
+## 최신 상태 — Linux too many open files 실습 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 Linux too many open files 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (lsof 포함)
+- 엔진(왜: "셸의 ulimit와 서비스 한도가 다르다"는 실무 함정을 상태에서 계산해 재현):
+  - `state/limits.ts`(새): 서비스 `connections`·`baseFds`와 프로세스 `nofile`(없으면 systemd 기본 1024:524288)로 열린 fd 계산, 포화 판정. `network.ts`: 포화 프로세스의 포트는 curl 시간 초과(stage timeout → 28), 서비스 `http` 응답(정의한 서비스만).
+  - `state/procfs.ts`(새): /proc/PID/limits·fd(링크 노드, dr-x------)·status, /proc/sys/fs/file-nr·file-max·nr_open. 읽기 명령(`input.readSources`·`ls`)만 `resolveForRead`로 연결(쓰기 경로는 손대지 않음). `NodeBase.link`, `formatMode`의 l.
+  - `state/systemdUnits.ts`(새): unit·drop-in 파싱(LimitNOFILE n | soft:hard | infinity, [Service]만, 마지막 값), `daemonReload`, `needsReload`, 실제 경고 문장. `services.startService`가 `loaded.nofile`을 새 프로세스에 주고, 포화면 `fdExhaustedLog`를 남김.
+  - `commands/systemctl.ts`: system.ts에서 분리(267→146줄) + cat·show(-p/--property)·daemon-reload(root), start/restart/status에 changed-on-disk 경고.
+  - 새 명령: `lsof`(-p, -i :PORT, -n/-P; 일반 사용자는 Permission denied 줄), `ulimit`(셸 내장, limits.conf 로그인 한도, sudo ulimit → command not found), `echo`(-e/-n), `tee`(-a, 권한·디렉터리 검사), `mkdir`(-p, GNU 문구).
+  - 동작 변경 2가지: ① `ls`는 파이프·리다이렉션일 때 한 줄에 하나(`ls | wc -l`). ② **리다이렉션(>)을 sudo가 아닌 셸 사용자 권한으로 연다**(실제 bash와 같음). 이에 따라 `tests/commands.test.ts`의 `sudo > /var/log/syslog` 기대를 Permission denied + `echo -n | sudo tee`로, linux-disk-full 탐색 대체 풀이를 `sudo rm -rf /var/log/app`로 바꿈.
+- 시나리오 `linux-too-many-files`(22, 고급): 세일로 SSE 연결 1,480개, shop-api 한도 1024 → `Error: accept EMFILE`, curl 28. 함정: limits.conf·`ulimit -n`은 65535. 정답: drop-in LimitNOFILE=65535 → daemon-reload → restart. 재시작만·reload 생략·limits.conf 수정은 미복구(탐색 검사). 대체: LimitNOFILE=8192:524288 + stop/start.
+- 카탈로그: linux-rlimit-nofile → 22. **예정(planned) 근거 문서 0건**(모두 실습에 연결). add HTTP 0, validate 실패 0.
+- 실행한 검사(이 Mac): typecheck 통과, vitest **723개/30파일**(새 limits 15), build 통과(본체 JS 665kB), diff --check 통과. 엔진 커밋만으로 694개 통과를 따로 확인. 백엔드 코드 변경 없음.
+- 브라우저(5173, PID 87647): 미션 22 — ulimit 65535 vs limits 1024, drop-in 후 reload 없이 restart → 빨간 경고·미복구, daemon-reload + restart → {"status":"ok"}·HUD 복구 켜짐. **주의: 확인 직전 탭 저장소에 사용자가 연 것으로 보이는 진행 중 실습(linux-disk-full, 입력 없음)과 코치 키가 있었음 → 값을 백업하고 확인 뒤 그대로 복원, 새로고침 뒤에도 유지 확인.** localStorage는 비어 있음(학습 기록 없음).
+- 한계: 연결 수의 시간 변화, prlimit·sysctl·systemctl edit 없음. lsof 일부 옵션만. ss의 fd 번호는 고정값(6).
+- 유료 호출: 없음. 실행 중: Vite 5173(PID 87647), API 8000(PID 74575).
+- 커밋: feat(linux) 엔진·feat(linux) 실습 22·docs 3개. push·master 병합 없음.
+- 다음 후보: (1) 번들 분할(665kB, 캠퍼스 그림·게시판 외 지연 로딩) (2) Web 실습(nginx upstream·TLS 체인 등) (3) 31건 메타데이터 사람 검수. 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — Docker 디스크 가득 참 실습 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "다음은 Docker 디스크 가득 참 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (/var/lib/docker 별도 디스크 포함)
 - 엔진(왜: Docker 데이터도 df·du·rm과 같은 기준으로 계산해, rm으로 지웠을 때의 결과까지 실제처럼 보이게):
