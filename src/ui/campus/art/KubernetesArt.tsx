@@ -2,6 +2,7 @@ import { points, project } from "../iso";
 import { Box, Cylinder, OnWall } from "../parts";
 import { BRASS, CrowsNest, HelmSymbol, HelmWheel, Hull, PirateFlag, Rigging, Sail, SHIP, WOOD } from "./ship";
 import { Person } from "./people";
+import { KubernetesPartyRigging, KubernetesPartySky, KubernetesPartyTreasure } from "../party/kubernetes";
 
 const SEA_LINE = "#2a6fb3";
 
@@ -120,6 +121,7 @@ export function KubernetesArt() {
         <Box key={i} at={[x, y, D + z]} size={[0.7, 0.75, 0.5]} tone={i === 1 ? ["#7ff2df", "#1fb39b", "#178a78"] : ["#7eaaff", "#326ce5", "#2756b8"]} />)}
       <Box at={[3.3, 5.35, D]} size={[0.75, 0.55, 0.4]} tone={["#a77b4f", "#6b4426", "#5a3a22"]} />
       <Box className="iso-lamp" at={[3.3, 5.35, D + 0.4]} size={[0.75, 0.55, 0.06]} tone={[BRASS, "#d9a92e", "#ad8422"]} />
+      <KubernetesPartyTreasure />
       <Person at={[3.4, 6.0, D]} facing="right" pose="walk" walkTo={[4.5, 6.0, D]} shirt="#bfe1ff" tie="#14213d" hair="#3b2a20" prop="tablet" duration={7} />
 
       {/* 주돛대: 돛 두 장(아래 돛에 조타륜 문장), 망대의 망꾼, 깃발 */}
@@ -141,7 +143,9 @@ export function KubernetesArt() {
       <Sail x={fore + 0.07} zTop={4.95} width={1.7} height={0.95} />
       <Person at={[7.9, yc, D + 0.1]} facing="right" shirt="#ffffff" tie="#ffd447" apron="#2b3a55" hair="#c98d4b" prop="spyglass" />
       <polyline points={points([8.7, yc, D + 0.3], [9.8, yc, D + 1.0])} stroke="#5a3a22" strokeWidth={3} strokeLinecap="round" />
+      <KubernetesPartyRigging />
     </g>
     <Gulls />
+    <KubernetesPartySky />
   </g>;
 }

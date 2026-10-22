@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { points, project, UNIT, type Point3 } from "../iso";
 import { Box, Neon, OnWall, type Tone } from "../parts";
+import { useParty } from "../party/context";
 
 export const TEAL = "#26e5c6";
 export const WHALE_BLUE = "#2b8cf0";
@@ -43,11 +44,15 @@ export function ShippingContainer({ at, size, tone, doors, ribs = "#00000055" }:
   </g>;
 }
 
+const SPOUT_DROPS = [[4.5, -25, "#bff7ff"], [13, -29, "#bff7ff"], [20.5, -24, "#bff7ff"]] as const;
+const SPOUT_CONFETTI = [[4.5, -25, "#ff5fa2"], [8, -31, "#ffd447"], [13, -29, "#7dff9b"], [17, -33, "#b48bff"], [20.5, -24, "#ff8a3d"], [11, -36, "#ffffff"]] as const;
+
 /**
  * 고래. 물 위로 등과 꼬리만 내놓고 헤엄친다. 등에는 작은 컨테이너를 싣고 있다(도커 고래를 떠올리게 하는
  * 자체 그림이며 공식 로고를 옮긴 것이 아니다). 사람처럼 iso-walker로 왕복하며 돌 때 좌우가 뒤집힌다.
  */
 export function Whale({ at, swimTo, water, duration = 16 }: { at: Point3; swimTo: Point3; water: string; duration?: number }) {
+  const party = useParty();
   const [x, y] = project(at);
   const [tx, ty] = project(swimTo);
   const style = { "--dx": `${tx - x}px`, "--dy": `${ty - y}px`, animationDuration: `${duration}s` } as CSSProperties;
@@ -64,10 +69,10 @@ export function Whale({ at, swimTo, water, duration = 16 }: { at: Point3; swimTo
         {/* 등에 실은 컨테이너 네 개 */}
         {[[-7, -20], [-1, -20], [5, -20], [-1, -26]].map(([cx, cy], i) =>
           <rect key={i} x={cx} y={cy} width={5.4} height={5.4} rx={0.6} fill={i === 3 ? "#7ff2df" : "#d9ecff"} stroke="#1757b0" strokeWidth={0.8} />)}
-        {/* 숨구멍 물보라 */}
+        {/* 숨구멍 물보라. 파티 중에는 물 대신 꽃가루를 뿜는다. */}
         <g className="iso-spout">
           <path d="M12,-17 q-3,-7 -7,-8 M12,-17 q0,-9 1,-11 M12,-17 q4,-7 8,-7" stroke="#bff7ff" strokeWidth={1.4} fill="none" strokeLinecap="round" />
-          <circle cx={4.5} cy={-25} r={1.3} fill="#bff7ff" /><circle cx={13} cy={-29} r={1.3} fill="#bff7ff" /><circle cx={20.5} cy={-24} r={1.3} fill="#bff7ff" />
+          {(party ? SPOUT_CONFETTI : SPOUT_DROPS).map(([cx, cy, color]) => <circle key={`${cx}${cy}`} cx={cx} cy={cy} r={party ? 1.5 : 1.3} fill={color} />)}
         </g>
         {/* 물에 잠긴 아랫부분: 물빛으로 덮고 수면 반짝임을 긋는다. */}
         <rect x={-30} y={2} width={58} height={7} fill={water} opacity={0.88} />

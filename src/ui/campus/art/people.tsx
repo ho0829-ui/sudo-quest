@@ -1,4 +1,5 @@
-import type { CSSProperties } from "react";
+import { useContext, type CSSProperties } from "react";
+import { HAT_COLORS, PartyContext } from "../party/context";
 import { project, type Point3 } from "../iso";
 
 /**
@@ -16,14 +17,14 @@ export interface PersonProps {
   pants?: string;
   skin?: string;
   hair?: string;
-  /** 손에 든 것. 태블릿·노트북·머그잔·망원경 */
-  prop?: "tablet" | "laptop" | "mug" | "spyglass";
+  /** 손에 든 것. 태블릿·노트북·머그잔·망원경, 파티 때는 잔 */
+  prop?: "tablet" | "laptop" | "mug" | "spyglass" | "glass";
   /** 넥타이 색(직장인 차림). 등을 보이면 그리지 않는다. */
   tie?: string;
   /** 앞치마 색(바리스타). */
   apron?: string;
-  /** 모자. tricorn은 선장 삼각 모자, cap은 안전모, beanie는 털모자. */
-  hat?: { kind: "tricorn" | "cap" | "beanie"; color: string };
+  /** 모자. tricorn은 선장 삼각 모자, cap은 안전모, beanie는 털모자, party는 고깔모자. */
+  hat?: { kind: "tricorn" | "cap" | "beanie" | "party"; color: string };
   /** walk일 때 왕복할 공간 좌표상 이동량 */
   walkTo?: Point3;
   delay?: number;
@@ -31,7 +32,20 @@ export interface PersonProps {
   duration?: number;
 }
 
-export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1d2433", skin = "#f2c9a0", hair = "#2a1d18", prop, tie, apron, hat, walkTo, delay = 0, duration }: PersonProps) {
+export function Person(props: PersonProps) {
+  // 파티 중인 방이면 근무 자세를 파티 자세로 바꾼다: 서 있던 사람은 춤추고, 앉아 일하던 사람은 두 팔을 든다.
+  const party = useContext(PartyContext);
+  const seatedAtWork = props.pose === "type" || props.pose === "sit";
+  const partyProps: PersonProps = party ? {
+    ...props,
+    hat: props.hat ?? { kind: "party", color: HAT_COLORS[[...props.shirt].reduce((h, c) => h + c.charCodeAt(0), 0) % HAT_COLORS.length] },
+    prop: props.prop === "tablet" || props.prop === "laptop" ? "glass" : props.prop,
+  } : props;
+  return <PersonFigure {...partyProps} cheer={party && seatedAtWork} dance={party && (props.pose ?? "stand") === "stand"} />;
+}
+
+function PersonFigure({ at, facing = "left", pose = "stand", shirt, pants = "#1d2433", skin = "#f2c9a0", hair = "#2a1d18", prop, tie, apron, hat, walkTo, delay = 0, duration, cheer, dance }:
+  PersonProps & { cheer: boolean; dance: boolean }) {
   const [x, y] = project(at);
   const away = facing.startsWith("away");
   // 기본 그림은 오른쪽 아래를 본다. 왼쪽을 보면 좌우를 뒤집는다.
@@ -49,7 +63,7 @@ export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1
   const head = shoulder - 6;
 
   return <g transform={`translate(${x},${y})`}>
-    <g className={walk ? "iso-walker" : undefined} style={style}>
+    <g className={walk ? "iso-walker" : dance ? "iso-dance" : undefined} style={style}>
       <ellipse cx={0} cy={0} rx={7.5} ry={3} fill="#000" opacity={0.35} />
       <g transform={`scale(${flip},1)`}>
         {seated
@@ -66,7 +80,13 @@ export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1
         {apron && <rect x={-5} y={shoulder + 5} width={10} height={12} rx={1.5} fill={apron} />}
         {tie && !away && <path d={`M-0.9,${shoulder + 0.6} h1.8 l0.7,8.5 l-1.6,1.8 l-1.6,-1.8z`} fill={tie} />}
         {/* 팔: 타이핑 중이면 앞으로 뻗어 살짝 흔든다. */}
-        {pose === "type"
+        {cheer || dance
+          // 환호: 두 팔을 머리 위로. 춤: 한 팔만 들고 흔든다.
+          ? <g className="iso-wave" style={{ animationDelay: `${delay}s` }}>
+              <rect x={4.2} y={shoulder - 9} width={3.4} height={11} rx={1.6} fill={shirt} transform={`rotate(14 5.9 ${shoulder + 2})`} />
+              {cheer && <rect x={-7.6} y={shoulder - 9} width={3.4} height={11} rx={1.6} fill={shirt} transform={`rotate(-14 -5.9 ${shoulder + 2})`} />}
+            </g>
+          : pose === "type"
           ? <rect className="iso-typing" x={2} y={shoulder + 6} width={9} height={3.2} rx={1.5} fill={shirt} style={{ animationDelay: `${delay}s` }} />
           : <rect x={4.2} y={shoulder + 2} width={3.4} height={11} rx={1.6} fill={shirt} />}
         <circle cx={0} cy={head} r={5.2} fill={skin} />
@@ -80,6 +100,15 @@ export function Person({ at, facing = "left", pose = "stand", shirt, pants = "#1
         {hat?.kind === "tricorn" && <path d={`M-8,${head - 3} q8,-3 16,0 l-2,-5 q-6,-3 -12,0z`} fill={hat.color} />}
         {hat?.kind === "cap" && <path d={`M-5.6,${head - 1} a5.6,5.6 0 0 1 11.2,0 h2.2 v1.4 h-13.4z`} fill={hat.color} />}
         {hat?.kind === "beanie" && <path d={`M-5.4,${head - 0.5} a5.4,5.6 0 0 1 10.8,0z`} fill={hat.color} />}
+        {hat?.kind === "party" && <g>
+          <path d={`M-4,${head - 3.6} L0,${head - 13} L4,${head - 3.6}z`} fill={hat.color} />
+          <path d={`M-2.6,${head - 6.6} L2.6,${head - 6.6} M-1.4,${head - 9.6} L1.4,${head - 9.6}`} stroke="#ffffff" strokeOpacity={0.7} strokeWidth={0.9} />
+          <circle cx={0} cy={head - 13.4} r={1.6} fill="#ffffff" />
+        </g>}
+        {prop === "glass" && <g transform={`translate(${cheer || dance ? 6.5 : 7} ${cheer || dance ? shoulder - 12 : shoulder + 4})`}>
+          <path d="M0,0 h4.6 l-1.6,3.6 v2.6 h1.4 v0.9 h-4.2 v-0.9 h1.4 v-2.6z" fill="#e8fbff" opacity={0.9} />
+          <path d="M0.5,0.6 h3.6 l-1.2,2.4 h-1.2z" fill="#ff8a3d" />
+        </g>}
       </g>
     </g>
   </g>;

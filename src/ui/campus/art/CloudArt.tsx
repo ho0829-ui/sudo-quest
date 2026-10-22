@@ -2,6 +2,7 @@ import { floorTransform, plane, points, project } from "../iso";
 import { Box, Cylinder, Neon, OnWall, Wire, type Tone } from "../parts";
 import { WALL_HEIGHT } from "../rooms";
 import { Person } from "./people";
+import { CloudPartyBalloons, CloudPartyDeck, CloudPartySky } from "../party/cloud";
 
 const SKY = "#5cc8ff";
 const INSTANCE: Tone = ["#e6f7ff", "#8fd3f4", "#5aa9d1"];
@@ -57,11 +58,13 @@ export function CloudArt() {
     {INSTANCES.map(([x, y]) => <Wire key={x} from={[5.0, 2.9, 1.55]} to={[x + 0.48, y + 0.48, 0.95]} color={SKY} flow bend={-10} width={1.5} />)}
     {/* 로드 밸런서와 인스턴스 사이를 오가는 엔지니어. 인스턴스보다 뒤라서 먼저 그린다. */}
     <Person at={[1.4, 5.0, 0]} facing="right" pose="walk" walkTo={[6.2, 5.0, 0]} shirt="#5cc8ff" pants="#14213d" hair="#3b2a20" prop="tablet" duration={11} delay={-6} />
+    <CloudPartyDeck />
     {INSTANCES.map(([x, y], i) => <g key={`i${x}`}>
       <Box at={[x, y, 0]} size={[0.95, 0.95, 0.95]} tone={INSTANCE} />
       <Neon path={[[x, y + 0.95, 0.95], [x + 0.95, y + 0.95, 0.95]]} color={SKY} width={0.7} />
       <OnWall wall="right" at={[x + 0.15, y + 0.95, 0.6]}><text className="iso-screen-text" fill="#1a5f85">i-0{i + 1}</text></OnWall>
     </g>)}
+    <CloudPartyBalloons />
 
     {/* 왼쪽 벽 문(4~6) 옆 IAM 출입 게이트: 열쇠 표시 단말과 차단봉. */}
     <OnWall wall="left" at={[0, 7.1, 2.4]}>
@@ -78,5 +81,6 @@ export function CloudArt() {
     <Cloud at={[11.6, 3.0, 1.2]} scale={0.85} delay={0} />
     <Cloud at={[11.2, 7.5, 2.4]} scale={0.6} delay={-5.5} />
     <Cloud at={[12.2, 2.0, 0.4]} scale={0.7} delay={-3} />
+    <CloudPartySky />
   </g>;
 }

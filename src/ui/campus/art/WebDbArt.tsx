@@ -2,6 +2,7 @@ import { project, UNIT } from "../iso";
 import { Box, Cylinder, OnWall, Wire, type Tone } from "../parts";
 import { Camera, GUNMETAL, Monitor, Plant, Rack } from "./fixtures";
 import { Chair, Person } from "./people";
+import { WebDbPartyBar, WebDbPartyMirrorBall, WebDbPartyWall } from "../party/webDb";
 
 const MAGENTA = "#ff2d95";
 const DISK: Tone = ["#3a1a2c", "#1f0d18", "#160912"];
@@ -50,6 +51,7 @@ export function WebDbArt() {
       <circle cx={38} cy={50} r={5.5} fill="#ffb547" />
     </OnWall>
     <Camera at={[0.05, 1.4, 3.3]} />
+    <WebDbPartyWall />
 
     {/* 스토리지 랙(디스크 칸이 촘촘)과 앱 서버 랙. */}
     <Rack x={1.0} y={1.3} accent={MAGENTA} seed={1} leds={[MAGENTA, "#ff8cc6", "#00d4ff"]} />
@@ -63,6 +65,7 @@ export function WebDbArt() {
     <Database x={8.4} y={3.8} delay={-0.8} />
     <Database x={6.5} y={4.9} delay={-1.6} />
     <Wire from={[3.7, 2.4, 2.0]} to={[6.6, 2.4, 1.7]} color="#00d4ff" flow bend={-10} />
+    <WebDbPartyBar />
 
     {/* 개발자 책상 두 개와 근무자. */}
     {[[0.9, 6.6], [4.7, 6.9]].map(([x, y], i) => <g key={x}>
@@ -76,5 +79,6 @@ export function WebDbArt() {
     {/* 두 책상 사이 통로를 오가는 개발자(커피를 들고). */}
     <Person at={[4.1, 5.5, 0]} facing="left" pose="walk" walkTo={[4.1, 9.2, 0]} shirt="#ff2d95" pants="#1d1d28" hair="#121212" prop="mug" duration={10} delay={-4} />
     <Plant at={[9.2, 9.1, 0]} />
+    <WebDbPartyMirrorBall />
   </g>;
 }

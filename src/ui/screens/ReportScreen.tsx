@@ -3,6 +3,7 @@ import type { Session } from "../../engine/session/session";
 import type { EvidenceKind } from "../../engine/scenario/types";
 import { InvestigationReview } from "../components/InvestigationReview";
 import { ExternalLink } from "../components/ExternalLink";
+import type { PartyNotice } from "../party";
 
 const EVIDENCE_LABEL: Record<EvidenceKind, string> = { "official-doc": "공식 문서", postmortem: "공개 포스트모템", survey: "업계 조사" };
 
@@ -12,9 +13,11 @@ interface ReportScreenProps {
   onRetry: () => void;
   /** 커뮤니티 카페에 이 실습의 회고를 남기러 간다(풀이 포함 표시가 켜진 양식). */
   onShare: () => void;
+  /** 이 클리어로 운영실 파티가 새로 열렸으면 그 안내. 버튼은 캠퍼스(홈)로 간다. */
+  party?: PartyNotice | null;
 }
 
-export function ReportScreen({ session, onBackToList, onRetry, onShare }: ReportScreenProps) {
+export function ReportScreen({ session, onBackToList, onRetry, onShare, party }: ReportScreenProps) {
   const { scenario, commands } = session;
   const score = calculateScore(session);
   const { postmortem } = scenario;
@@ -37,6 +40,10 @@ export function ReportScreen({ session, onBackToList, onRetry, onShare }: Report
           <ScoreItem label="힌트" value={`${session.hintsUsed}회`} penalty={score.hintPenalty} />
           <ScoreItem label="오답" value={`${session.wrongAnswers.length}회`} penalty={score.wrongPenalty} />
         </div>
+        {party && <div className="party-callout" role="status">
+          <span>{party.message}</span>
+          <button className="primary" onClick={onBackToList}>{party.action}</button>
+        </div>}
       </div>
 
       <InvestigationReview key={session.scenario.id} session={session} />

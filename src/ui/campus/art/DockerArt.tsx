@@ -3,6 +3,7 @@ import { Box, Cylinder, Led, Neon, OnWall, Wire } from "../parts";
 import { CONTAINER_TONES, GantryCrane, ShippingContainer, TEAL, Whale } from "./dockerParts";
 import { GUNMETAL, Monitor, Plant } from "./fixtures";
 import { Chair, Person } from "./people";
+import { DockerPartyDeck, DockerPartyGarland, DockerPartyPool } from "../party/docker";
 
 const WATER = "#06283a";
 const HAZARD = "#ffc23d";
@@ -84,6 +85,7 @@ export function DockerArt() {
     <PortPanel />
     {/* 운하는 화면에서 부두보다 늘 아래에 있어 먼저 그려도 가리는 것이 없다. 운하 턱에 앉은 사람·고래는 그 뒤에 그린다. */}
     <Canal />
+    <DockerPartyPool />
     {/* 오른쪽 벽 앞 이미지 더미(레지스트리)와 그 위를 오가는 크레인. 이름 간판(0.45~5.4) 오른쪽에 둔다. */}
     <ShippingContainer at={[5.85, 0.25, 0]} size={[1.85, 1.25, 0.95]} tone={CONTAINER_TONES.gold} />
     <ShippingContainer at={[7.8, 0.25, 0]} size={[1.85, 1.25, 0.95]} tone={CONTAINER_TONES.blue} />
@@ -114,9 +116,11 @@ export function DockerArt() {
     <Person at={[1.0, 5.6, 0]} facing="right" pose="walk" walkTo={[6.6, 5.6, 0]} shirt="#5eaaff" pants="#14213d" hair="#3b2a20" prop="laptop" duration={13} delay={-3} />
     <Person at={[8.6, 5.7, 0]} facing="left" shirt="#26333d" apron="#d8ff3d" hat={{ kind: "cap", color: HAZARD }} prop="tablet" hair="#2a1d18" />
     <Plant at={[0.7, 6.3, 0]} scale={0.8} />
+    <DockerPartyDeck />
     {/* 발은 물 높이(-0.3), 엉덩이는 운하 턱 높이에 오도록 앉힌다. */}
     <Person at={[3.4, 7.3, -0.3]} facing="right" pose="sit" shirt="#ff8a65" pants="#1d2433" hair="#6b4a2f" prop="mug" />
     <Whale at={[1.9, 8.5, -0.3]} swimTo={[7.7, 8.5, -0.3]} water={WATER} />
     <CanalRim />
+    <DockerPartyGarland />
   </g>;
 }

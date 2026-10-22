@@ -4,6 +4,7 @@ import type { Progress } from '../storage';
 import { Icon } from '../components/Icon';
 import { CATEGORIES, OPEN_CATEGORIES } from '../categories';
 import { IsoCampus } from '../campus/IsoCampus';
+import { upcomingScenarios } from '../../scenarios/upcoming';
 
 interface ScenarioListProps {
   scenarios: Scenario[];
@@ -36,6 +37,9 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
     && (difficulty === 'all' || s.difficulty === Number(difficulty))
     && `${s.title} ${CATEGORIES[s.category].label} ${s.id}`.toLowerCase().includes(query.trim().toLowerCase()));
   const best = Math.max(0, ...cleared.map(s => progress[s.id].bestScore));
+  // 오픈 예정 실습은 난이도가 아직 없으므로 난이도를 고르면 숨긴다. 기록 화면에는 보이지 않는다.
+  const upcoming = recordsOnly || difficulty !== 'all' ? [] : upcomingScenarios.filter(u => (category === 'all' || u.category === category)
+    && `${u.title} ${CATEGORIES[u.category].label}`.toLowerCase().includes(query.trim().toLowerCase()));
 
   return <div className="scenario-screen">
     <div className="page-heading">
@@ -74,8 +78,14 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
           <h3>{scenario.title}</h3><p className="card-description">{scenario.ticket.split('\n').find(line => line.length > 25) ?? scenario.ticket.split('\n')[0]}</p>
           <div className="card-bottom"><span>{record?.cleared ? <><Icon name="check" size={14} /> 해결 완료 · {record.bestScore}점</> : <><span className="tiny-dot" /> {info.label} 실습</>}</span><span className="card-go"><Icon name="arrow" size={17} /></span></div>
         </button>;
-      })}</div>
-      {!visible.length && <div className="empty-state"><Icon name={recordsOnly ? 'chart' : 'search'} size={32} /><h3>{recordsOnly && !cleared.length ? '첫 번째 해결 기록을 기다리고 있어요' : '조건에 맞는 시나리오가 없습니다'}</h3><p className="muted">{recordsOnly && !cleared.length ? '가상 장애 실습을 완료하면 이곳에 기록이 쌓입니다.' : '검색어나 분류, 난이도를 변경해 보세요.'}</p><button onClick={() => { setQuery(''); setCategory('all'); setDifficulty('all'); if (recordsOnly && !cleared.length) onExplore(); }}>{recordsOnly && !cleared.length ? '지식 탐색으로 준비하기' : '필터 초기화'}</button></div>}
+      })}
+      {upcoming.map((item, index) => <div key={item.title} className={`scenario-card upcoming category-${item.category}`} style={{ '--card-index': visible.length + index } as CSSProperties}>
+        <div className="card-top"><span className="card-icon"><Icon name={CATEGORIES[item.category].icon} size={21} /></span><span className="upcoming-badge">OPENING SOON</span></div>
+        <span className="card-category">{CATEGORIES[item.category].wallTag} <span>/ 준비 중</span></span>
+        <h3>{item.title}</h3><p className="card-description">{item.teaser}</p>
+        <div className="card-bottom"><span><span className="tiny-dot" /> 다음 업데이트에 열려요</span></div>
+      </div>)}</div>
+      {!visible.length && !upcoming.length && <div className="empty-state"><Icon name={recordsOnly ? 'chart' : 'search'} size={32} /><h3>{recordsOnly && !cleared.length ? '첫 번째 해결 기록을 기다리고 있어요' : '조건에 맞는 시나리오가 없습니다'}</h3><p className="muted">{recordsOnly && !cleared.length ? '가상 장애 실습을 완료하면 이곳에 기록이 쌓입니다.' : '검색어나 분류, 난이도를 변경해 보세요.'}</p><button onClick={() => { setQuery(''); setCategory('all'); setDifficulty('all'); if (recordsOnly && !cleared.length) onExplore(); }}>{recordsOnly && !cleared.length ? '지식 탐색으로 준비하기' : '필터 초기화'}</button></div>}
     </section>
     <footer className="lab-footer"><span><Icon name="shield" size={14} /> 모든 명령은 브라우저 안의 가상 환경에서 실행됩니다.</span>
       {cleared.length > 0 && <div>{confirmReset ? <><span>모든 학습 기록을 지울까요? </span><button className="small" onClick={() => { onResetProgress(); setConfirmReset(false); }}>기록 삭제</button> <button className="small" onClick={() => setConfirmReset(false)}>취소</button></> : <button className="text-button small" onClick={() => setConfirmReset(true)}>진행 기록 초기화</button>}</div>}

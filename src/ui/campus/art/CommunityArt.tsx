@@ -4,6 +4,7 @@ import { WALL_HEIGHT } from "../rooms";
 import { Bubble, CafeTable, CorkBoard, Counter, MenuBoard, Mug, PEACH, PendantLamp, Sofa, Stool, WARM_LIGHT } from "./cafe";
 import { Plant } from "./fixtures";
 import { Person } from "./people";
+import { CommunityPartyCake } from "../party/control";
 
 /**
  * 벽돌 벽과 아래 나무 판벽. 문(4~6)은 비워 두려고 벽을 구간으로 나눠 그린다.
@@ -105,6 +106,7 @@ export function CommunityArt() {
     <Stool at={[3.35, 3.8]} />
     <Person at={[3.35, 3.8, 0]} facing="right" pose="sit" shirt="#c96a4a" pants="#1d2433" hair="#121212" prop="mug" />
     <CafeTable at={[4.2, 4.1]} mugs={[[-0.2, 0.1, -0.5], [0.25, -0.1]]} />
+    <CommunityPartyCake />
     <Stool at={[5.05, 4.4]} />
     <Person at={[5.05, 4.4, 0]} facing="left" pose="sit" shirt="#8fb3ff" pants="#2b3a55" hair="#c98d4b" />
     <Bubble at={[3.35, 3.8, 2.0]} text="Q&A" delay={0} />

@@ -140,3 +140,8 @@
 @keyframes iso-warm { 0%, 100% { opacity: .12; } 50% { opacity: .24; } }
 @keyframes iso-steam { 0% { opacity: 0; transform: translateY(2px); } 30% { opacity: .8; } 100% { opacity: 0; transform: translateY(-6px); } }
 @keyframes iso-bubble { 0%, 8% { opacity: 0; transform: translateY(3px) scale(.8); } 15%, 60% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; } }
+/* 파티 모드 사람: 춤(들썩이며 좌우로), 팔 흔들기 */
+.iso-dance { animation: iso-dance .8s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+.iso-wave { animation: iso-wave .6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes iso-dance { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-2.5px) rotate(4deg); } }
+@keyframes iso-wave { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }

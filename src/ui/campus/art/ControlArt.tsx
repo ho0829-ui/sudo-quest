@@ -2,6 +2,7 @@ import { Box, Neon, OnWall, type Tone } from "../parts";
 import { GUNMETAL, Monitor } from "./fixtures";
 import { Chair, Person } from "./people";
 import { miniMapLayout } from "../layout";
+import { ControlPartyBanner, ControlPartyConfetti, ControlPartyStage } from "../party/control";
 
 export interface WallStat { label: string; cleared: number; total: number }
 export interface MapRoom { accent: string; alarm: boolean | null }
@@ -82,10 +83,13 @@ export function ControlArt({ stats, total, clock, rooms }: { stats: WallStat[]; 
     </OnWall>
     <OnWall wall="left" at={[0, 3.6, 3.85]}><MiniMap rooms={rooms} /></OnWall>
 
+    <ControlPartyStage />
     <DeskRow y={2.3} people={[{ shirt: "#2f7bff", hair: "#1b1b1b" }, { shirt: PLATINUM, hair: "#6b4a2f", skin: "#d9a77c" }, { shirt: "#14213d", hair: "#c98d4b" }]} />
+    <ControlPartyBanner />
     <DeskRow y={5.6} people={[{ shirt: "#00d4ff", hair: "#2a1d18" }, { shirt: "#1d2433", hair: "#121212", skin: "#b9835a" }]} />
     <Person at={[1.8, 9.3, 0]} facing="right" pose="walk" walkTo={[6.3, 9.3, 0]} shirt="#2f7bff" pants="#0e1526" hair="#6b4a2f" prop="tablet" duration={12} delay={-2} />
     <Box at={[8.3, 8.6, 0]} size={[0.9, 0.6, 0.9]} tone={GUNMETAL} />
     <Person at={[7.6, 9.3, 0]} facing="away-right" shirt={PLATINUM} pants="#14213d" hair="#2a1d18" prop="mug" />
+    <ControlPartyConfetti />
   </g>;
 }

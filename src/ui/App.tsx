@@ -21,6 +21,7 @@ import './command-center.css';
 import './coach.css';
 import './game.css';
 import { missionDraft } from './community/postFormat';
+import { partyNotice } from './party';
 
 // 게시판 화면은 처음 들어갈 때 불러온다. 회고 양식(missionDraft)은 작은 순수 함수라 바로 가져온다.
 const CommunityScreen = lazy(() => import('./community/CommunityScreen').then(m => ({ default: m.CommunityScreen })));
@@ -147,6 +148,7 @@ export function App() {
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
             onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} /></Suspense>}
           {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
+            party={partyNotice(scenarios, progress, ownSession.scenario.category)}
             onShare={() => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })} />}
         </div>
         </ErrorBoundary>

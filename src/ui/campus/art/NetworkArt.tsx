@@ -2,6 +2,7 @@ import { plane, points } from "../iso";
 import { Box, Cylinder, Led, Neon, OnWall, Wire } from "../parts";
 import { Camera, GUNMETAL, Monitor, Rack } from "./fixtures";
 import { Chair, Person } from "./people";
+import { NetworkPartyGarland, NetworkPartyPingPong } from "../party/network";
 
 const PURPLE = "#a259ff";
 const ORANGE = "#ff7a1a";
@@ -69,6 +70,7 @@ export function NetworkArt() {
     <Firewall />
     <Wire from={[3.5, 2.6, 1.9]} to={[4.4, 2.7, 1.9]} color="#00d4ff" flow width={1.4} bend={-6} />
     <Wire from={[6.0, 2.2, 1.6]} to={[6.8, 2.3, 0.9]} color={ORANGE} flow width={1.4} bend={-6} />
+    <NetworkPartyPingPong />
     <Person at={[8.2, 3.3, 0]} facing="away-right" shirt="#2b2f3a" pants="#14181f" hair="#c98d4b" prop="tablet" />
 
     {/* 앞줄: 분배 스위치 랙 세 대. */}
@@ -92,5 +94,6 @@ export function NetworkArt() {
     <Person at={[6.4, 8.6, 0]} facing="away-right" shirt="#e6f1f8" pants="#3a2f55" hair="#c98d4b" prop="laptop" />
     <Cylinder at={[9.0, 8.8, 0]} r={0.6} h={0.45} tone={["#a259ff", "#5a2aa0", "#40207a"]} />
     <Cylinder at={[9.0, 8.8, 0.45]} r={0.2} h={0.06} tone={GUNMETAL} />
+    <NetworkPartyGarland />
   </g>;
 }

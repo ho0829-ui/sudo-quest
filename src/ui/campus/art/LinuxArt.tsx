@@ -2,6 +2,7 @@ import { floorTransform, plane, points } from "../iso";
 import { Box, Neon, OnWall } from "../parts";
 import { Camera, CoolingUnit, Extinguisher, GasCylinders, GUNMETAL, Monitor, Rack } from "./fixtures";
 import { Chair, Person } from "./people";
+import { LinuxPartyBanner, LinuxPartyConfetti, LinuxPartyLights, LinuxPartyTable } from "../party/linux";
 
 const GREEN = "#00ff66";
 const LEDS = ["#00ff66", "#00ff66", "#00d4ff", "#b6ffd1"];
@@ -28,6 +29,7 @@ export function LinuxArt() {
       <path d="M8,0 v-14 M20,0 v-14" stroke="#3a4554" strokeWidth={2} />
     </OnWall>
     <Camera at={[0.05, 1.4, 3.3]} />
+    <LinuxPartyBanner />
 
     {/* 뒷줄 랙(앞면이 통로 쪽) + 천장 케이블 사다리. */}
     {COLUMNS.map((x, i) => <Rack key={`a${x}`} x={x} y={1.9} accent={GREEN} seed={i} leds={LEDS} />)}
@@ -48,6 +50,7 @@ export function LinuxArt() {
     {/* 앞줄 랙(뒷면 배선이 보임)과 위로 빠지는 열기. */}
     {COLUMNS.map((x, i) => <Rack key={`b${x}`} x={x} y={5.6} accent={GREEN} seed={i + 2} rear />)}
     {[2.0, 4.4, 6.8].map(x => <polyline key={`h${x}`} className="iso-flow iso-heat" points={points([x, 6.9, 2.4], [x + 0.2, 6.9, 3.0], [x, 6.9, 3.6])} stroke="#ff7a1a" strokeWidth={1.1} fill="none" />)}
+    <LinuxPartyLights />
 
     {/* 통로 끝을 오가는 점검자. 앞쪽 책상보다 뒤에 있으므로 먼저 그린다. */}
     <Person at={[9.3, 3.2, 0]} facing="left" pose="walk" walkTo={[9.3, 6.8, 0]} shirt="#14301f" pants="#0b120e" hair="#c98d4b" prop="laptop" duration={9} delay={-5} />
@@ -56,10 +59,12 @@ export function LinuxArt() {
     <Box at={[6.6, 7.7, 0]} size={[2.6, 0.9, 0.78]} tone={GUNMETAL} />
     <Monitor at={[6.9, 7.85, 0.78]} glow={GREEN} />
     <Monitor at={[7.95, 7.85, 0.78]} glow="#00d4ff" />
+    <LinuxPartyTable />
     <Person at={[3.0, 7.25, 0]} facing="away-right" shirt="#1f6f4a" prop="tablet" />
     <Person at={[2.4, 8.7, 0]} facing="right" pose="walk" walkTo={[5.6, 8.7, 0]} shirt="#e6f1f8" pants="#2b3542" hair="#6b4a2f" delay={-2} />
     <Chair at={[7.7, 9.35, 0]} />
     <Person at={[7.7, 9.35, 0]} facing="away-right" pose="type" shirt="#00a35a" hair="#121212" skin="#c99a73" />
     <Extinguisher at={[9.5, 9.4, 0]} />
+    <LinuxPartyConfetti />
   </g>;
 }

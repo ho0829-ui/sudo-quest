@@ -149,3 +149,12 @@
 
 /* 화면에는 안 보이고 화면 낭독기만 읽는 글자 */
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 리포트: 이 클리어로 운영실 파티가 열렸다는 안내 */
+.party-callout { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; margin-top: 16px; padding: 12px 14px; border: 1px solid #ffd44755; border-radius: 10px; background: #ffd4470f; color: #ffe9a8; font-size: 13.5px; font-weight: 650; }
+
+/* 실습 목록: 오픈 예정 카드(잠김). 눌러도 아무 일이 없으므로 호버 효과를 끈다. */
+.scenario-card.upcoming { border-style: dashed; background: #0c1116; opacity: .72; cursor: default; }
+.scenario-card.upcoming:hover { transform: none; border-color: #1a2631; box-shadow: none; }
+.scenario-card.upcoming h3 { color: #b8c4cc; }
+.upcoming-badge { font: 700 9px var(--mono); letter-spacing: 1.2px; color: #ffd08a; padding: 3px 7px; border: 1px solid #ffd08a55; border-radius: 20px; }

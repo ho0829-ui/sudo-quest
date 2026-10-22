@@ -12,6 +12,9 @@ interface RoomShellProps {
   doors: ("left" | "right")[];
   index: number;
   active: boolean;
+  /** 이 방의 장애를 모두 해결해 파티 중이다. kickoff는 그 파티가 이번에 처음 열렸다는 뜻(시작 연출). */
+  party?: boolean;
+  kickoff?: boolean;
   onHover: (active: boolean) => void;
   /** 마우스·터치로 눌렀을 때. 터치 화면에서는 첫 탭을 미리 보기로 쓸 수 있게 따로 받는다. */
   onPress: () => void;
@@ -26,9 +29,9 @@ function statusText({ total, cleared, alarm }: RoomStatus): string {
 }
 
 /** 방 하나의 틀. 바닥·뒷벽·이름 간판·문·상태등과 호버·키보드 동작을 맡는다. */
-export function RoomShell({ info, status, theme, doors, index, active, onHover, onPress, onActivate, children }: RoomShellProps) {
+export function RoomShell({ info, status, theme, doors, index, active, party, kickoff, onHover, onPress, onActivate, children }: RoomShellProps) {
   const [ox, oy] = project([info.origin[0], info.origin[1], 0]);
-  const label = `${info.name}. ${info.blurb}. ${info.soon ? "준비 중" : statusText(status)}`.trim();
+  const label = `${info.name}. ${info.blurb}. ${info.soon ? "준비 중" : statusText(status)}${party ? ", 파티 중" : ""}`.trim();
   function onKeyDown(event: KeyboardEvent<SVGGElement>) {
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onActivate(); }
   }
@@ -38,7 +41,7 @@ export function RoomShell({ info, status, theme, doors, index, active, onHover, 
   // 상자가 무너진 것처럼 보인다.
   const lamp = project([0, 0, WALL_HEIGHT + 1.15]);
 
-  return <g className={`iso-room${active ? " is-active" : ""}`} transform={`translate(${ox},${oy})`}
+  return <g className={`iso-room${active ? " is-active" : ""}${party ? " is-party" : ""}${kickoff ? " is-kickoff" : ""}`} transform={`translate(${ox},${oy})`}
     role="button" tabIndex={0} aria-label={label}
     onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}
     onFocus={() => onHover(true)} onBlur={() => onHover(false)}

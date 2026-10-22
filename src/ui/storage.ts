@@ -63,6 +63,8 @@ export function saveClear(scenarioId: string, score: number): Progress {
 export function clearProgress(): Progress {
   try {
     localStorage.removeItem(STORAGE_KEY);
+    // 파티 시작 연출을 본 기록도 함께 지운다. 다시 다 풀면 연출을 다시 볼 수 있다(ui/party.ts).
+    localStorage.removeItem("incident-game/celebrations");
   } catch {
     // 무시
   }
