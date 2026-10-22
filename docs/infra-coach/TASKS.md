@@ -125,7 +125,8 @@
 - [ ] 31건 한국어 메타데이터 사람 검수. 예정 시나리오를 만들면 `scenario_sources.json`의 planned를 scenario_ids로 옮기기(CrashLoop·OOM은 옮김).
 - [ ] (결정) 제출 문서(docs/submission)의 항목 수·임베딩 모델·RAG 비교 수치를 새 모델로 다시 잴지.
 - [x] K8s CrashLoopBackOff(15)·OOMKilled(16) 실습: 종료 방식 상태 계산(runtime)·revision 기록(history), kubectl logs·set env/resources·rollout history/undo, grep -A/-B/-C. 롤백도 대체 풀이로 인정(사용자 승인). 시나리오 16개.
-- [ ] 후속 문제 보강: Docker 2(docker 명령 엔진 필요) → K8s readiness/selector → Linux·Web. 새 시나리오마다 탐색 검사 추가.
-- [ ] 번들 563kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
+- [x] Docker 실습 2개: 포트 충돌(17)·환경 변수 누락(18). 가상 Docker 엔진(docker-proxy 포트·재시작 정책·데몬 재시작), docker 명령 10종, 컨테이너 실행 규칙 K8s와 공용화. 시나리오 18개.
+- [ ] 후속 문제 보강: K8s readiness/selector → Docker 디스크 가득(이미지 크기의 df 반영 필요) → Linux·Web. 새 시나리오마다 탐색 검사 추가.
+- [ ] 번들 599kB(Vite 경고, 게시판은 별도 18kB 조각으로 분리됨). 캠퍼스 그림 지연 로딩 등 분할 검토.
 - [ ] 시나리오 카드 아이콘 색은 아직 분류별 CSS(`command-center.css` `.category-*`)다. 새 분류는 기본 색으로 나오므로 필요하면 그때 한 줄 추가.
 - [ ] 공식 문서 내용 변경 확인(캐시 원문 해시 비교).

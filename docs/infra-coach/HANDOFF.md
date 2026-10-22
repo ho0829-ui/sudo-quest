@@ -1,8 +1,28 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: K8s CrashLoopBackOff·OOMKilled 실습 완료(시나리오 16개), 다음은 Docker 실습 또는 K8s readiness/selector
+갱신: 2026-10-22 · 단계: Docker 실습 2개 완료(시나리오 18개), 다음은 K8s readiness/selector 또는 Docker 디스크 실습
 
-## 최신 상태 — K8s CrashLoopBackOff·OOMKilled 실습 2개 (2026-10-22, Mac, Claude)
+## 최신 상태 — Docker 실습 2개: 포트 충돌·환경 변수 누락 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 Docker 실습 2개(포트 충돌·환경 변수 누락)야. 계획 먼저 보여줘." → 계획 승인 "계획대로 진행해줘." (권한은 계획대로 docker 그룹, sudo 불필요)
+- 리팩터(왜: K8s와 Docker가 같은 실행 규칙을 쓰게 해 다음 컨테이너 실습을 시나리오 파일만으로 추가하려고):
+  - `state/containers/{types,runtime}.ts`(새): ImageProfile(+`responses`·`headers`), `runOutcome`·`runLog`. K8s `runtime.ts`는 이미지 받기 실패만 더하는 얇은 층. 기존 564개 테스트 그대로 통과 확인 후 커밋.
+  - `commands/flags.ts`: kubectl 전용 파서를 공용으로 옮김(git mv). 반복 옵션 `lists`, `stopAtFirstArg`(docker run IMAGE 뒤는 컨테이너 명령).
+- Docker 엔진(`state/docker/`): `types`(이미지·컨테이너·재시작 정책·포트), `runtime`(화면 상태를 시각으로 계산 — 재시작 100ms부터 두 배·상한 1분, on-failure:N 소진 시 Exited / 실행마다 이어 붙는 로그 / 컨테이너 HTTP 응답), `lifecycle`(create/start/stop/remove, 데몬 정지·시작 시 재시작 정책), `format`(go-units 시간 표기, 고정 ID).
+  - 공개 포트는 `docker-proxy` 프로세스(`Process.container`)가 호스트 포트를 잡음 → `ss -tlnp`·`ps aux`·`curl`·포트 충돌 판정이 그대로 동작. `state/network.ts`는 소켓 주인이 docker-proxy면 컨테이너 응답을 돌려줌(새 실패 단계 `reset` → curl 56). curl 헤더는 응답이 주면 그것을 씀.
+  - `services.ts`: `systemctl stop/start docker` 때 컨테이너 정지·재시작 정책 적용.
+- docker 명령(`commands/docker.ts` + `docker/{common,query,inspect,lifecycle,run,template}.ts`): ps(-a,-q,--format), images, logs(--tail/-n, -f는 지금까지만), inspect(-f, `{{.A.B}}`·`{{json .X}}`만), port, start/stop/restart/rm(-f), run(-d --name -p -e --env-file --restart), `container …`·`image ls` 묶음. 오류 문장은 실제 CLI 형태(port is already allocated / userland proxy address already in use / 이름 충돌 / pull access denied / unknown flag 125 / 데몬 연결 실패).
+- 호스트 `docker-host`(app-01): ubuntu-web에서 systemd shop-api 제거, dockerd·containerd, 정상 컨테이너 status-page(8081, unless-stopped).
+- 시나리오: `docker-port-allocated`(17, 중급 — 배포 스크립트가 옛 2.0.3을 멈추지 않고 2.1.0을 같은 8080으로 띄워 Created로 남음, 알림은 "완료"; 배포 로그의 오류 문장은 엔진 계산 결과를 그대로 기록), `docker-missing-env`(18, 중급 — run.sh의 `-e SMTP_PASSWORD`(값 없음)로 비밀번호가 빠져 Exited(1)·RestartCount 5; notify.env로 다시 만들기). 대체 풀이: 17은 rm -f 후 새 이름으로 run, 18은 -e 값 직접 지정. 무관한 조치(docker restart·데몬 재시작)로는 복구 안 됨을 탐색 검사로 확인. 컨테이너 운영실 comingSoon 해제.
+- 카탈로그: docker-run-publish·docker-port-publishing → 17, docker-run-env·docker-restart-policy·docker-logs → 18(planned → scenario_ids), `add_scenario_catalog` HTTP 0, `validate_catalog` 실패 0. 색인은 다시 만들지 않음(메타데이터만 바뀜).
+- 실행한 검사(이 Mac): typecheck 통과, vitest **615개/27파일** 통과(새: docker 8·docker-runtime 15, 탐색·커버리지·캠퍼스 갱신), build 통과, `git diff --check` 통과. 백엔드 코드 변경 없음(이번에 unittest 재실행 안 함).
+- 브라우저(5173): 캠퍼스 컨테이너 운영실 "미해결 2개", 목록에 Docker 실습 2개·준비 중 표시 없음. 미션 17 — curl 2.0.3, ps -a Created, docker start 거절(port is already allocated) → stop 2.0.3·start 2.1.0 → 쿠폰 API 응답, HUD 복구 켜짐. 미션 18 — logs FATAL, docker restart는 Restarting(미복구) → rm -f·run --env-file → waiting for jobs, HUD 복구 켜짐. 콘솔 오류 0. 원인 제출·리포트는 학습 기록 보존을 위해 하지 않음(자동 테스트로 검증). 검사 뒤 탭 저장소의 실습 세션·코치 키 삭제(검사 전과 같이 저장소 비어 있음).
+- 알려진 한계: 좁은 터미널에서 docker ps 표가 줄바꿈됨(실제 터미널과 같음, kubectl -o wide도 동일). 컨테이너 안 프로세스는 ps에 안 보임. 이미지 받기·빌드·네트워크·볼륨·compose·exec·--rm 미지원. 앱 셸에 export가 없어 `-e KEY`는 항상 빈 값.
+- 유료 호출: 없음. 실행 중: Vite `127.0.0.1:5173`(PID 61243), API 8000(api-mac).
+- 커밋: refactor·feat(docker)·docs 3개. push·master 병합 없음.
+- 다음 후보: (1) K8s readiness probe·service selector(엔진 대부분 있음) (2) Docker 디스크 가득(docker-system-df·prune 근거 문서 있음, 이미지 크기를 df에 반영하는 엔진 작업 필요) (3) Linux·Web 보강. 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — K8s CrashLoopBackOff·OOMKilled 실습 2개 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "예정 시나리오 구현을 시작하자. K8s CrashLoopBackOff·OOMKilled부터, 계획 먼저 보여줘." → 계획 승인 "계획대로 진행해줘. 롤백도 정답 경로로 인정하는 것에 동의해."
 - 엔진(왜: 출력을 시나리오에 적지 않고 상태에서 계산하려고):

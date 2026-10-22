@@ -214,6 +214,7 @@ const breakSomething: Fault = (state) => {
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
+| Docker | `docker ps`(-a, -q, --format) · `images` · `logs`(--tail) · `inspect`(-f) · `port` · `start` · `stop` · `restart` · `rm`(-f) · `run`(-d --name -p -e --env-file --restart), `docker container ls` 같은 묶음 형태 |
 | Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/events/nodes, 이름·별칭·wide), `describe pod/deploy`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests), `rollout status` · `history` · `undo`(--to-revision) |
 
 ### 호스트 프리셋
@@ -222,6 +223,8 @@ const breakSomething: Fault = (state) => {
 |---|---|
 | `ubuntu-web` | nginx + shop-api가 도는 웹 서버 (web-01). 대부분 여기서 시작 |
 | `aws-admin` | AWS CLI가 있는 운영 작업 서버 (ops-bastion). 클라우드 시나리오용 |
+| `kubernetes-admin` | kubectl이 있는 운영 호스트 (k8s-admin)와 가상 클러스터 |
+| `docker-host` | dockerd와 상태 페이지 컨테이너(8081)가 도는 앱 서버 (app-01). 운영 계정은 docker 그룹이라 sudo 없이 docker를 쓴다 |
 
 ---
 
@@ -305,10 +308,10 @@ npx vitest run tests/_play.test.ts
 
 도커·쿠버네티스처럼 **분류 자체가 새로 생길 때**만 필요합니다. 기존 분류에 문제를 더할 때는 위 3단계로 충분합니다.
 
-### 이미 방이 지어진 분류: Docker·Kubernetes
+### 방을 먼저 지어 두는 분류(준비 중)
 
-`docker`(컨테이너 운영실)는 캠퍼스에 방을 먼저 지어 둔 **준비 중** 분류입니다. `kubernetes`는 이미지 풀 실패·CrashLoopBackOff·OOMKilled 실습 3개가 있습니다.
-`category: "docker"` 시나리오를 처음 넣을 때 `src/ui/categories.ts` 에서 그 분류의 `comingSoon: true` 를 지우면
+지금은 모든 분류에 실습이 있습니다(`docker` 2개, `kubernetes` 3개). 새 분류의 방을 실습보다 먼저 지을 때는
+`src/ui/categories.ts` 에서 `comingSoon: true` 로 두고, 첫 시나리오를 넣을 때 지웁니다. 그러면
 목록 탭·레일·관제실 화면·경보등이 함께 열립니다. 둘 중 하나만 하면 `tests/campus.test.ts` 가 실패해 알려 줍니다.
 
 ### 완전히 새 분류
@@ -329,7 +332,7 @@ npx vitest run tests/_play.test.ts
 
 `host: "kubernetes-admin"`과 `withCommands("kubectl")`을 사용합니다. 상태 타입은 `src/engine/state/kubernetes/types.ts`, 계산은 `reconcile.ts`입니다. Deployment를 새로 만들 때는 `state/kubernetes/history.ts`의 `addDeployment`(revision 1 기록 포함), 템플릿을 바꾸는 fault는 `changeTemplate(deployment, "변경 사유", template => …)`를 쓰고 `reconcileKubernetes(cluster, 시각)`을 호출합니다. `changeTemplate`이 revision과 `rollout history`를 함께 남기므로 `rollout undo`가 자동으로 대체 풀이가 됩니다. 서비스 엔드포인트는 selector와 Ready 파드에서 계산합니다.
 
-컨테이너가 어떻게 끝나는지도 상태에서 계산합니다(`runtime.ts`의 `outcome`). 출력 문장을 시나리오에 적지 마세요.
+컨테이너가 어떻게 끝나는지도 상태에서 계산합니다. 한 번의 실행 결과는 Docker와 함께 쓰는 `state/containers/runtime.ts`(`runOutcome`·`runLog`)가 정하고, K8s는 `kubernetes/runtime.ts`의 `outcome`이 이미지 받기 실패를 더합니다. 출력 문장을 시나리오에 적지 마세요.
 
 | 상태 | 쓰는 곳 | 결과 |
 |---|---|---|
@@ -341,6 +344,27 @@ npx vitest run tests/_play.test.ts
 재시작 횟수는 반복 종료가 시작된 시각과 시뮬레이션 시각으로 계산합니다(10초부터 두 배, 최대 300초 간격).
 
 현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 대기·RollingUpdate·ConfigMap/Secret 참조·인증·delete·`kubectl top`은 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
+
+### Docker 프리셋
+
+`host: "docker-host"`와 `withCommands("docker", "curl", "ss", "ps")`를 사용합니다. 상태 타입은 `src/engine/state/docker/types.ts`입니다.
+fault에서는 docker 명령과 같은 함수(`state/docker/lifecycle.ts`)로 컨테이너를 만들고 띄웁니다. 오류 문장도 엔진이 계산하므로, 배포 로그 같은 파일에 넣을 때는 그 결과를 그대로 씁니다.
+
+```ts
+state.docker!.images.push({ repository: "shop-api", tag: "2.1.0", id: hexId("image:shop-api:2.1.0"), createdAt, sizeMB: 182,
+  cmd: ["node", "server.js"], profile: { ports: [8080], paths: ["/healthz"], requiredEnv: ["DATABASE_URL"],
+    responses: { "/version": '{"version":"2.1.0"}' }, headers: { "Content-Type": "application/json" },
+    log: { boot: ["starting"], ready: ["listening on :8080"] } } });
+const created = createContainer(state.docker!, { name: "shop-api", image: "shop-api:2.1.0", env, ports, restart, createdAt });
+if (created.ok) startContainer(state, created.container, startedAt); // at: 과거에 띄운 컨테이너
+```
+
+- 공개 포트(`ports`)는 실제 Docker 기본값처럼 `docker-proxy` 프로세스가 호스트 포트를 잡습니다. 그래서 `ss -tlnp`·`ps aux`·`curl localhost:포트`·다른 서비스의 포트 충돌 판정이 따로 손대지 않아도 맞습니다. `curl` 응답은 이미지의 `responses`·`headers`에서 나옵니다(없는 경로는 404).
+- 포트가 이미 잡혀 있으면 다른 컨테이너일 때 `port is already allocated`, 일반 프로세스일 때 `address already in use`로 시작이 실패하고, 새로 만든 컨테이너는 `Created`로 남습니다.
+- 재시작 정책(`no`·`always`·`unless-stopped`·`on-failure:N`)으로 반복 종료하는 컨테이너는 100ms부터 두 배(상한 1분) 간격으로 재시작 횟수와 Restarting/Exited를 시각에서 계산합니다. `docker logs`는 실행마다 로그를 이어 붙입니다.
+- `systemctl stop docker`는 컨테이너를 모두 멈추고, 다시 시작하면 `always`·(손으로 멈추지 않은) `unless-stopped`만 되살립니다.
+- 환경 변수는 컨테이너를 만든 뒤 바꿀 수 없습니다. `-e KEY`(값 없음)는 가상 셸에 export된 값이 없으므로 넣지 않습니다.
+- 지원하지 않는 것: 이미지 받기·빌드, 네트워크·볼륨, compose, exec, `--rm`, 실시간 로그(`-f`는 지금까지의 로그만), 컨테이너 안 프로세스의 `ps` 표시.
 
 새 시나리오는 `tests/scenario-exploration.cases.ts`에도 조회·무관한 조치·대체 풀이를 추가해야 합니다. `solutionPath`를 복사해 채우지 말고 실제 사용자가 시도할 다른 경로를 작성하세요.
 
