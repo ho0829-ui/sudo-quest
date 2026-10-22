@@ -1,8 +1,22 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: 번들 분할 완료(첫 화면 317kB, 경고 없음), 다음은 Web 실습 또는 메타데이터 검수
+갱신: 2026-10-22 · 단계: CLI 로더·퀘스트 담당자 연출 완료, 기존 미커밋 Web 확장 보존
 
-## 최신 상태 — 번들 분할: vendor 분리 + 엔진 실행부 지연 로딩 (2026-10-22, Mac, Claude)
+## 최신 상태 — 도트 CLI 로딩·퀘스트 담당자 연출 (2026-10-22, Mac, Codex)
+
+- 최신 사용자 요청: 작은 CLI 모양 로딩 + 첨부 픽셀 초상의 안경·수염 캐릭터를 아이소메트릭 그림체로 + 전신→상반신 줌인/문제 설명/도움 요청/수락→CLI. 제공 영상은 브라우저에서 직접 확인(도트 실루엣). 재첨부 `/Users/jaeho/Downloads/0.png`의 아래 줄 인물을 참고해 자체 SVG로 그림.
+- Claude의 게시판 2단계·번들 분할 완료를 최신 코드에서 확인했다. 과거 대화의 게시판 미구현 상태로 되돌리지 않음.
+- 추가: `components/TerminalLoader.tsx`·CSS(도트 CLI 창/커서, 58px·compact 36px), `quest/{QuestOfficer,QuestBriefing}.tsx`, `quest/{dialogue.ts,quest.css}`, `tests/quest-presentation.test.tsx` 5개.
+- 연결: App lazy/복원, BackendStatus, CoachTurn, ConditionSearch, KnowledgeScreen, 게시판 목록/상세/댓글의 로딩. index.html 최초 JS 대기 화면. TicketScreen은 새 조사에서 대화 청크를 불러오고 수락 때만 onStart 호출, 이어하기는 바로 연결. 원인/풀이 대신 공개 title/ticket만 전달. 의도적인 요청 지연/LLM 호출 없음.
+- 연출: 선임 운영자 도윤, 1.6초 줌인/서버 랙/레터박스, 대화 2단계, 건너뛰기/취소/Esc/포커스 순환/복원, 모션 끄기·reduced-motion 대응. 긴 신고는 안쪽 스크롤, 수락 버튼은 화면 안 유지.
+- **실제 검사:** `npm run typecheck`, `npm test` **762개/31파일**, `npm run build` 통과. 현재 미커밋 Web 확장 포함 수치. index 340.39kB/vendor 221.70kB/QuestBriefing 8.64kB, 500kB 경고 없음. 전체 diff --check는 기존 Web 변경 `state/network.ts:171` EOF 빈 줄 1건을 지적(이번 UI 범위 밖, 보존). UI 스테이징 범위는 별도 검사.
+- 브라우저: 신규 수락→CLI→pwd, 뒤로→이어하기 기록 유지, Esc/포커스 복원, Tab/Shift+Tab 순환, 모션 끄기 즉시 대화, 건너뛰기 확인. 375×812/812×375 가로 넘침 없음. 최종 콘솔 error 0. `evidence/quest/`에 desktop/mobile/intro-loader. 테스트 탭 종료·viewport 원복, 사용자 학습 기록/기존 탭 보존. 정답 제출·유료 요청 없음.
+- 서버 그대로: 5173 Vite PID 87647, 8000 API PID 74575. 이번 UI 단계에서 백엔드 재검증/실제 RAG/색인/npm audit은 안 함. .env 값 읽기/수정 없음.
+- **기존 미커밋 작업 보존:** Web 엔진(nginx/text/tls, state types/network/services/ubuntuWeb + certs/dns/webServer/config/nginxSites), Web 시나리오 2개와 registry, 탐색 사례/web.test. 기존 커밋 기준 22개, 작업 트리는 24개. 이번 UI 커밋에 포함하지 않는다. 다음 도우미가 구현/근거/문서/커밋 완료 여부를 확인할 것.
+- 이번 UI/테스트 커밋 `bbed91f`(스테이징 diff --check 통과), 이 문서·증빙·Claude 시작 프롬프트는 별도 docs 커밋. 해시는 git log 확인. push/master 병합 없음. 전체 작업 트리는 위 Web 변경 때문에 clean이 아니다.
+- 사용자 피드백 미수령: 캐릭터 얼굴/이름·카메라 속도·대사. 다음: 피드백 우선 반영 → 기존 Web 확장 검토·정리. 자세한 결과 `15_CLI_로딩_퀘스트_연출.md`, 그대로 붙여 넣을 프롬프트 `16_Claude_이어가기_프롬프트.md`.
+
+## 이전 상태 — 번들 분할: vendor 분리 + 엔진 실행부 지연 로딩 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "다음은 번들 분할(665kB 경고)이야. 계획 먼저 보여줘." → "A(vendor 분리)와 B(엔진 지연 로딩) 둘 다 계획대로 진행해줘."
 - 측정(소스맵으로 모듈별 바이트 계산, scratchpad 스크립트): react-dom 206kB, engine/commands 92kB, ui/campus 67kB, engine/state 45kB, 시나리오 약 100kB. 원인: 시나리오가 `withCommands`를 등록부(`engine/commands/index.ts`)에서 가져와 명령 구현 전체가 딸려 왔고, App이 새로고침 복원·execute를 바로 가져옴.
