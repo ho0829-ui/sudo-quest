@@ -34,5 +34,5 @@ export function useCampusParty(scenarios: Scenario[], progress: Progress) {
   const partyOf = (kind: RoomKind) => kind === "control" || kind === "community"
     ? state.allClear : (state.rooms as RoomKind[]).includes(kind);
   const kickoffOf = (kind: RoomKind) => kind === "control" ? kickoff.allClear : (kickoff.rooms as RoomKind[]).includes(kind);
-  return { state, partyOf, kickoffOf, toast };
+  return { state, kickoff, partyOf, kickoffOf, toast };
 }

@@ -158,3 +158,9 @@
 .scenario-card.upcoming:hover { transform: none; border-color: #1a2631; box-shadow: none; }
 .scenario-card.upcoming h3 { color: #b8c4cc; }
 .upcoming-badge { font: 700 9px var(--mono); letter-spacing: 1.2px; color: #ffd08a; padding: 3px 7px; border: 1px solid #ffd08a55; border-radius: 20px; }
+
+/* 학습 기록: 모든 실습을 해결했을 때 피날레·엔딩 크레딧 다시 보기 */
+.allclear-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin: 0 0 24px; padding: 16px 20px; border-radius: 12px; border: 1px solid #ffd44755; background: radial-gradient(ellipse at 0% 50%, #ffd44718, transparent 60%), #0d1118; }
+.allclear-banner strong { font-size: 15px; color: #ffe9a8; }
+.allclear-banner p { margin: 4px 0 0; }
+.allclear-actions { display: flex; gap: 8px; flex-wrap: wrap; }

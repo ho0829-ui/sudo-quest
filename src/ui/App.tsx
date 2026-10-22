@@ -27,6 +27,9 @@ import { partyNotice, partyState } from './party';
 const CommunityScreen = lazy(() => import('./community/CommunityScreen').then(m => ({ default: m.CommunityScreen })));
 // 실습 화면(터미널·코치)과 명령 실행 엔진은 실습에 들어갈 때 불러온다. 홈 첫 화면을 가볍게 하려는 분할이다.
 const PlayScreen = lazy(() => import('./screens/PlayScreen').then(m => ({ default: m.PlayScreen })));
+// 피날레·엔딩 크레딧(불꽃놀이·음악)은 모든 실습을 끝낸 사람만 보므로 그때 불러온다.
+const Finale = lazy(() => import('./ending').then(m => ({ default: m.Finale })));
+const Credits = lazy(() => import('./ending').then(m => ({ default: m.Credits })));
 
 /**
  * 화면은 주소(해시 라우트)에서 정해진다. 이동할 때 브라우저 기록에 쌓아 두므로
@@ -41,6 +44,7 @@ export function App() {
   // 새로고침 전 실습이 있으면 엔진을 불러와 입력을 다시 실행한다. 끝나기 전에는 저장·주소 보정을 멈춘다.
   const [restoring, setRestoring] = useState(() => readSavedSession() !== null);
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
+  const [ending, setEnding] = useState<'finale' | 'credits' | null>(null);
 
   const workspace: Workspace = route.kind === 'community' ? 'community' : route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
   const scenario = route.kind === 'mission' ? scenarios[route.no - 1] : null;
@@ -100,6 +104,9 @@ export function App() {
   }, [ownSession, stage]);
 
   const missionNo = (s: Scenario) => scenarios.indexOf(s) + 1;
+  const clearedScenarios = scenarios.filter(s => progress[s.id]?.cleared);
+  const xp = clearedScenarios.reduce((sum, s) => sum + progress[s.id].bestScore, 0);
+  const endingProps = { onFinale: () => setEnding('finale'), onCredits: () => setEnding('credits') };
   function navigate(next: Workspace) {
     go(next === 'community' ? { kind: 'community' } : next === 'knowledge' ? { kind: 'knowledge' } : next === 'records' ? { kind: 'records' } : { kind: 'home' });
   }
@@ -138,10 +145,10 @@ export function App() {
           onCreated={postId => go({ kind: 'community', postId }, true)}
           motion={motion} party={partyState(scenarios, progress).allClear} /></Suspense>}
         {knowledgeVisited && <div hidden={workspace !== 'knowledge'}><KnowledgeScreen /></div>}
-        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
+        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
         <div hidden={workspace !== 'game'}>
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
-          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} />}
+          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
           {stage === 'briefing' && scenario && <TicketScreen key={scenario.id} scenario={scenario} motion={motion} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
           {restoring && stage !== 'briefing' && <TerminalLoader label="진행 중이던 실습을 이어서 불러오는 중…" />}
           {stage === 'play' && ownSession && <Suspense fallback={<TerminalLoader label="실습 터미널을 준비하는 중…" />}><PlayScreen session={ownSession}
@@ -155,5 +162,11 @@ export function App() {
         </ErrorBoundary>
       </main>
     </div>
+    {/* 피날레·크레딧은 화면 전체를 덮는다. 조각을 못 받으면 조용히 넘어간다(게임에는 영향 없음). */}
+    {ending && <ErrorBoundary label="엔딩" resetKey={ending}><Suspense fallback={null}>
+      {ending === 'finale' && <Finale cleared={clearedScenarios.length} total={scenarios.length} xp={xp} motion={motion}
+        onCredits={() => setEnding('credits')} onClose={() => setEnding(null)} />}
+      {ending === 'credits' && <Credits scenarios={scenarios} motion={motion} onClose={() => setEnding(null)} />}
+    </Suspense></ErrorBoundary>}
   </div>;
 }

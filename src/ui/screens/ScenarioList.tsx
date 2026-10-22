@@ -15,10 +15,13 @@ interface ScenarioListProps {
   onExplore: () => void;
   onOpenRecords: () => void;
   onCommunity: () => void;
+  /** 모든 실습을 해결했을 때 피날레·엔딩 크레딧 열기 */
+  onFinale?: () => void;
+  onCredits?: () => void;
 }
 const LEVELS = ['', '입문', '중급', '고급'];
 
-export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity }: ScenarioListProps) {
+export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity, onFinale, onCredits }: ScenarioListProps) {
   const headingId = useId();
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [query, setQuery] = useState('');
@@ -55,7 +58,11 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
         <div className="hero-actions"><button className="primary" onClick={() => next && onSelect(next)}> {cleared.length ? '다음 실습 시작' : '첫 장애 해결하기'} <Icon name="arrow" size={17} /></button>
           <button className="text-button" onClick={onExplore}>지식 탐색 <Icon name="arrow" size={15} /></button></div>
         <div className="hero-note"><Icon name="shield" size={14} /> 실제 시스템에 영향 없는 가상 환경</div>
-      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} />
+      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} onFinale={onFinale} onCredits={onCredits} />
+    </section>}
+    {recordsOnly && scenarios.length > 0 && cleared.length === scenarios.length && onFinale && <section className="allclear-banner" aria-label="모든 장애 해결">
+      <div><strong>🎆 ALL CLEAR — 모든 장애를 해결했어요!</strong><p className="muted small">축하 화면과 엔딩 크레딧을 언제든 다시 볼 수 있어요.</p></div>
+      <div className="allclear-actions"><button className="primary" onClick={onFinale}>피날레 다시 보기</button><button onClick={onCredits}>엔딩 크레딧</button></div>
     </section>}
     <section className="lab-stats" aria-label="내 학습 현황">
       <div className="lab-stat"><span className="stat-icon"><Icon name="server" /></span><div><span>실습 시나리오</span><strong>{String(scenarios.length).padStart(2, '0')} <small>개</small></strong></div><span className="stat-note">{OPEN_CATEGORIES.length}개 인프라 영역</span></div>

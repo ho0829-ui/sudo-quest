@@ -1,0 +1,85 @@
+/**
+ * 엔딩 크레딧 데이터. 유쾌하게 쓰되 사실과 다른 숫자·주장은 넣지 않는다.
+ *
+ * ⚠️ 기능을 추가하면 CHAPTERS에 한 줄, 기능을 없애면 GRAVEYARD에 비석 하나를 더한다(CLAUDE.md 규칙).
+ * 실습 목록·실습 수·명령 수는 시나리오 데이터에서 자동으로 계산하므로 손으로 고치지 않는다(rollCall).
+ */
+import type { Scenario } from "../../engine/scenario/types";
+import { DEFAULT_COMMANDS } from "../../engine/commands/names";
+import { CATEGORIES, OPEN_CATEGORIES } from "../categories";
+
+export interface CastMember { name: string; role: string; lines: string[] }
+export interface Chapter { title: string; credit: string; lines: string[] }
+export interface Tomb { name: string; died: string; epitaph: string }
+
+export const CAST: CastMember[] = [
+  { name: "Choi", role: "총감독 · 기획 · 최종 승인 버튼",
+    lines: ["\"계획 먼저 보여줘\"의 장인", "사이버펑크 세기말을 사내 파티로 바꾼 사람", "모든 Phase는 이 사람의 \"진행해줘\"로 시작되었다"] },
+  { name: "Claude", role: "가상 엔진 · 실습 · 캠퍼스 · 파티 · 카페 · 엔딩",
+    lines: ["\"다시 시도해 주세요\"에서 부활한 경력 보유", "펭귄에게 고깔모자를 씌운 장본인", "출력을 하드코딩하고 싶을 때마다 상태 모델을 늘렸다"] },
+  { name: "GPT (Codex)", role: "쿠버네티스 첫 실습 · 정답 밖 탐색 점검 · 퀘스트 연출",
+    lines: ["정답 말고 엉뚱한 명령을 잔뜩 쳐 보며 결함을 잡아낸 테스터", "도트 CLI 로더와 선임 운영자 도윤을 데려왔다"] },
+];
+
+export const CHAPTERS: Chapter[] = [
+  { title: "가상 서버 엔진", credit: "Claude · GPT (Codex)",
+    lines: ["2026년 9월 11일, CLAUDE.md와 첫 실습(디스크 가득 참)과 함께 태어남", "파일·프로세스·서비스·systemd·journalctl·도커·쿠버네티스·nginx·인증서 체인을 전부 메모리 안에서",
+      "명령 출력은 하드코딩 금지 — 언제나 지금 상태에서 계산한다"] },
+  { title: "SUDO QUEST 캠퍼스", credit: "Claude · 감독 Choi",
+    lines: ["아이소메트릭 운영실, 경보등, 출동 대기 전광판, 운영자 등급", "걷고 타이핑하는 근무자들 — 월급은 받지 않는다"] },
+  { title: "AI 코치 · 지식 탐색", credit: "Choi · Claude",
+    lines: ["FastAPI · Chroma · LangGraph · 공식 문서 근거 인용", "정답 정보는 절대 보내지 않는 코치 — 사실·가설·다음 점검만 말한다"] },
+  { title: "정답 밖 탐색 점검", credit: "GPT (Codex)",
+    lines: ["조회 반복 · 역순 · 오조치 · 대체 풀이로 실습을 두들겨 본 사람", "덕분에 엉뚱한 명령에도 게임이 무너지지 않는다"] },
+  { title: "퀘스트 브리핑 · 도트 CLI 로더", credit: "GPT (Codex)",
+    lines: ["선임 운영자 도윤이 장애를 설명하고 도움을 청한다", "로딩 중에도 작은 터미널 커서가 깜박인다"] },
+  { title: "커뮤니티 카페", credit: "Claude · 감독 Choi",
+    lines: ["SQLite 게시판, 삭제 비밀번호, 풀이 포함 가리기", "글쓴이가 손님이 되어 돌아다니는 큰 사내 카페와 바리스타 둘", "예시 글 18개와 배경 직원 25명 덕분에 첫날부터 북적임"] },
+  { title: "안정성 점검", credit: "Claude",
+    lines: ["Error Boundary 3단, 이상한 입력 퍼징, 손상된 저장소에도 흰 화면 없음"] },
+  { title: "운영실 파티 · 전사 시상식", credit: "Claude · 아이디어 Choi",
+    lines: ["업타임 생일 파티 · 핑퐁 대회 · 쿼리 칵테일 바 · 루프톱 풍선 파티 · 고래 풀 파티 · 선상 보물 연회", "그리고 지금 이 피날레와 엔딩 크레딧"] },
+];
+
+export const SPECIAL_GUESTS = [
+  "컨테이너 운하의 고래 — 파티 날엔 물 대신 꽃가루를 뿜음",
+  "고깔모자 펭귄 인형 — 업타임 케이크 옆 지정석",
+  "소파 위 고양이 — 낮잠 담당, 단 한 번도 깨지 않음",
+  "선임 운영자 도윤 — 모든 장애 신고의 첫 목소리",
+  "바리스타 둘 — HOTFIX AMERICANO 전문",
+  "쿠버네티스 바다의 갈매기 두 마리",
+];
+
+export const MUSIC_CREDIT = {
+  title: "음악",
+  lines: ["자크 오펜바흐 「지옥의 오르페우스」 중 지옥의 갤럽(캉캉), 1858 · 퍼블릭 도메인", "8비트 편곡·연주: 브라우저 Web Audio 코드 (음원 파일 없음)"],
+};
+
+/** 우리가 만들다 없앤 것들. 날짜는 사라진 날. */
+export const GRAVEYARD: Tomb[] = [
+  { name: "홈 화면 장식 서버 랙", died: "2026-10-21", epitaph: "캠퍼스에게 자리를 물려주고 편히 잠들다" },
+  { name: "화면 이름 InfraCoach", died: "2026-10-21", epitaph: "SUDO QUEST로 개명. 백엔드 서비스 이름으로 반쯤 살아 있음" },
+  { name: "원인이 드러나던 티켓 번호", died: "2026-10-21", epitaph: "#linux-disk-full — 스포일러는 무덤으로" },
+  { name: "초록색 디자인 토큰", died: "2026-10-21", epitaph: "사이버 블루와의 승부에서 졌다" },
+  { name: "임베딩 text-embedding-3-large", died: "2026-10-22", epitaph: "3,072차원의 삶을 마치고 gemini-embedding-2에게 바통을" },
+  { name: "Vite 500kB 경고", died: "2026-10-22", epitaph: "번들 분할로 영면. 다시는 노랗게 뜨지 마라" },
+  { name: "kubectl/mutations.ts", died: "2026-10-22", epitaph: "더 작은 파일들로 환생" },
+  { name: "사이버펑크 퇴근 이벤트", died: "2026-10-22", epitaph: "태어나지도 못했다. 세기말은 우리 취향이 아니었다" },
+  { name: "큰 카페의 펜던트 조명", died: "2026-10-22", epitaph: "손님 얼굴을 가린 죄로 철거" },
+];
+
+export interface RollCall {
+  /** 분류별 실습 제목 */
+  groups: { label: string; titles: string[] }[];
+  total: number;
+  /** 실습들이 쓰는 서로 다른 명령 수 */
+  commands: number;
+}
+
+/** 실습 목록·수·명령 수. 시나리오 데이터에서 계산하므로 실습이 늘어도 크레딧이 낡지 않는다. */
+export function rollCall(scenarios: Scenario[]): RollCall {
+  const groups = OPEN_CATEGORIES.map(c => ({ label: CATEGORIES[c.id].room, titles: scenarios.filter(s => s.category === c.id).map(s => s.title) }))
+    .filter(g => g.titles.length);
+  const commands = new Set(scenarios.flatMap(s => s.commands ?? DEFAULT_COMMANDS));
+  return { groups, total: scenarios.length, commands: commands.size };
+}
