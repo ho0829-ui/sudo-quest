@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import type { Session } from "../../engine/session/session";
 import { hintPenaltyAt } from "../../engine/session/score";
 import { CoachPanel } from "./CoachPanel";
+import { HintGlossary } from "./HintGlossary";
 
 interface SidebarProps {
   session: Session;
@@ -72,6 +73,7 @@ export function Sidebar({ session, onRevealHint, onOpenCause, onGiveUp, onUseCom
             <div key={index} className="hint">
               <strong className="small">{index + 1}단계</strong>
               <div>{hint}</div>
+              <HintGlossary text={hint} before={scenario.hints.slice(0, index).join("\n")} />
             </div>
           ))}
           <button onClick={onRevealHint} disabled={allHintsUsed} style={{ width: "100%" }}>

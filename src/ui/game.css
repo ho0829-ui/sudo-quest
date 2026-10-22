@@ -168,3 +168,10 @@
 .allclear-banner strong { font-size: 15px; color: #ffe9a8; }
 .allclear-banner p { margin: 4px 0 0; }
 .allclear-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- 힌트 용어 풀이(HintGlossary) ---------- */
+.hint-glossary { margin-top: 8px; border-top: 1px dashed #24323f; padding-top: 6px; }
+.hint-glossary summary { cursor: pointer; font-size: 12px; color: #8fd8ea; }
+.hint-glossary dl { margin: 8px 0 0; display: grid; gap: 8px; }
+.hint-glossary dt { font-weight: 700; font-size: 12.5px; color: var(--text); }
+.hint-glossary dd { margin: 2px 0 0; font-size: 12.5px; line-height: 1.6; color: #a9bcc2; }
