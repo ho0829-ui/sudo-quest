@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { TerminalLoader } from "./TerminalLoader";
 import { getJob, startSearch, type ExploreResult } from "../../api/knowledge";
+import { isExploreResult } from "../../api/validate";
 
 const stages: Record<string, string> = {
   queued: "요청 대기 중", candidates: "조건에 가까운 항목 후보 찾는 중",
@@ -28,7 +29,7 @@ export function ConditionSearch({ ready, onSelect }: { ready: boolean; onSelect:
       const { job_id } = await startSearch(text);
       const deadline = Date.now() + 120000;
       while (active.current && Date.now() < deadline) {
-        const job = await getJob<ExploreResult>(job_id);
+        const job = await getJob(job_id, isExploreResult);
         if (!active.current) return;
         if (job.status === "failed") throw new Error(job.message || "조건 탐색에 실패했습니다.");
         if (job.status === "complete" && job.result) { setResult(job.result); return; }

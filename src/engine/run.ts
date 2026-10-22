@@ -48,6 +48,11 @@ function escapeRegex(text: string): string {
   return text.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** 명령 구현이 예외를 던졌다는 표시. runCommand가 받아 사용자용 오류 문장으로 바꾼다. */
+class CommandCrash extends Error {
+  constructor(readonly command: string) { super(`${command} crashed`); }
+}
+
 export function runCommand(state: SystemState, input: string, options: RunOptions = {}): RunResult {
   // 상태는 항상 복사본에서 바꾼다. 원본이 그대로 남아야 React 리렌더와 테스트가 정확해진다.
   const next = structuredClone(state);
@@ -67,10 +72,16 @@ export function runCommand(state: SystemState, input: string, options: RunOption
   let stdin: string | undefined;
   const errors: string[] = [];
   let last: RunResult = { stdout: "", stderr: "", exitCode: 0, state: next };
-  for (const [index, stage] of stages.entries()) {
-    last = runStage(next, stage, available, stdin, index < stages.length - 1);
-    if (last.stderr) errors.push(last.stderr);
-    stdin = last.stdout;
+  try {
+    for (const [index, stage] of stages.entries()) {
+      last = runStage(next, stage, available, stdin, index < stages.length - 1);
+      if (last.stderr) errors.push(last.stderr);
+      stdin = last.stdout;
+    }
+  } catch (error) {
+    if (!(error instanceof CommandCrash)) throw error;
+    // 받은 state는 건드리지 않았으므로(복사본에서만 실행) 그대로 돌려주면 이 줄을 실행하기 전 상태다.
+    return { stdout: "", stderr: `${error.command}: [시뮬레이터 오류] 이 명령을 처리하다 문제가 생겼습니다. 다른 명령으로 계속할 수 있어요.`, exitCode: 1, state: structuredClone(state) };
   }
   return { ...last, stderr: errors.join("\n") };
 }
@@ -94,7 +105,14 @@ function runStage(next: SystemState, input: string, available: string[], stdin: 
   const command = getCommand(parsed.name)!;
   const tokens = parsed.tokens.flatMap((t) => (t.startsWith("-") ? [t] : expandGlob(next, t)));
 
-  const result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available, stdin, piped: toPipe || !!parsed.redirect });
+  // 명령 구현의 버그가 실습 화면 전체를 멈추지 않게 막는다. runCommand가 받아 이 줄을 실패로 끝내고 상태는 되돌린다.
+  let result: CommandResult;
+  try {
+    result = command.run({ state: next, tokens, sudo: parsed.sudo, user, available, stdin, piped: toPipe || !!parsed.redirect });
+  } catch (error) {
+    console.error(`[engine] ${parsed.name} 실행 중 예외`, error);
+    throw new CommandCrash(parsed.name);
+  }
 
   // 리다이렉션(>)은 sudo가 아니라 지금 셸(일반 사용자)이 연다. 그래서 sudo echo x > /etc/파일 은 권한 오류가 난다.
   // root로 쓰려면 실제처럼 | sudo tee 를 써야 한다.

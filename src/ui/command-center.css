@@ -105,3 +105,10 @@ button.primary:hover { background: var(--accent-strong); }
 .crumbs { display: flex; align-items: center; }
 .home-crumb { display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; background: transparent; color: #9ab3b9; padding: 5px 9px; margin-left: -9px; font-size: 11px; border-radius: 6px; }
 .home-crumb:hover:not(:disabled) { color: var(--accent); border-color: #7dcee340; background: #7dcee30d; }
+
+/* 화면 오류 안내(ErrorBoundary). 흰 화면 대신 같은 관제실 톤으로 구역 고장을 알린다. */
+.crash-panel { margin: 24px auto; max-width: 640px; padding: 22px 24px; border: 1px solid #ff335566; border-radius: 12px; background: linear-gradient(180deg, #1a0d14, var(--panel)); box-shadow: 0 0 28px #ff335522; }
+.crash-panel.compact { margin: 12px 0; padding: 14px 16px; }
+.crash-panel h2 { margin: 6px 0 8px; font-size: 1.05rem; }
+.crash-code { margin: 0; color: var(--danger); font: 700 0.72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.12em; }
+.crash-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 14px; }

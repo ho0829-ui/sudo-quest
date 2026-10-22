@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { Terminal } from "../components/Terminal";
 import { Sidebar } from "../components/Sidebar";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { CauseDialog } from "../components/CauseDialog";
 import type { Session } from "../../engine/session/session";
 import { execute } from "../../engine/session/execute";
@@ -48,6 +49,8 @@ export function PlayScreen({
       <div className="terminal-help">↑ ↓ 명령 기록 · Tab 자동완성 · Shift+Tab 포커스 이동 · help 명령어 안내</div>
       </div>
 
+      {/* 코치·힌트 패널에서 오류가 나도 터미널은 계속 쓸 수 있게 따로 막는다. */}
+      <ErrorBoundary label="코치·힌트 패널" compact>
       <Sidebar
         session={session}
         onRevealHint={onRevealHint}
@@ -55,6 +58,7 @@ export function PlayScreen({
         onGiveUp={onGiveUp}
         onUseCommand={text => setDraft(current => ({ text, nonce: current.nonce + 1 }))}
       />
+      </ErrorBoundary>
 
       {causeOpen && (
         <CauseDialog

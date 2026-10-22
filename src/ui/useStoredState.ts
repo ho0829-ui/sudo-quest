@@ -54,3 +54,18 @@ export function removeStored(key: string) {
 export function settlePending<T extends { result?: unknown; error?: string }>(turns: T[]): T[] {
   return turns.map((turn) => (turn.result || turn.error ? turn : { ...turn, error: "페이지를 떠나 있는 동안 응답을 받지 못했습니다. 다시 물어봐 주세요." }));
 }
+
+/**
+ * 저장해 둔 대화 턴을 하나씩 확인한다. 질문 글자가 없는 턴은 버리고, 결과 모양이 다르면 결과만 버린다.
+ * 손상되거나 옛 형식인 저장본 하나가 코치·지식 화면 전체를 깨뜨리지 않게 한다.
+ */
+export function sanitizeTurns<R>(value: unknown, isResult: (v: unknown) => v is R): { question: string; result?: R; error?: string }[] | null {
+  if (!Array.isArray(value)) return null;
+  return value
+    .filter((turn): turn is Record<string, unknown> => typeof turn === "object" && turn !== null && typeof (turn as { question?: unknown }).question === "string")
+    .map((turn) => ({
+      question: turn.question as string,
+      ...(isResult(turn.result) ? { result: turn.result } : {}),
+      ...(typeof turn.error === "string" ? { error: turn.error } : {}),
+    }));
+}

@@ -8,6 +8,7 @@ import { TicketScreen } from './screens/TicketScreen';
 import { ReportScreen } from './screens/ReportScreen';
 import { clearProgress, loadProgress, saveClear, type Progress } from './storage';
 import { TerminalLoader } from './components/TerminalLoader';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { BackendStatus } from './components/BackendStatus';
 import { KnowledgeScreen } from './screens/KnowledgeScreen';
 import { Icon } from './components/Icon';
@@ -59,9 +60,12 @@ export function App() {
       const hash = window.location.hash;
       if (hash !== '' && !hash.startsWith('#/')) return;
       const next = parseRoute(hash, scenarios.length);
+      // 없는 주소(#/mission/99 등)는 실제로 보여 주는 화면의 주소로 바꿔 둔다. 그래야 북마크·공유가 어긋나지 않는다.
+      if (hash !== '' && formatRoute(next) !== hash) window.history.replaceState(null, '', formatRoute(next));
       if (next.kind === 'knowledge') setKnowledgeVisited(true);
       setRoute(next);
     };
+    onPop();
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
@@ -125,6 +129,8 @@ export function App() {
       <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
       <main className="app" id="main-content" tabIndex={-1}>
         <BackendStatus />
+        {/* 화면 구역 오류는 여기서 막는다. 주소가 바뀌면(다른 화면으로 가면) 다시 그린다. */}
+        <ErrorBoundary label="화면" resetKey={formatRoute(route)}>
         {route.kind === 'community' && <Suspense fallback={<TerminalLoader label="카페 문을 여는 중…" />}><CommunityScreen postId={route.postId} writing={!!route.write}
           preset={route.mission ? missionDraft(route.mission, scenarios[route.mission - 1].title) : undefined}
           onOpen={postId => go({ kind: 'community', postId })} onWrite={() => go({ kind: 'community', write: true })}
@@ -143,6 +149,7 @@ export function App() {
           {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
             onShare={() => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })} />}
         </div>
+        </ErrorBoundary>
       </main>
     </div>
   </div>;

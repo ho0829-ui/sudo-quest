@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "../../engine/session/session";
 import { DEFAULT_COMMANDS } from "../../engine/commands";
-import { buildCoachRequest, type CoachAnswer } from "../../api/coach";
+import { buildCoachRequest } from "../../api/coach";
 import { getHealth } from "../../api/health";
 import { getItems, getJob, startCoach, type Item, type Message } from "../../api/knowledge";
+import { isCoachAnswer } from "../../api/validate";
 import { coachNudge, quickPrompts, type QuickPrompt } from "../coachPrompts";
 import { CoachTurn, type Turn } from "./CoachTurn";
-import { settlePending, useStoredState } from "../useStoredState";
+import { sanitizeTurns, settlePending, useStoredState } from "../useStoredState";
+import { randomId } from "../randomId";
 
 function reviveCoach(value: unknown): { sessionId: string; turns: Turn[] } | null {
   if (typeof value !== "object" || value === null) return null;
   const v = value as { sessionId?: unknown; turns?: unknown };
-  if (typeof v.sessionId !== "string" || !Array.isArray(v.turns)) return null;
-  return { sessionId: v.sessionId, turns: settlePending(v.turns as Turn[]) };
+  const turns = sanitizeTurns(v.turns, isCoachAnswer);
+  if (typeof v.sessionId !== "string" || !turns) return null;
+  return { sessionId: v.sessionId, turns: settlePending(turns) };
 }
 
 const stages: Record<string, string> = {
@@ -39,7 +42,7 @@ export function CoachPanel({ session, onUseCommand, onAnswer }: CoachPanelProps)
   // 실습 판마다 새 ID를 쓴다. 시나리오 ID를 쓰면 실습 정체가 드러나므로 무작위 값이다.
   // 대화와 함께 탭 저장소에 두어, 근거 링크로 페이지를 떠났다 돌아와도 같은 대화가 이어진다.
   const [coach, setCoach] = useStoredState(`incident-game/coach/${session.startedAt}`,
-    () => ({ sessionId: crypto.randomUUID(), turns: [] as Turn[] }), reviveCoach);
+    () => ({ sessionId: randomId(), turns: [] as Turn[] }), reviveCoach);
   const sessionId = coach.sessionId;
   const turns = coach.turns;
   const setTurns = (next: Turn[]) => setCoach((current) => ({ ...current, turns: next }));
@@ -92,7 +95,7 @@ export function CoachPanel({ session, onUseCommand, onAnswer }: CoachPanelProps)
       const { job_id } = await startCoach(buildCoachRequest(session, sessionId, text, itemId || null, history));
       const deadline = Date.now() + 180000;
       while (active.current && Date.now() < deadline) {
-        const job = await getJob<CoachAnswer>(job_id);
+        const job = await getJob(job_id, isCoachAnswer);
         if (!active.current) return;
         if (job.status === "failed") throw new Error(job.message || "코칭에 실패했습니다.");
         if (job.status === "complete" && job.result) {

@@ -1,16 +1,20 @@
 import { TerminalLoader } from "../components/TerminalLoader";
 import { useEffect, useRef, useState } from "react";
 import { getItems, getJob, startChat, type Item } from "../../api/knowledge";
+import { isAnswer } from "../../api/validate";
 import { ConditionSearch } from "../components/ConditionSearch";
 import { RichAnswer, RichLine } from "../components/RichAnswer";
 import { RoomVignette } from "../campus/RoomVignette";
 import { ExternalLink } from "../components/ExternalLink";
-import { settlePending, useStoredState } from "../useStoredState";
+import { sanitizeTurns, settlePending, useStoredState } from "../useStoredState";
 
 function reviveTurns(value: unknown): Record<string, Turn[]> | null {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
   const result: Record<string, Turn[]> = {};
-  for (const [item, turns] of Object.entries(value)) if (Array.isArray(turns)) result[item] = settlePending(turns as Turn[]);
+  for (const [item, stored] of Object.entries(value)) {
+    const turns = sanitizeTurns(stored, isAnswer);
+    if (turns) result[item] = settlePending(turns);
+  }
   return result;
 }
 import { historyFor, type Turn } from "../chatHistory";
@@ -71,7 +75,7 @@ export function KnowledgeScreen() {
       const { job_id } = await startChat(item, text, history);
       const deadline = Date.now() + 240000;
       while (active.current && Date.now() < deadline) {
-        const job = await getJob(job_id);
+        const job = await getJob(job_id, isAnswer);
         if (!active.current) return;
         if (job.status === "failed") throw new Error(job.message || "답변 생성에 실패했습니다.");
         if (job.status === "complete" && job.result) {
