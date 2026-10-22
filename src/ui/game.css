@@ -66,8 +66,9 @@
 .mission-stats div { padding: 7px 11px; border: 1px solid #1f2833; border-radius: 8px; background: #07090e; }
 .mission-stats dt { font: 8.5px var(--mono); letter-spacing: 1.2px; color: #5f7684; }
 .mission-stats dd { margin: 2px 0 0; display: flex; align-items: center; gap: 6px; font: 700 16px var(--mono); color: #e6f1f8; }
-.grade { padding: 0 5px; border-radius: 4px; font-size: 10px; color: #05070b; background: var(--ok); }
-.grade-B, .grade-C { background: var(--alert); } .grade-D { background: var(--danger); }
+/* HUD의 작은 등급 배지. 리포트의 큰 등급 글자(styles.css의 .grade)와 겹치지 않게 HUD 안으로 한정한다. */
+.mission-stats .grade { padding: 0 5px; border-radius: 4px; font-size: 10px; color: #05070b; background: var(--ok); }
+.mission-stats .grade-B, .mission-stats .grade-C { background: var(--alert); } .mission-stats .grade-D { background: var(--danger); }
 .hint-pips { gap: 4px !important; height: 22px; }
 .hint-pips i { width: 14px; height: 8px; border-radius: 2px; background: var(--ok); box-shadow: 0 0 6px var(--ok); }
 .hint-pips i.used { background: #1f2833; box-shadow: none; }
@@ -80,6 +81,8 @@
 .terminal-window { position: relative; border-color: color-mix(in srgb, var(--room) 45%, #1f2833); box-shadow: 0 0 0 1px #05070b, 0 0 28px color-mix(in srgb, var(--room) 14%, transparent); }
 .terminal-window::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 60%, #00000066); }
 .terminal { background: #05080b; }
+/* 출력 한 줄 = 한 블록. 긴 줄이 접히면 접힌 부분만 2칸 들여 써서 줄의 시작이 보이게 한다(Terminal.tsx의 OutputLines). */
+.terminal .out-line { display: block; padding-left: 2ch; text-indent: -2ch; }
 .terminal pre { text-shadow: 0 0 6px #ffffff14; }
 .terminal .prompt { color: var(--room); text-shadow: 0 0 8px color-mix(in srgb, var(--room) 55%, transparent); }
 .terminal-toolbar { background: #0b0f16; }

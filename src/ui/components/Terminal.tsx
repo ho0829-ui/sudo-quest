@@ -102,8 +102,8 @@ export function Terminal({ state, lines, available, draft, onSubmit }: TerminalP
           <pre>
             <span className="prompt">{promptOf(state, line.cwd)}</span> {line.input}
           </pre>
-          {line.stdout && <pre>{line.stdout}</pre>}
-          {line.stderr && <pre className="stderr">{line.stderr}</pre>}
+          {line.stdout && <pre><OutputLines text={line.stdout} /></pre>}
+          {line.stderr && <pre className="stderr"><OutputLines text={line.stderr} /></pre>}
         </div>
       ))}
 
@@ -125,4 +125,12 @@ export function Terminal({ state, lines, available, draft, onSubmit }: TerminalP
       </div>
     </div>
   );
+}
+
+/**
+ * 출력 한 줄을 한 블록으로 그린다. 좁은 화면에서 긴 로그 줄이 접히면, 접힌 부분만 들여 써서(CSS의 .out-line)
+ * 어디서 새 줄이 시작하는지 보이게 한다. 빈 줄은 높이가 0이 되지 않게 공백 하나를 넣는다.
+ */
+function OutputLines({ text }: { text: string }) {
+  return <>{text.replace(/\n$/, "").split("\n").map((row, i) => <span key={i} className="out-line">{row || " "}</span>)}</>;
 }

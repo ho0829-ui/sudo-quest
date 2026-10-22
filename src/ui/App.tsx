@@ -22,6 +22,7 @@ import './coach.css';
 import './game.css';
 import './cards.css';
 import './short-screen.css';
+import './mobile.css';
 import { missionDraft } from './community/postFormat';
 import { partyNotice, partyState } from './party';
 
