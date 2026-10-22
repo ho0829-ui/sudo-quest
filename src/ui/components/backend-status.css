@@ -1,0 +1,19 @@
+/* 상단바의 AI 코치 상태 배지. 누르면 아래로 자세한 상태가 펼쳐진다. */
+.coach-status { position: relative; }
+.coach-status > summary { display: flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; padding: 5px 10px; border: 1px solid #22313c; border-radius: 999px; background: #0f161d; color: #8fa7ae; font-size: 11px; white-space: nowrap; }
+.coach-status > summary::-webkit-details-marker { display: none; }
+.coach-status > summary:hover, .coach-status[open] > summary { border-color: #3a5a66; color: #c3d6db; }
+.coach-status strong { font-weight: 600; color: #b9ccd1; }
+.coach-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #5b6b74; flex-shrink: 0; }
+.tone-ok .coach-status-dot { background: var(--ok); box-shadow: 0 0 8px #2cff8f88; }
+.tone-warn .coach-status-dot { background: var(--alert); box-shadow: 0 0 8px #ff7a1a88; }
+.tone-off .coach-status-dot { background: #6b7780; }
+.tone-checking .coach-status-dot { background: #7fb4c2; animation: coach-status-blink 1s steps(2) infinite; }
+.motion-paused .tone-checking .coach-status-dot { animation: none; }
+.tone-warn .coach-status-label { color: #ffb27a; }
+@keyframes coach-status-blink { 50% { opacity: .3; } }
+.coach-status-panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 20; width: min(360px, calc(100vw - 32px)); padding: 14px 16px; border: 1px solid #2a3b47; border-radius: 10px; background: #0d141a; box-shadow: 0 12px 32px #0008; font-size: 12px; line-height: 1.6; color: #a9bcc2; }
+.coach-status-panel p { margin: 0 0 10px; }
+.coach-status-panel p[role="alert"] { color: #ffc89e; }
+.coach-status-panel button { font-size: 12px; }
+@media (max-width: 520px) { .coach-status-label { display: none; } .coach-status > summary { padding: 5px 8px; } }

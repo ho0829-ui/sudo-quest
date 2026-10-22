@@ -21,6 +21,7 @@ import './command-center.css';
 import './coach.css';
 import './game.css';
 import './cards.css';
+import './short-screen.css';
 import { missionDraft } from './community/postFormat';
 import { partyNotice, partyState } from './party';
 
@@ -135,9 +136,8 @@ export function App() {
     <CampusDefs />
     <Rail workspace={workspace} scenarios={scenarios} progress={progress} onNavigate={navigate} onHome={goHome} />
     <div className="workspace-body">
-      <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
+      <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><BackendStatus /><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
       <main className="app" id="main-content" tabIndex={-1}>
-        <BackendStatus />
         {/* 화면 구역 오류는 여기서 막는다. 주소가 바뀌면(다른 화면으로 가면) 다시 그린다. */}
         <ErrorBoundary label="화면" resetKey={formatRoute(route)}>
         {route.kind === 'community' && <Suspense fallback={<TerminalLoader label="카페 문을 여는 중…" />}><CommunityScreen postId={route.postId} writing={!!route.write}
