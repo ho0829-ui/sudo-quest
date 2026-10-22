@@ -4,7 +4,7 @@ import { reconcileKubernetes } from "../../state/kubernetes/reconcile";
 import { formatMemory, parseMemory } from "../../state/kubernetes/runtime";
 import type { ContainerSpec, KubeDeployment, KubernetesState, PodTemplate, ResourceList } from "../../state/kubernetes/types";
 import { fail, ok, type CommandResult } from "../types";
-import { parseFlags } from "./flags";
+import { parseFlags } from "../flags";
 import { deploymentName, notFound } from "./resources";
 
 type Found = { deployment: KubeDeployment } | { error: CommandResult };

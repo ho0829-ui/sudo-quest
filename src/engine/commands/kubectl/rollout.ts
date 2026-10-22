@@ -3,7 +3,7 @@ import { undoTo } from "../../state/kubernetes/history";
 import { deploymentPods, deploymentReady, podReady, reconcileKubernetes } from "../../state/kubernetes/reconcile";
 import type { KubernetesState } from "../../state/kubernetes/types";
 import { fail, ok, type CommandResult } from "../types";
-import { parseFlags } from "./flags";
+import { parseFlags } from "../flags";
 import { deploymentName, notFound, table } from "./resources";
 
 function target(cluster: KubernetesState, args: string[], verb: string) {

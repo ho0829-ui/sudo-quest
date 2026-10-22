@@ -1,14 +1,8 @@
 /** 단일 default 네임스페이스의 가상 클러스터. 실제 Kubernetes API에는 접속하지 않는다. */
-export interface ImageProfile {
-  ports: number[];
-  paths: string[];
-  /** 시작할 때 반드시 있어야 하는 환경 변수. 하나라도 없으면 설정 오류로 종료 코드 1을 내고 끝난다. */
-  requiredEnv?: string[];
-  /** 정상 동작에 필요한 메모리(MiB). 컨테이너 memory limit보다 크면 OOMKilled(137)로 끝난다. */
-  memoryMi?: number;
-  /** 컨테이너 로그. boot는 시작하면 항상 찍고, ready는 정상 기동했을 때만 이어서 찍는다. */
-  log?: { boot: string[]; ready: string[] };
-}
+import type { ImageProfile, TerminatedState } from "../containers/types";
+
+// 이미지 정보와 종료 모습은 Docker와 함께 쓰는 타입이다(containers/types.ts).
+export type { ImageProfile, TerminatedState };
 
 /** 메모리는 MiB 숫자로 저장하고, 화면에는 128Mi처럼 보여 준다. cpu는 값만 보관한다. */
 export interface ResourceList { memoryMi?: number; cpu?: string }
@@ -43,9 +37,6 @@ export interface KubeDeployment {
   template: PodTemplate;
   history: DeploymentRevision[];
 }
-
-/** 직전 실행이 끝난 모습. kubectl describe의 Last State와 kubectl logs --previous가 쓴다. */
-export interface TerminatedState { reason: "Error" | "OOMKilled"; exitCode: number }
 
 export interface KubeContainer extends ContainerSpec {
   state: "Running" | "Waiting";

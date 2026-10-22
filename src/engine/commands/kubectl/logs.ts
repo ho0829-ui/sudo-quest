@@ -6,7 +6,7 @@ import { deploymentPods } from "../../state/kubernetes/reconcile";
 import { runLog } from "../../state/kubernetes/runtime";
 import type { KubePod, KubernetesState } from "../../state/kubernetes/types";
 import { fail, type CommandResult } from "../types";
-import { parseFlags } from "./flags";
+import { parseFlags } from "../flags";
 import { notFound, resourceOf } from "./resources";
 
 const USAGE = "error: expected 'logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]'.\nPOD or TYPE/NAME is a required argument for the logs command";
