@@ -4,9 +4,11 @@ export interface PostSummary {
   id: number; title: string; author: string; category: BoardCategory; created_at: string;
   /** 풀이가 담긴 글이면 서버가 빈 문자열을 보낸다(목록 스포일러 방지). */
   excerpt: string; comment_count: number; spoiler: boolean;
+  /** 시드 스크립트가 넣은 예시 글. 예전 서버는 이 필드를 보내지 않는다. */
+  example?: boolean;
 }
 export interface Post extends Omit<PostSummary, 'excerpt' | 'comment_count'> { body: string; deletable: boolean }
-export interface Comment { id: number; post_id: number; author: string; body: string; created_at: string; deletable: boolean }
+export interface Comment { id: number; post_id: number; author: string; body: string; created_at: string; deletable: boolean; example?: boolean }
 export interface Page<T> { items: T[]; total: number; page: number; page_size: number }
 export interface PostInput { title: string; body: string; author: string; category: BoardCategory; spoiler: boolean; password: string | null }
 export interface CommentInput { author: string; body: string; password: string | null }
@@ -17,13 +19,14 @@ const integer = (v: unknown, min = 0): v is number => typeof v === 'number' && N
 const text = (v: unknown): v is string => typeof v === 'string';
 const flag = (v: unknown): v is boolean => typeof v === 'boolean';
 const dated = (v: unknown): v is string => text(v) && Number.isFinite(Date.parse(v));
+const optionalFlag = (v: unknown) => v === undefined || flag(v);
 const category = (v: unknown): v is BoardCategory => text(v) && Object.hasOwn(BOARD_CATEGORIES, v);
 export const isPost = (v: unknown): v is Post => record(v) && integer(v.id, 1) && text(v.title)
-  && text(v.author) && category(v.category) && dated(v.created_at) && text(v.body) && flag(v.spoiler) && flag(v.deletable);
+  && text(v.author) && category(v.category) && dated(v.created_at) && text(v.body) && flag(v.spoiler) && flag(v.deletable) && optionalFlag(v.example);
 const isSummary = (v: unknown): v is PostSummary => record(v) && integer(v.id, 1) && text(v.title)
-  && text(v.author) && category(v.category) && dated(v.created_at) && text(v.excerpt) && integer(v.comment_count) && flag(v.spoiler);
+  && text(v.author) && category(v.category) && dated(v.created_at) && text(v.excerpt) && integer(v.comment_count) && flag(v.spoiler) && optionalFlag(v.example);
 export const isComment = (v: unknown): v is Comment => record(v) && integer(v.id, 1) && integer(v.post_id, 1)
-  && text(v.author) && text(v.body) && dated(v.created_at) && flag(v.deletable);
+  && text(v.author) && text(v.body) && dated(v.created_at) && flag(v.deletable) && optionalFlag(v.example);
 function isPage<T>(v: unknown, item: (v: unknown) => v is T): v is Page<T> {
   return record(v) && integer(v.total) && integer(v.page, 1) && integer(v.page_size, 1)
     && v.page_size <= 50 && Array.isArray(v.items) && v.items.length <= v.page_size && v.items.every(item);

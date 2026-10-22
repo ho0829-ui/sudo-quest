@@ -130,11 +130,12 @@ Chroma는 기본 `backend/data/chroma`에 저장한다. `knowledge_items`, `refe
 
 게임 화면의 커뮤니티 카페(`#/community`)가 쓰는 게시판이다. 표준 `sqlite3`만 쓰고 새 의존성은 없다.
 
-- **저장**: `backend/data/community.sqlite3`(`COMMUNITY_DB_PATH`로 변경). `backend/data/`는 git에 올리지 않는다. 스키마 버전은 `PRAGMA user_version`(현재 2)에 기록하고, 이전 버전 파일은 서버가 처음 열 때 빠진 열을 더해 올린다(데이터 유지).
+- **저장**: `backend/data/community.sqlite3`(`COMMUNITY_DB_PATH`로 변경). `backend/data/`는 git에 올리지 않는다. 스키마 버전은 `PRAGMA user_version`(현재 3, 3에서 예시 글 표시 `example` 열 추가)에 기록하고, 이전 버전 파일은 서버가 처음 열 때 빠진 열을 더해 올린다(데이터 유지).
 - **API** (`/api/community`): `GET /posts?category=&q=&page=&page_size=`(최대 50), `GET /posts/{id}`, `GET /posts/{id}/comments`, `POST /posts`, `POST /posts/{id}/comments`, 작성자 삭제 `POST /posts/{id}/delete`·`POST /comments/{id}/delete`, 운영자 `GET /admin`·`DELETE /posts/{id}`·`DELETE /comments/{id}`.
 - **익명 작성**: 닉네임은 인증하지 않는다. 글·댓글을 쓸 때 삭제 비밀번호(선택, 4~64자)를 정하면 scrypt 해시만 저장하고, 작성자가 그 비밀번호로 직접 지울 수 있다(실수로 올린 비밀 키·개인정보를 운영자를 기다리지 않고 지우기 위함). 비밀번호 없이 쓴 것은 운영자만 지운다. 응답에는 해시 대신 `deletable`(비밀번호 유무)만 내보낸다.
 - **풀이 포함**(`spoiler`): 목록 미리보기를 빈 문자열로 보내고, 화면은 상세에서 펼쳐 보게 한다. 실습 리포트의 "커뮤니티에 회고 남기기"는 이 표시가 켜진 회고 양식을 연다.
 - **속도 제한**: 접속 주소당 1분 10회(글·댓글·작성자 삭제 시도 합산, 틀린 비밀번호 포함). 전달 헤더(X-Forwarded-For)는 믿지 않으므로 Vite 프록시 뒤 로컬 개발에서는 모든 요청이 한 주소로 묶인다.
+- **예시 글**: 카페가 비어 보이지 않게 스터디원 대화처럼 쓴 예시 글 18개·댓글(`app/community/examples.py`)을 넣을 수 있다. backend 폴더에서 `.venv/bin/python -X utf8 -m scripts.seed_community`(없을 때만 넣음), `--status`(개수), `--remove`(예시 글·댓글만 삭제). 예시 글은 응답에 `example: true`로 나가 화면에 "예시"로 보이고, 삭제 비밀번호가 없어 화면에서는 운영자만 지울 수 있다. 실습의 원인·풀이는 쓰지 않고, 실습 회고는 풀이 포함으로 표시했다.
 - **운영자**: `backend/.env`의 `COMMUNITY_ADMIN_KEY`(32자 이상)를 사용자가 직접 넣는다. 비우면 운영자 삭제가 꺼진다(503). 예: `python3 -c "import secrets; print(secrets.token_urlsafe(36))"`의 출력값을 넣고 서버를 다시 시작한다. 화면의 "운영자 모드"에 입력하면 서버가 확인(`GET /admin`)한 뒤 그 탭의 메모리에만 두고 브라우저 저장소에 쓰지 않는다(새로고침하면 꺼짐). 쓰기 요청은 `CORS_ORIGINS`에 있는 Origin만 받는다.
 - **오프라인**: 정적 배포(GitHub Pages)처럼 백엔드가 없으면 게시판은 "서버에 연결하지 못했습니다"와 다시 불러오기만 보이고 게임은 그대로 동작한다.
 

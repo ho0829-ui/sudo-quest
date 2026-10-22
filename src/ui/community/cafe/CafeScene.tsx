@@ -3,24 +3,23 @@
  * 손님을 누르면 그 글이 열린다. 아래 게시글 목록이 같은 내용을 글로 모두 담고 있어, 장면은 둘러보는 입구 역할이다.
  * 아이소메트릭은 뒤→앞 순서로 그려야 겹침이 맞으므로, 테이블·의자·화분·손님을 깊이(x+y)로 정렬해 그린다.
  */
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { BOARD_CATEGORIES, isPostPage } from "../../../api/community";
 import { project } from "../../campus/iso";
-import { CafeTable, Stool } from "../../campus/art/cafe";
-import { Plant } from "../../campus/art/fixtures";
 import { PartyContext } from "../../campus/party/context";
-import { Cake } from "../../campus/party/parts";
-import { BoardTime, useBoard } from "../shared";
+import { BoardTime, ExampleTag, useBoard } from "../shared";
 import { CafeBack } from "./CafeRoom";
 import { BUBBLE_CHARS, BUBBLE_CHARS_NARROW, MAX_VISITORS, MAX_VISITORS_NARROW, visitorsFrom } from "./crowd";
-import { SPOTS, spot, TABLES } from "./floor";
+import { NARROW_SPOTS, spot } from "./floor";
+import { cafeDrawables } from "./furniture";
 import { VisitorBody, VisitorTag } from "./Visitor";
 import { useWander } from "./wander";
 import "./cafe.css";
 
-const VIEW_BOX = "-198 -106 472 378";
+const VIEW_BOX = "-275 -104 702 508";
+// 좁은 화면은 카페 전체를 담으면 사람이 너무 작아져서 가운데(커피 바·장테이블 쪽)만 잘라 보여 준다.
+const VIEW_BOX_NARROW = "-150 -78 410 352";
 const ENTERING = 2;
-const PLANTS: [number, number][] = [[13.4, 9.3], [0.7, 9.3], [13.4, 2.7]];
 const media = (query: string) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 
 interface CafeSceneProps {
@@ -41,35 +40,32 @@ export function CafeScene({ motion, party, onOpen, onWrite }: CafeSceneProps) {
   // 새 글 손님 중 가장 최근 두 명만 문으로 걸어 들어온다(여럿이면 문 앞에 줄을 서 버린다).
   // 모션이 꺼져 있으면 걸어 들어올 수 없으므로 모두 자리에서 시작한다.
   const entering = useMemo(() => new Set(moving ? visitors.filter(v => v.fresh).slice(0, ENTERING).map(v => v.author) : []), [visitors, moving]);
-  const crowd = useWander(visitors.map(v => v.author), entering, moving);
+  const crowd = useWander(visitors.map(v => v.author), entering, moving, env.narrow ? NARROW_SPOTS : undefined);
   const [active, setActive] = useState<string | null>(null);
   const focused = visitors.find(v => v.author === active) ?? null;
 
-  // 깊이 정렬: 의자는 그 의자에 앉은 사람보다 살짝 먼저, 테이블·화분·손님은 바닥 위치(x+y) 순서.
-  const drawables: { depth: number; node: ReactNode }[] = [
-    ...SPOTS.filter(s => s.kind === "seat").map(s => ({ depth: s.x + s.y - 0.05, node: <Stool key={s.id} at={[s.x, s.y]} /> })),
-    ...TABLES.map(([x, y], i) => ({ depth: x + y, node: <g key={`t${i}`}>
-      <CafeTable at={[x, y]} mugs={i % 2 ? [[0.2, -0.1, -i]] : [[-0.2, 0.1], [0.2, -0.15, -i]]} />
-      {party && i === 1 && <Cake at={[x, y, 0.78]} band="#ff9a6b" />}
-    </g> })),
-    ...PLANTS.map(([x, y]) => ({ depth: x + y, node: <Plant key={`p${x}-${y}`} at={[x, y, 0]} scale={1.1} /> })),
+  // 깊이 정렬: 가구·배경 직원(furniture.tsx)과 손님을 바닥 위치(x+y) 순서로 그린다.
+  const drawables = [
+    ...cafeDrawables(party),
     ...visitors.filter(v => crowd[v.author]).map(v => {
       const s = spot(crowd[v.author].spot);
       return { depth: s.x + s.y + 0.01, node: <VisitorBody key={v.author} visitor={v} placement={crowd[v.author]} /> };
     }),
   ].sort((a, b) => a.depth - b.depth);
 
-  const [signX, signY] = project([7.0, 5.85, 1.7]);
+  const [signX, signY] = project([10.1, 5.2, 1.9]);
   const status = latest.error ? "offline" : latest.loading ? "loading" : visitors.length ? "open" : "empty";
   return <section className="cafe-scene" aria-label="커뮤니티 카페 둘러보기">
-    <svg className={`cafe-map${moving ? "" : " is-still"}`} viewBox={VIEW_BOX} role="group"
+    <svg className={`cafe-map${moving ? "" : " is-still"}`} viewBox={env.narrow ? VIEW_BOX_NARROW : VIEW_BOX} role="group"
       aria-label={`카페 손님 ${visitors.length}명. 손님을 고르면 그 사람이 쓴 최근 글이 열립니다.`}>
       <PartyContext.Provider value={party}>
         <CafeBack total={latest.data?.total ?? null} />
         {drawables.map(d => d.node)}
       </PartyContext.Provider>
-      {visitors.filter(v => crowd[v.author]).map(v => <VisitorTag key={v.author} visitor={v} placement={crowd[v.author]}
-        active={active === v.author} touch={env.touch} large={env.narrow} onActive={setActive} onOpen={onOpen} />)}
+      {/* 말풍선은 앞(아래)에 선 사람 것이 위에 오도록 깊이 순서로 그린다. */}
+      {visitors.filter(v => crowd[v.author]).map((v, i) => ({ v, i, depth: spot(crowd[v.author].spot).x + spot(crowd[v.author].spot).y }))
+        .sort((a, b) => a.depth - b.depth).map(({ v, i }) => <VisitorTag key={v.author} visitor={v} placement={crowd[v.author]} lift={i % 2 === 1}
+          active={active === v.author} touch={env.touch} large={env.narrow} onActive={setActive} onOpen={onOpen} />)}
       {(status === "empty" || status === "offline") && <g transform={`translate(${signX},${signY})`}>
         {status === "empty"
           ? <a href="#/community/write" onClick={e => { e.preventDefault(); onWrite(); }} aria-label="첫 이야기 남기기">
@@ -82,6 +78,7 @@ export function CafeScene({ motion, party, onOpen, onWrite }: CafeSceneProps) {
     <div className="cafe-caption" aria-live="polite">
       {focused ? <>
         <span className={`board-tag ${focused.category}`}>{BOARD_CATEGORIES[focused.category]}</span>
+        {focused.example && <ExampleTag />}
         <strong>{focused.title}</strong>
         <span className="cafe-caption-meta">{focused.author} · <BoardTime value={focused.createdAt} /> · 댓글 {focused.comments}
           {focused.posts > 1 && ` · 최근 글 ${focused.posts}개`}</span>

@@ -6,7 +6,7 @@ import { Compose, type Draft } from './Compose';
 import { PostDetail } from './PostDetail';
 import { AdminBar } from './moderation';
 import { plainExcerpt } from './postFormat';
-import { BoardError, BoardTime, Pagination, isFresh, useBoard } from './shared';
+import { BoardError, BoardTime, ExampleTag, Pagination, isFresh, useBoard } from './shared';
 import { CafeScene } from './cafe/CafeScene';
 import './community.css';
 
@@ -74,6 +74,7 @@ function BoardList({ onOpen, onWrite }: { onOpen: (id: number) => void; onWrite:
         : <div className="board-posts">{list.data.items.map(post => <article className="board-post" key={post.id}>
           <div className="board-post-top"><span className={`board-tag ${post.category}`}>{BOARD_CATEGORIES[post.category]}</span>
             {post.spoiler && <span className="board-spoiler-tag">풀이 포함</span>}
+            {post.example && <ExampleTag />}
             {isFresh(post.created_at) && <span className="board-new">NEW</span>}
             <span className="board-post-number">#{post.id.toString().padStart(3, '0')}</span></div>
           <h3><a href={`#/community/${post.id}`} onClick={e => { if (plainClick(e)) { e.preventDefault(); onOpen(post.id); } }}>{post.title}</a></h3>

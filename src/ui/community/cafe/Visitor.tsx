@@ -49,19 +49,21 @@ interface TagProps {
   touch: boolean;
   /** 좁은 화면: 글자를 키운 말풍선 */
   large: boolean;
+  /** 말풍선을 한 줄 높이 더 띄운다. 가까이 선 두 사람의 말풍선이 같은 높이에서 겹치지 않게 번갈아 준다. */
+  lift?: boolean;
   onActive: (author: string | null) => void;
   onOpen: (postId: number) => void;
 }
 
 /** 말풍선 + 몸 위의 투명한 누름 영역. 글로 가는 링크다(새 탭 열기도 된다). */
-export function VisitorTag({ visitor, placement, active, touch, large, onActive, onOpen }: TagProps) {
+export function VisitorTag({ visitor, placement, active, touch, large, lift, onActive, onOpen }: TagProps) {
   const color = CATEGORY_COLORS[visitor.category];
   const text = visitor.short;
   const font = large ? FONT_LARGE : FONT;
   const k = font / FONT;
   const w = bubbleWidth(text, font) + (visitor.fresh ? 25 : 10) * k;
-  const top = seated(placement) ? -54 : -60;
-  const label = `${visitor.author}: ${visitor.title} (${BOARD_CATEGORIES[visitor.category]}, 댓글 ${visitor.comments}개)`;
+  const top = (seated(placement) ? -54 : -60) - (lift ? 13 * k : 0);
+  const label = `${visitor.author}: ${visitor.title} (${BOARD_CATEGORIES[visitor.category]}, 댓글 ${visitor.comments}개${visitor.example ? ", 예시 글" : ""})`;
   const away = outside(placement);
   // 탭하면 click보다 focus가 먼저 와서 이미 "고른" 상태가 된다. 그래서 누르기 시작한 순간에 골라져 있었는지를 따로 기억한다.
   // 키보드 Enter에는 pointerdown이 없으므로 바로 연다.
@@ -80,6 +82,7 @@ export function VisitorTag({ visitor, placement, active, touch, large, onActive,
       else onOpen(visitor.postId);
     }}>
     <rect x={-9} y={-42} width={18} height={44} fill="transparent" />
+    {lift && <line x1={0} y1={top + 4.5 * k} x2={0} y2={top + 13 * k} stroke={color} strokeWidth={0.6} opacity={0.7} />}
     {/* 말풍선은 k배로 키워도 꼬리 끝(0,0)이 머리 위 같은 자리에 오도록 꼬리 기준으로 늘린다. */}
     <g transform={`translate(0,${top}) scale(${k})`}>
       <rect className="cafe-bubble" x={-w / k / 2} y={-11} width={w / k} height={12} rx={5} stroke={color} />

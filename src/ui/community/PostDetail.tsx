@@ -1,7 +1,7 @@
 import { TerminalLoader } from "../components/TerminalLoader";
 import { useState, type FormEvent } from 'react';
 import { BOARD_CATEGORIES, boardRequest, isPost, isComment, isCommentPage } from '../../api/community';
-import { BoardError, BoardTime, Pagination, loadNickname, saveNickname, useBoard } from './shared';
+import { BoardError, BoardTime, ExampleTag, Pagination, loadNickname, saveNickname, useBoard } from './shared';
 import { DeleteControl, PostBody } from './moderation';
 
 interface PostDetailProps { id: number; adminKey: string | null; onDeleted: () => void }
@@ -41,6 +41,7 @@ export function PostDetail({ id, adminKey, onDeleted }: PostDetailProps) {
     <article className="board-panel">
       <div className="board-post-top"><span className={`board-tag ${item.category}`}>{BOARD_CATEGORIES[item.category]}</span>
         {item.spoiler && <span className="board-spoiler-tag">풀이 포함</span>}
+        {item.example && <ExampleTag />}
         <DeleteControl target={{ kind: 'post', id: item.id }} deletable={item.deletable} adminKey={adminKey} label="글" onDeleted={onDeleted} /></div>
       <h2>{item.title}</h2><div className="board-meta"><strong>{item.author}</strong><BoardTime value={item.created_at} /></div>
       {hidden
@@ -55,7 +56,7 @@ export function PostDetail({ id, adminKey, onDeleted }: PostDetailProps) {
       {comments.data && <>
         {comments.data.items.length === 0 && <p className="board-note">첫 번째 응원을 남겨 주세요.</p>}
         {comments.data.items.map(comment => <article className="board-comment" key={comment.id}>
-          <div className="board-meta"><strong>{comment.author}</strong><BoardTime value={comment.created_at} />
+          <div className="board-meta"><strong>{comment.author}</strong>{comment.example && <ExampleTag />}<BoardTime value={comment.created_at} />
             <DeleteControl target={{ kind: 'comment', id: comment.id }} deletable={comment.deletable} adminKey={adminKey} label="댓글" onDeleted={comments.reload} /></div>
           {!hidden && <PostBody text={comment.body} />}
           {hidden && <p className="board-note">본문을 펼치면 댓글 내용도 함께 보여요.</p>}

@@ -1,6 +1,6 @@
 /* 커뮤니티 카페 장면. 손님 이동은 transform transition, 그 밖 움직임은 캠퍼스와 같은 CSS 애니메이션이라 모션 설정을 따른다. */
 .cafe-scene { margin: -8px 0 28px; border: 1px solid var(--cafe-line); border-radius: 16px; background: radial-gradient(ellipse at 50% 30%, #3a251c55, transparent 70%), #0e0f14; overflow: hidden; }
-.cafe-map { display: block; width: 100%; height: auto; max-height: 540px; }
+.cafe-map { display: block; width: 100%; height: auto; max-height: 720px; }
 .cafe-map text { font-family: var(--sans); }
 .cafe-neon { font: 800 9px var(--mono); letter-spacing: 1.4px; }
 .cafe-visitor, .cafe-tag { will-change: transform; }
@@ -24,3 +24,5 @@
 .cafe-caption-open { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--cafe); white-space: nowrap; }
 @media (max-width: 520px) { .cafe-scene { margin-top: -14px; border-radius: 12px; } .cafe-caption { padding: 10px 12px; } .cafe-caption-open { margin-left: 0; } }
 .cafe-visitor.is-outside, .cafe-tag.is-outside { opacity: 0; pointer-events: none; }
+.cafe-board-title { font: 800 6px var(--sans); fill: #1d2433; }
+.cafe-glass-text { font: 700 5px var(--mono); fill: #bfe6fa; letter-spacing: 1px; opacity: .8; }

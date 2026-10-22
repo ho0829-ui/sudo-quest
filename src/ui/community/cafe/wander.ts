@@ -35,8 +35,8 @@ function restMs(spotId: string, random: () => number): number {
 }
 
 /** 처음 배치. 새 글(fresh) 손님은 문에서 시작해 바로 걸어 들어온다. */
-export function initialCrowd(ids: string[], entering: Set<string>, now: number, random: () => number): Crowd {
-  const starts = startSpots(ids.length);
+export function initialCrowd(ids: string[], entering: Set<string>, now: number, random: () => number, allowed?: Set<string>): Crowd {
+  const starts = startSpots(ids.length, allowed);
   return Object.fromEntries(ids.map((id, i) => {
     const at = entering.has(id) ? "door" : starts[i];
     const seat = spot(at);
@@ -45,8 +45,11 @@ export function initialCrowd(ids: string[], entering: Set<string>, now: number, 
   }));
 }
 
-/** 한 번의 시계 틱. 때가 된 손님만 도착하거나 다음 자리로 출발한다. 바뀐 게 없으면 같은 객체를 돌려준다. */
-export function step(crowd: Crowd, now: number, random: () => number = Math.random): Crowd {
+/**
+ * 한 번의 시계 틱. 때가 된 손님만 도착하거나 다음 자리로 출발한다. 바뀐 게 없으면 같은 객체를 돌려준다.
+ * allowed가 있으면 그 자리로만 간다(좁은 화면에서 보이는 구역 안).
+ */
+export function step(crowd: Crowd, now: number, random: () => number = Math.random, allowed?: Set<string>): Crowd {
   let next = crowd;
   for (const [id, p] of Object.entries(crowd)) {
     if (now < p.nextAt) continue;
@@ -58,7 +61,7 @@ export function step(crowd: Crowd, now: number, random: () => number = Math.rand
     }
     // 다른 사람이 있거나 가는 중인 자리는 피한다. 입구로는 되돌아가지 않는다.
     const taken = new Set(Object.values(next).map(o => o.spot));
-    const options = neighbors(p.spot).filter(n => n !== "door" && !taken.has(n));
+    const options = neighbors(p.spot).filter(n => n !== "door" && !taken.has(n) && (!allowed || allowed.has(n)));
     if (!options.length) { next[id] = { ...p, nextAt: now + 1500 }; continue; }
     const to = options[Math.floor(random() * options.length)];
     const a = spot(p.spot), b = spot(to);
@@ -69,8 +72,8 @@ export function step(crowd: Crowd, now: number, random: () => number = Math.rand
 }
 
 /** 손님 목록이 바뀌면(새 글) 새 사람만 문으로 들이고, 이미 있던 사람의 자리는 그대로 둔다. */
-function merge(crowd: Crowd, ids: string[], entering: Set<string>, now: number): Crowd {
-  const fresh = initialCrowd(ids, entering, now, Math.random);
+function merge(crowd: Crowd, ids: string[], entering: Set<string>, now: number, allowed?: Set<string>): Crowd {
+  const fresh = initialCrowd(ids, entering, now, Math.random, allowed);
   const taken = new Set(ids.filter(id => crowd[id]).map(id => crowd[id].spot));
   return Object.fromEntries(ids.map(id => {
     if (crowd[id]) return [id, crowd[id]];
@@ -79,17 +82,17 @@ function merge(crowd: Crowd, ids: string[], entering: Set<string>, now: number):
   }));
 }
 
-export function useWander(ids: string[], entering: Set<string>, enabled: boolean): Crowd {
-  const [crowd, setCrowd] = useState<Crowd>(() => initialCrowd(ids, entering, Date.now(), Math.random));
+export function useWander(ids: string[], entering: Set<string>, enabled: boolean, allowed?: Set<string>): Crowd {
+  const [crowd, setCrowd] = useState<Crowd>(() => initialCrowd(ids, entering, Date.now(), Math.random, allowed));
   const key = ids.join("\n");
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
-    setCrowd(current => merge(current, ids, entering, Date.now()));
+    setCrowd(current => merge(current, ids, entering, Date.now(), allowed));
   }, [key]);
   useEffect(() => {
     if (!enabled) return;
-    const timer = window.setInterval(() => setCrowd(current => step(current, Date.now())), TICK_MS);
+    const timer = window.setInterval(() => setCrowd(current => step(current, Date.now(), Math.random, allowed)), TICK_MS);
     return () => window.clearInterval(timer);
   }, [enabled]);
   return crowd;

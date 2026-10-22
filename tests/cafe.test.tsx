@@ -3,9 +3,10 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { PostSummary } from "../src/api/community";
+import { isPostPage, type PostSummary } from "../src/api/community";
 import { bubbleWidth, hashName, MAX_VISITORS, outfitOf, shorten, visitorsFrom } from "../src/ui/community/cafe/crowd";
-import { BLOCKS, EDGES, FLOOR, neighbors, segmentDistance, SPOTS, spot, startSpots, TABLE_RADIUS, TABLES } from "../src/ui/community/cafe/floor";
+import { BLOCKS, EDGES, FLOOR, NARROW_SPOTS, neighbors, segmentDistance, SPOTS, spot, STANDING, STANDING_RADIUS, startSpots, TABLE_RADIUS, TABLES } from "../src/ui/community/cafe/floor";
+import { STAFF } from "../src/ui/community/cafe/staff";
 import { facingFor, initialCrowd, step, type Crowd } from "../src/ui/community/cafe/wander";
 import { VisitorTag } from "../src/ui/community/cafe/Visitor";
 
@@ -45,6 +46,14 @@ describe("글 → 손님", () => {
     expect(shorten("  여러   칸\n공백  ")).toBe("여러 칸 공백");
   });
 
+  it("예시 글 표시는 새 서버(true/false)와 예전 서버(필드 없음) 모두 받고, 이상한 값은 거부한다", () => {
+    const page = (extra: object) => ({ items: [{ ...post("a"), ...extra }], total: 1, page: 1, page_size: 30 });
+    expect(isPostPage(page({ example: true }))).toBe(true);
+    expect(isPostPage(page({}))).toBe(true);
+    expect(isPostPage(page({ example: "yes" }))).toBe(false);
+    expect(visitorsFrom([post("b", { example: true })], MAX_VISITORS, NOW)[0].example).toBe(true);
+  });
+
   it("같은 닉네임은 늘 같은 옷을 입는다", () => {
     expect(outfitOf("커피한잔")).toEqual(outfitOf("커피한잔"));
     expect(hashName("a")).not.toBe(hashName("b"));
@@ -57,7 +66,7 @@ describe("카페 평면도", () => {
     for (const s of SPOTS) {
       expect(s.x).toBeGreaterThan(0); expect(s.x).toBeLessThan(FLOOR.w);
       expect(s.y).toBeGreaterThan(0); expect(s.y).toBeLessThan(FLOOR.d);
-      for (const [x, y, w, d] of BLOCKS) expect(s.x > x && s.x < x + w && s.y > y && s.y < y + d).toBe(false);
+      for (const [x, y, w, d] of Object.values(BLOCKS)) expect(s.x > x && s.x < x + w && s.y > y && s.y < y + d).toBe(false);
       for (const t of TABLES) expect(Math.hypot(s.x - t[0], s.y - t[1])).toBeGreaterThan(TABLE_RADIUS);
     }
   });
@@ -68,7 +77,7 @@ describe("카페 평면도", () => {
       for (const t of TABLES) expect(segmentDistance([a.x, a.y], [b.x, b.y], t)).toBeGreaterThan(TABLE_RADIUS + 0.1);
       for (let k = 0; k <= 20; k++) {
         const [px, py] = [a.x + (b.x - a.x) * k / 20, a.y + (b.y - a.y) * k / 20];
-        for (const [x, y, w, d] of BLOCKS) expect(px > x && px < x + w && py > y && py < y + d, `${from}→${to}`).toBe(false);
+        for (const [x, y, w, d] of Object.values(BLOCKS)) expect(px > x && px < x + w && py > y && py < y + d, `${from}→${to}`).toBe(false);
       }
     }
   });
@@ -80,9 +89,33 @@ describe("카페 평면도", () => {
     expect(seen.size).toBe(SPOTS.length);
   });
 
+  it("스탠딩 테이블도 길목이 비켜 간다", () => {
+    for (const [from, tos] of EDGES) for (const to of tos) {
+      const a = spot(from), b = spot(to);
+      for (const t of STANDING) expect(segmentDistance([a.x, a.y], [b.x, b.y], t)).toBeGreaterThan(STANDING_RADIUS + 0.3);
+    }
+  });
+
+  it("배경 직원은 손님 자리·길목 선과 겹치지 않는 곳에 있다(걷는 직원은 길 양 끝을 본다)", () => {
+    for (const m of STAFF) for (const p of m.walkTo ? [m.at, m.walkTo] : [m.at]) {
+      for (const s of SPOTS) expect(Math.hypot(s.x - p[0], s.y - p[1]), `${m.shirt} ↔ ${s.id}`).toBeGreaterThan(0.5);
+    }
+  });
+
+  it("좁은 화면 구역 안의 자리끼리도 서로 이어져 있다(손님이 화면 밖으로 나가지 않는다)", () => {
+    const start = [...NARROW_SPOTS].find(id => id.startsWith("lane"))!;
+    const seen = new Set([start]);
+    const queue = [start];
+    while (queue.length) for (const n of neighbors(queue.shift()!)) if (NARROW_SPOTS.has(n) && !seen.has(n)) { seen.add(n); queue.push(n); }
+    expect(seen.size).toBe(NARROW_SPOTS.size);
+    let crowd: Crowd = initialCrowd(["a", "b", "c"], new Set(), 0, seeded(), NARROW_SPOTS);
+    for (let t = 0; t < 120_000; t += 400) crowd = step(crowd, t, seeded(), NARROW_SPOTS);
+    expect(Object.values(crowd).every(p => NARROW_SPOTS.has(p.spot))).toBe(true);
+  });
+
   it("처음 자리는 겹치지 않는다", () => {
-    const starts = startSpots(10);
-    expect(new Set(starts).size).toBe(10);
+    const starts = startSpots(14);
+    expect(new Set(starts).size).toBe(14);
   });
 });
 

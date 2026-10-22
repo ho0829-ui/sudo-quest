@@ -5,7 +5,7 @@ PRAGMA user_version으로 스키마 버전을 기록한다. 이미 만들어진 
 """
 import sqlite3
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # 버전 1: 처음 배포한 표. 새 열은 아래 MIGRATIONS로만 더한다(이 문장을 고치지 않는다).
 BASE = """
@@ -31,11 +31,14 @@ MIGRATIONS = {
     2: [("posts", "spoiler", "INTEGER NOT NULL DEFAULT 0"),
         ("posts", "delete_hash", "TEXT"),
         ("comments", "delete_hash", "TEXT")],
+    # 버전 3: 예시 글·댓글 표시. 시드 스크립트(scripts.seed_community)가 넣고, 그 표시로 한꺼번에 지운다.
+    3: [("posts", "example", "INTEGER NOT NULL DEFAULT 0"),
+        ("comments", "example", "INTEGER NOT NULL DEFAULT 0")],
 }
 
 # 응답에 내보내는 열. delete_hash는 절대 내보내지 않고, 비밀번호가 있는지만 알린다.
-POST_COLUMNS = "id, title, body, author, category, spoiler, created_at, delete_hash IS NOT NULL AS deletable"
-COMMENT_COLUMNS = "id, post_id, body, author, created_at, delete_hash IS NOT NULL AS deletable"
+POST_COLUMNS = "id, title, body, author, category, spoiler, example, created_at, delete_hash IS NOT NULL AS deletable"
+COMMENT_COLUMNS = "id, post_id, body, author, example, created_at, delete_hash IS NOT NULL AS deletable"
 
 
 def _add_column(db: sqlite3.Connection, table: str, column: str, definition: str):

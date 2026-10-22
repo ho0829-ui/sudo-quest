@@ -32,6 +32,10 @@ export function Pagination({ page, total, size, onPage }: { page: number; total:
     <button disabled={page >= pages} onClick={() => onPage(page + 1)}>다음 →</button>
   </nav>;
 }
+/** 시드 스크립트가 넣은 예시 글·댓글 표시. 실제 사람이 쓴 글과 구분한다. */
+export function ExampleTag() {
+  return <span className="board-example-tag" title="카페가 비어 보이지 않게 넣어 둔 예시예요">예시</span>;
+}
 export function BoardTime({ value }: { value: string }) {
   return <time dateTime={value}>{new Date(value).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' })}</time>;
 }

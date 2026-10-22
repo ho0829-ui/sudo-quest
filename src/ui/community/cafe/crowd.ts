@@ -19,12 +19,14 @@ export interface Visitor {
   createdAt: string;
   /** 하루 안의 글. 문으로 걸어 들어오고 NEW를 단다. */
   fresh: boolean;
+  /** 시드 스크립트가 넣은 예시 글 */
+  example: boolean;
   /** 이 사람이 최근 목록에 쓴 글 수 */
   posts: number;
   outfit: Outfit;
 }
 
-export const MAX_VISITORS = 10;
+export const MAX_VISITORS = 14;
 export const MAX_VISITORS_NARROW = 6;
 export const BUBBLE_CHARS = 12;
 /** 좁은 화면은 장면이 작게 그려지므로 말풍선 글자를 키우고 대신 더 짧게 줄인다. */
@@ -68,7 +70,7 @@ export function visitorsFrom(posts: PostSummary[], max = MAX_VISITORS, now = Dat
     if (byAuthor.size >= max) continue;
     byAuthor.set(author, {
       author, postId: post.id, title: post.title, short: shorten(post.title, chars), category: post.category,
-      comments: post.comment_count, createdAt: post.created_at, fresh: isFresh(post.created_at, now), posts: 1, outfit: outfitOf(author),
+      comments: post.comment_count, createdAt: post.created_at, fresh: isFresh(post.created_at, now), example: !!post.example, posts: 1, outfit: outfitOf(author),
     });
   }
   return [...byAuthor.values()];

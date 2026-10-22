@@ -35,7 +35,7 @@ class AuthorDeleteDisabled(Exception):
 
 def _post(row) -> dict:
     item = dict(row)
-    for flag in ("spoiler", "deletable"):
+    for flag in ("spoiler", "deletable", "example"):
         if flag in item:
             item[flag] = bool(item[flag])
     return item
@@ -90,7 +90,7 @@ class CommunityStore:
             db.execute("BEGIN")
             total = db.execute("SELECT count(*) FROM posts p" + clause, args).fetchone()[0]
             # 풀이가 담긴 글은 목록에서 본문 미리보기를 내보내지 않는다(실습 전 스포일러 방지).
-            rows = db.execute("""SELECT p.id, p.title, p.author, p.category, p.created_at, p.spoiler,
+            rows = db.execute("""SELECT p.id, p.title, p.author, p.category, p.created_at, p.spoiler, p.example,
                 CASE WHEN p.spoiler THEN '' ELSE substr(p.body, 1, 160) END AS excerpt,
                 (SELECT count(*) FROM comments c WHERE c.post_id = p.id) AS comment_count
                 FROM posts p""" + clause + " ORDER BY p.id DESC LIMIT ? OFFSET ?",

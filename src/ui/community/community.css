@@ -66,6 +66,7 @@
 .board-post-top { gap: 8px; }
 .board-post-top .board-post-number, .board-post-top .board-delete, .board-post-top > .board-delete-button, .board-post-top > .board-delete-form { margin-left: auto; }
 .board-spoiler-tag { font-size: 10px; padding: 4px 8px; border-radius: 5px; color: #ffd36b; border: 1px dashed #7a6331; background: #ffd36b0d; }
+.board-example-tag { font-size: 10px; padding: 3px 7px; border-radius: 5px; color: #b9bccb; border: 1px solid #3a3d4b; background: #ffffff08; }
 .board-new { font: 700 9.5px var(--mono, monospace); letter-spacing: .08em; color: #231a16; background: var(--cafe); border-radius: 4px; padding: 3px 6px; }
 .board-spoiler-gate { margin-top: 24px; padding: 22px; border-radius: 12px; border: 1px dashed #7a6331; background: repeating-linear-gradient(135deg, #ffd36b08 0 10px, transparent 10px 20px), #15131a; text-align: center; }
 .board-spoiler-gate strong { color: #ffe1a0; font-size: 15px; }
