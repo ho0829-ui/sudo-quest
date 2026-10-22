@@ -48,7 +48,7 @@ export const CATEGORIES: Record<Category, CategoryMeta> = {
   },
   docker: {
     label: "Docker", tag: "DOCKER", room: "컨테이너 운영실", wallTag: "CONTAINER", icon: "container", slot: [2, 0],
-    blurb: "포트 충돌·이미지 캐시·바로 죽는 컨테이너처럼 컨테이너를 띄우고 굴릴 때 생기는 장애", comingSoon: true,
+    blurb: "포트 충돌·바로 죽는 컨테이너처럼 컨테이너를 띄우고 굴릴 때 생기는 장애",
   },
   kubernetes: {
     label: "Kubernetes", tag: "K8S", room: "쿠버네티스 운영실", wallTag: "ORCHESTRATION", icon: "helm", slot: [0, 2],

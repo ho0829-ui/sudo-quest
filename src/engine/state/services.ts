@@ -13,6 +13,7 @@
  * 시나리오는 원인만 심어두면 되고, "그래서 서비스가 뜨지 못한다"는 판단은 엔진이 한다.
  */
 import { configValidators } from "./config/nginx";
+import { daemonStarted, daemonStopped } from "./docker/lifecycle";
 import { diskUsage, nextPid, portOwner } from "./derived";
 import { findNode } from "./fs";
 import { addLog } from "./log";
@@ -141,12 +142,15 @@ export function startService(state: SystemState, name: string): StartOutcome {
     unit: service.name,
     message: `Started ${service.name}.service - ${service.description}.`,
   });
+  // dockerd가 다시 뜨면 재시작 정책에 따라 컨테이너를 되살린다(state/docker/lifecycle.ts).
+  if (service.name === "docker") daemonStarted(state);
   return { ok: true };
 }
 
 export function stopService(state: SystemState, name: string): boolean {
   const service = findService(state, name);
   if (!service) return false;
+  if (service.name === "docker") daemonStopped(state);
   state.processes = state.processes.filter((p) => p.service !== service.name);
   service.state = "inactive";
   service.mainPid = undefined;

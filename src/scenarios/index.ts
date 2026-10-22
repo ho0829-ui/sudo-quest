@@ -19,6 +19,8 @@ import { dbMaxConnections } from "./db-max-connections";
 import { kubernetesImagePull } from "./kubernetes-image-pull";
 import { kubernetesCrashloop } from "./kubernetes-crashloop";
 import { kubernetesOom } from "./kubernetes-oom";
+import { dockerPortAllocated } from "./docker-port-allocated";
+import { dockerMissingEnv } from "./docker-missing-env";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -38,6 +40,8 @@ export const scenarios: Scenario[] = [
   // 실습 번호는 이 순서다. 기존 번호가 밀리지 않게 새 실습은 끝에 붙인다.
   kubernetesCrashloop,
   kubernetesOom,
+  dockerPortAllocated,
+  dockerMissingEnv,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

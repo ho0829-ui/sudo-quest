@@ -6,6 +6,7 @@
  * 그래야 플레이어가 파일을 지우면 df 결과가 저절로 바뀐다.
  */
 
+import type { DockerState } from "./docker/types";
 import type { KubernetesState } from "./kubernetes/types";
 
 // ---------- 파일시스템 ----------
@@ -99,6 +100,8 @@ export interface Process {
   listenPorts?: { addr: string; port: number }[];
   /** systemd 서비스가 띄운 프로세스면 서비스 이름 */
   service?: string;
+  /** docker-proxy처럼 컨테이너로 연결을 넘기는 프로세스면 그 컨테이너 ID. 로컬 요청의 응답을 컨테이너가 만든다. */
+  container?: string;
 }
 
 // ---------- 로그 ----------
@@ -304,4 +307,6 @@ export interface SystemState {
   aws?: AwsState;
   /** Kubernetes 실습에만 있는 가상 클러스터 */
   kubernetes?: KubernetesState;
+  /** Docker 실습에만 있는 가상 Docker 엔진 */
+  docker?: DockerState;
 }

@@ -60,8 +60,8 @@ export const curl: Command = {
 
     if (!outcome.ok) {
       // curl의 실제 에러 코드를 그대로 쓴다. 이 숫자 자체가 단서가 된다.
-      const code =
-        outcome.stage === "dns" ? 6 : outcome.stage === "tls" ? 60 : outcome.stage === "refused" ? 7 : 28;
+      const codes: Record<string, number> = { dns: 6, tls: 60, refused: 7, reset: 56 };
+      const code = codes[outcome.stage ?? ""] ?? 28;
       const detail =
         outcome.stage === "dns"
           ? `Could not resolve host: ${url.host}`
@@ -77,11 +77,11 @@ export const curl: Command = {
       lines.push(`> GET ${url.path} HTTP/1.1`, `> Host: ${url.host}`, ">");
     }
 
+    const headers = outcome.headers ?? { Server: "nginx/1.24.0", "Content-Type": "text/html" };
     const header = [
       `HTTP/1.1 ${outcome.status} ${REASON_PHRASES[outcome.status ?? 200] ?? ""}`.trim(),
-      "Server: nginx/1.24.0",
+      ...Object.entries(headers).map(([key, value]) => `${key}: ${value}`),
       `Content-Length: ${(outcome.body ?? "").length}`,
-      "Content-Type: text/html",
     ].join("\n");
 
     if (headOnly) return ok([...lines, header].join("\n"));

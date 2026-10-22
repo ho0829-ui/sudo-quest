@@ -9,11 +9,12 @@
  * "어느 단계에서 막혔는가"를 플레이어가 출력만 보고 좁혀 들어갈 수 있다.
  */
 import { requestInstance } from "./aws";
+import { containerResponse } from "./docker/runtime";
 import { listeningSockets } from "./derived";
 import { canRead, findNode } from "./fs";
 import type { FirewallRule, SystemState } from "./types";
 
-export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "tls";
+export type FailureStage = "dns" | "firewall" | "unreachable" | "refused" | "reset" | "tls";
 
 export interface RequestOutcome {
   ok: boolean;
@@ -24,6 +25,8 @@ export interface RequestOutcome {
   stage?: FailureStage;
   /** 실패 사유를 사람이 읽는 문장으로 */
   message?: string;
+  /** 응답 헤더. 없으면 우리 서버의 nginx 기본 헤더를 쓴다. */
+  headers?: Record<string, string>;
 }
 
 const IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
@@ -113,6 +116,13 @@ export function request(state: SystemState, target: RequestTarget): RequestOutco
         stage: "refused",
         message: `Failed to connect to ${target.host} port ${target.port}: Connection refused`,
       };
+    }
+    // docker-proxy가 잡은 포트면 응답은 그 컨테이너가 만든다(nginx 웹 루트가 아니다).
+    const forwarder = state.processes.find((p) => p.pid === socket.pid)?.container;
+    if (forwarder) {
+      const reply = containerResponse(state.docker, forwarder, target.path ?? "/", state.clock);
+      if (!reply) return { ok: false, ip, stage: "reset", message: "Recv failure: Connection reset by peer" };
+      return { ok: true, ip, ...reply };
     }
     // 우리 서버의 인증서도 만료를 검사한다. 원격이든 로컬이든 규칙은 같다.
     if (target.tls) {

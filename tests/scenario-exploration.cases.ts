@@ -91,4 +91,21 @@ export const explorations: Record<string, ExplorationCase> = {
     alternative: ["kubectl rollout undo deployment/catalog-api --to-revision=1", "kubectl rollout status deployment/catalog-api",
       "kubectl rollout history deployment/catalog-api"],
   },
+  "docker-port-allocated": {
+    inspect: ["docker container ls -a", "docker ps --format '{{.Names}} {{.Status}}'", "docker images shop-api", "docker logs shop-api-2.0.3 --tail 2",
+      "docker port shop-api-2.0.3", "curl -i http://localhost:8080/api/coupons", "ss -tlnp | grep 8080", "ps aux | grep docker-proxy",
+      "grep -n allocated /var/log/deploy/shop-api.log"],
+    unrelated: ["docker restart shop-api-2.0.3", "docker start shop-api-2.1.0", "sudo systemctl restart docker", "sudo systemctl restart nginx"],
+    alternative: ["docker rm -f shop-api-2.0.3 shop-api-2.1.0",
+      "docker run -d --name shop-api --restart unless-stopped -p 8080:8080 --env-file /opt/shop-api/shop-api.env shop-api:2.1.0",
+      "curl -s localhost:8080/version"],
+  },
+  "docker-missing-env": {
+    inspect: ["docker ps -aq", "docker container ls --all", "docker logs --tail 1 notify-worker", "docker inspect -f '{{json .Config.Env}}' notify-worker",
+      "docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' notify-worker", "docker logs notify-worker | grep -c FATAL", "ls -l /opt/notify"],
+    unrelated: ["docker restart notify-worker", "docker start notify-worker", "sudo systemctl restart docker",
+      "docker run -d --name notify-worker-2 -e SMTP_PASSWORD notify-worker:1.4.0"],
+    alternative: ["docker rm -f notify-worker",
+      "docker run -d --name notify-worker --restart=on-failure:5 -e SMTP_HOST=smtp.example.com -e SMTP_USER=noreply@shop.example.com -e SMTP_PASSWORD=from-vault -e QUEUE_URL=redis://queue.internal:6379/0 notify-worker:1.4.0"],
+  },
 };
