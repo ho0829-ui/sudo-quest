@@ -102,7 +102,7 @@ Set-Location backend
 브라우저 안의 가상 터미널에서 명령어를 입력하며, 일부러 망가뜨린 가상 서버의 **장애 원인을 찾고 복구하는 학습 게임**입니다.
 
 정답을 알려주는 게임이 아니라 **사고 과정을 훈련하는 게임**입니다.
-증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 18개 시나리오로 반복해서 익힙니다.
+증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 20개 시나리오로 반복해서 익힙니다.
 
 > **▶️ 플레이하기:** https://\<GitHub-사용자명\>.github.io/\<저장소명\>/
 > *(저장소를 push하고 Settings → Pages → Source를 "GitHub Actions"로 바꾸면 자동 배포됩니다)*
@@ -145,7 +145,7 @@ Filesystem Size Used Avail Use% Mounted on
 
 ---
 
-## 시나리오 18개
+## 시나리오 20개
 
 | ID | 카테고리 | 난이도 | 증상 | 핵심 학습 |
 |---|---|---|---|---|
@@ -167,6 +167,8 @@ Filesystem Size Used Avail Use% Mounted on
 | `kubernetes-oom` | Kubernetes | 고급 | 변경 작업 뒤 상품 목록 빔 | OOMKilled(137)는 앱 로그에 남지 않는다, request가 아니라 limit이다 |
 | `docker-port-allocated` | Docker | 중급 | 배포 완료인데 옛 버전 응답 | "배포 완료"가 아니라 실제 응답 버전을 확인하라, Created는 한 번도 실행되지 않았다는 뜻이다 |
 | `docker-missing-env` | Docker | 중급 | 인증 메일 미발송 | 컨테이너 환경 변수는 바꿀 수 없다, -e KEY는 셸 값을 넘긴다 |
+| `kubernetes-readiness` | Kubernetes | 중급 | 배포 뒤 검색만 실패 | Running과 Ready는 다르다, Ready가 아니면 엔드포인트에서 빠진다 |
+| `kubernetes-service-selector` | Kubernetes | 중급 | 결제 서버 연결 불가 | Service는 라벨로 파드를 고른다, 엔드포인트 <none>은 셀렉터부터 본다 |
 
 각 시나리오는 **장애 티켓 → 조사 → 원인 제출 → 복구 조치 → 포스트모템** 순서로 진행되고,
 3단계 힌트(방향 질문 → 볼 곳 제시 → 거의 정답)와 점수(시간·명령어 수·힌트·오답)를 제공합니다.
@@ -290,7 +292,7 @@ const usedKB = disk.reservedKB + fileKB;
 npm test
 ```
 
-**615개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 18개를 순회하며 검사합니다.
+**666개 테스트**(2026-10-22 Mac 검증, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 20개를 순회하며 검사합니다.
 
 1. 장애 주입 직후 `resolution`이 `false`인가
 2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가

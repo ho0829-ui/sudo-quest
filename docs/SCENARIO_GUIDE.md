@@ -215,7 +215,7 @@ const breakSomething: Fault = (state) => {
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
 | Docker | `docker ps`(-a, -q, --format) · `images` · `logs`(--tail) · `inspect`(-f) · `port` · `start` · `stop` · `restart` · `rm`(-f) · `run`(-d --name -p -e --env-file --restart), `docker container ls` 같은 묶음 형태 |
-| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/events/nodes, 이름·별칭·wide), `describe pod/deploy`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests), `rollout status` · `history` · `undo`(--to-revision) |
+| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/endpointslices/events/nodes, 이름·별칭·wide, `-l` 셀렉터, `--show-labels`), `describe pod/deploy/svc`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests) · `set selector`(Service), `patch deployment|svc -p '<JSON>'`(strategic·merge), `rollout status` · `history` · `undo`(--to-revision) |
 
 ### 호스트 프리셋
 
@@ -339,9 +339,16 @@ npx vitest run tests/_play.test.ts
 | `images[이미지]` 없음 | — | ImagePullBackOff |
 | 이미지 `requiredEnv`에 있는데 컨테이너 `env`에 없음 | `images[…].requiredEnv`, `containers[].env` | CrashLoopBackOff, Last State Error·종료 코드 1, 로그 마지막 줄 `FATAL config: required environment variable X is not set` |
 | 이미지 `memoryMi` > 컨테이너 `resources.limits.memoryMi` | `images[…].memoryMi`, `containers[].resources` | CrashLoopBackOff, Last State OOMKilled·137, 로그는 `log.boot`에서 오류 없이 끊김 |
+| `readinessProbe` 포트가 이미지 `ports`에 없음 | `containers[].readinessProbe`, `images[…].ports` | Running·0/1, 이벤트 `Readiness probe failed: … connect: connection refused`, 엔드포인트에서 빠짐 |
+| `readinessProbe` 경로가 이미지 `paths`에 없음 | `containers[].readinessProbe`, `images[…].paths` | Running·0/1, 이벤트 `HTTP probe failed with statuscode: 404`, 엔드포인트에서 빠짐 |
 | 그 밖 | `images[…].log.boot`·`log.ready` | Running, 로그는 boot+ready |
 
 재시작 횟수는 반복 종료가 시작된 시각과 시뮬레이션 시각으로 계산합니다(10초부터 두 배, 최대 300초 간격).
+이미지에 `accessLog: true`를 주면 `kubectl logs`에 kubelet의 readiness 요청 줄(`"GET /health HTTP/1.1" 404 … "kube-probe/1.30"`)이 probe 판정 결과로 계산되어 붙습니다.
+
+Service는 Deployment가 아니라 라벨 셀렉터로 Ready 파드를 고릅니다(`serviceEndpoints`). 셀렉터 불일치 장애는 Service의 `selector`나 파드 라벨만 어긋나게 두면 됩니다.
+Deployment 셀렉터는 만든 뒤 바꿀 수 없으므로(`selectorOf`), patch로 템플릿 라벨을 바꿀 때 셀렉터를 벗어나면 실제처럼 거절됩니다. 라벨 체계를 바꾸려면 새 이름의 Deployment를 만드세요(`addDeployment`).
+`kubectl patch`는 replicas·템플릿 라벨·컨테이너 image·readinessProbe와 Service selector·ports만 반영하고, 그 밖의 필드는 `field not declared in schema`로 거절합니다. `--type=json`과 `kubectl edit`·`apply -f`는 지원하지 않습니다.
 
 현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 대기·RollingUpdate·ConfigMap/Secret 참조·인증·delete·`kubectl top`은 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
 

@@ -1,8 +1,27 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-22 · 단계: Docker 실습 2개 완료(시나리오 18개), 다음은 K8s readiness/selector 또는 Docker 디스크 실습
+갱신: 2026-10-22 · 단계: K8s readiness·service selector 실습 완료(시나리오 20개), 다음은 Docker 디스크 가득 또는 Linux too many open files
 
-## 최신 상태 — Docker 실습 2개: 포트 충돌·환경 변수 누락 (2026-10-22, Mac, Claude)
+## 최신 상태 — K8s readiness probe·service selector 실습 2개 (2026-10-22, Mac, Claude)
+
+- 사용자 요청: "다음은 K8s readiness probe·service selector 실습이야. 계획 먼저 보여줘." → 승인 "계획대로 진행해줘." (readiness 실습의 rollout undo 대체 풀이 포함)
+- 엔진(왜: "엔드포인트가 비었다"를 Ready 문제와 셀렉터 문제로 가를 수 있게, 출력은 상태에서 계산):
+  - `state/kubernetes/probe.ts`(새): readiness 판정 — 포트가 이미지 `ports`에 없으면 `connect: connection refused`, 경로가 `paths`에 없으면 `HTTP probe failed with statuscode: 404`(실제 kubelet 문장, 이벤트 Unhealthy). 이미지 `accessLog: true`면 kubectl logs에 kube-probe 요청 줄 3개(10초 간격)를 판정 결과로 계산. `reconcile.ts`가 이 판정을 씀.
+  - `history.ts` `selectorOf`: Deployment 셀렉터(변경 불가). 템플릿 라벨을 처음 바꿀 때 셀렉터를 `selector` 필드로 굳힘.
+- kubectl(`commands/kubectl.ts` + `kubectl/{describe,selector,service,patch,patchDeployment}.ts` 새, `queries.ts` 재작성):
+  - get: `-l`(=,==,!=,존재,!존재), `--show-labels`, `endpointslices`(서비스 이름 라벨, 비면 `<unset>`). get 옵션을 공용 파서로 읽어 `-o wide -o wide`도 실제처럼 허용(기존 실패 기대 테스트 2개를 실제 잘못된 입력으로 교체).
+  - describe: `svc`(Selector·TargetPort·Endpoints), pod에 Readiness 줄·Conditions. AGE는 이틀부터 일 단위(5d, 3d4h).
+  - `set selector`(Service만, Deployment는 immutable 오류), `patch`(strategic·merge; replicas·템플릿 라벨·컨테이너 image·readinessProbe / Service selector·ports; null로 키 삭제; 셀렉터 벗어나는 라벨·스키마에 없는 필드·잘못된 JSON 거절, 실패 시 상태 불변). `--type=json`은 미지원이라고 그대로 알림.
+- 시나리오: `kubernetes-readiness`(19 — search-api 3.0.0이 /health→/healthz로 바꿨는데 probe는 /health; 정답 patch, 대체 rollout undo), `kubernetes-service-selector`(20 — 라벨 표준화로 payment-api 새 Deployment·옛 payment 삭제, Service payment 셀렉터 app=payment 그대로; 정답 set selector, 대체 patch svc의 `"app": null`, 셀렉터를 유지한 채 파드에 app=payment 라벨을 더하는 patch도 실제처럼 허용). 무관한 조치(포트 8081 patch, replicas 변경, null 없는 selector patch, 셀렉터 벗어나는 relabel, undo)로는 복구 안 됨을 탐색 검사로 확인.
+- 카탈로그: k8s-readiness-probe·k8s-define-readiness → 19, k8s-service-endpointslices·k8s-service-definition → 20. add_scenario_catalog HTTP 0, validate 실패 0. 남은 planned: docker-disk-full(3), linux-too-many-files(1).
+- 실행한 검사(이 Mac): typecheck 통과, vitest **666개/28파일** 통과(새 kubectl-service 23), build 통과(본체 JS 625kB, Vite 경고 유지), `git diff --check` 통과. 백엔드 코드 변경 없음(unittest 재실행 안 함).
+- 브라우저(5173, 새로고침 후): 미션 19 — 0/1 Running, Conditions Ready False, kube-probe 404 로그 → patch → 엔드포인트 2개, HUD 복구 켜짐. 미션 20 — 엔드포인트 <none>, Selector app=payment, --show-labels → null 없는 patch는 여전히 <none> → set selector로 엔드포인트 2개, HUD 복구 켜짐. 캠퍼스 쿠버네티스 운영실 "미해결 5개". 콘솔에는 편집 도중 HMR이 옛 queries.ts를 읽은 오류(같은 시각 묶음)만 남았고, 새로고침 뒤 모듈 정상 로드 확인. 원인 제출·리포트는 학습 기록 보존을 위해 하지 않음. 검사 뒤 탭 저장소 정리(비어 있음).
+- 한계: probe 주기·실패 누적·liveness/startup probe·RollingUpdate·ClusterIP 직접 요청·NetworkPolicy·EndpointSlice 여러 개는 재현하지 않음. patch는 위 필드만.
+- 유료 호출: 없음. 실행 중: Vite `127.0.0.1:5173`(PID 61243), API 8000(api-mac).
+- 커밋: feat(k8s)·docs 2개. push·master 병합 없음.
+- 다음 후보: (1) Docker 디스크 가득(이미지·컨테이너 크기를 df·`docker system df`에 반영하는 엔진 작업, prune) (2) Linux too many open files(ulimit·lsof 모델 필요) (3) 번들 분할. 사용자 미결정: 제출 문서 수치 재측정, LLM_MODEL 원복, master 병합.
+
+## 이전 상태 — Docker 실습 2개: 포트 충돌·환경 변수 누락 (2026-10-22, Mac, Claude)
 
 - 사용자 요청: "다음은 Docker 실습 2개(포트 충돌·환경 변수 누락)야. 계획 먼저 보여줘." → 계획 승인 "계획대로 진행해줘." (권한은 계획대로 docker 그룹, sudo 불필요)
 - 리팩터(왜: K8s와 Docker가 같은 실행 규칙을 쓰게 해 다음 컨테이너 실습을 시나리오 파일만으로 추가하려고):
