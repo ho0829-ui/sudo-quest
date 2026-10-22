@@ -4,54 +4,133 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5173
     },
     {
       "name": "api",
+      "runtimeExecutable": "backend/.venv/bin/python",
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app.main:create_app",
+        "--factory",
+        "--app-dir",
+        "backend",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "port": 8000,
+      "url": "http://127.0.0.1:8000"
+    },
+    {
+      "name": "api-windows",
       "runtimeExecutable": "backend/.venv/Scripts/python.exe",
-      "runtimeArgs": ["-X", "utf8", "-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "backend", "--host", "127.0.0.1", "--port", "8000"],
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app.main:create_app",
+        "--factory",
+        "--app-dir",
+        "backend",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
       "port": 8000,
       "url": "http://127.0.0.1:8000"
     },
     {
       "name": "api-mac",
       "runtimeExecutable": "backend/.venv/bin/python",
-      "runtimeArgs": ["-X", "utf8", "-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "backend", "--host", "127.0.0.1", "--port", "8000"],
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app.main:create_app",
+        "--factory",
+        "--app-dir",
+        "backend",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
       "port": 8000,
       "url": "http://127.0.0.1:8000"
     },
     {
       "name": "api-8001",
       "runtimeExecutable": "backend/.venv/Scripts/python.exe",
-      "runtimeArgs": ["-X", "utf8", "-m", "uvicorn", "app.main:create_app", "--factory", "--app-dir", "backend", "--host", "127.0.0.1", "--port", "8001"],
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app.main:create_app",
+        "--factory",
+        "--app-dir",
+        "backend",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8001"
+      ],
       "port": 8001,
       "url": "http://127.0.0.1:8001"
     },
     {
       "name": "api-empty-nokey",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "set CHROMA_PATH=C:\\Users\\SSAFY\\AppData\\Local\\Temp\\claude\\C--Users-SSAFY-Documents-Codex-InfraCoach\\e801ab70-a482-45bc-833b-8da0d19bb8b6\\scratchpad\\empty-chroma&& set LLM_BASE_URL=https://example.invalid/v1/&& set EMBEDDING_BASE_URL=https://example.invalid/v1/&& backend\\.venv\\Scripts\\python.exe -X utf8 -m uvicorn app.main:create_app --factory --app-dir backend --host 127.0.0.1 --port 8001"],
+      "runtimeArgs": [
+        "/c",
+        "set CHROMA_PATH=C:\\Users\\SSAFY\\AppData\\Local\\Temp\\claude\\C--Users-SSAFY-Documents-Codex-InfraCoach\\e801ab70-a482-45bc-833b-8da0d19bb8b6\\scratchpad\\empty-chroma&& set LLM_BASE_URL=https://example.invalid/v1/&& set EMBEDDING_BASE_URL=https://example.invalid/v1/&& backend\\.venv\\Scripts\\python.exe -X utf8 -m uvicorn app.main:create_app --factory --app-dir backend --host 127.0.0.1 --port 8001"
+      ],
       "port": 8001,
       "url": "http://127.0.0.1:8001"
     },
     {
       "name": "api-index-nokey",
       "runtimeExecutable": "backend/.venv/Scripts/python.exe",
-      "runtimeArgs": ["-X", "utf8", "-c", "import os, sys, uvicorn; os.environ['GMS_KEY'] = ''; sys.path.insert(0, 'backend'); uvicorn.run('app.main:create_app', factory=True, host='127.0.0.1', port=8001)"],
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-c",
+        "import os, sys, uvicorn; os.environ['GMS_KEY'] = ''; sys.path.insert(0, 'backend'); uvicorn.run('app.main:create_app', factory=True, host='127.0.0.1', port=8001)"
+      ],
       "port": 8001,
       "url": "http://127.0.0.1:8001"
     },
     {
       "name": "dev-5174-to-8001",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "set BACKEND_PROXY_TARGET=http://127.0.0.1:8001&& npx vite --port 5174"],
+      "runtimeArgs": [
+        "/c",
+        "set BACKEND_PROXY_TARGET=http://127.0.0.1:8001&& npx vite --port 5174"
+      ],
       "port": 5174
     },
     {
       "name": "preview",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "preview", "--", "--port", "4173"],
+      "runtimeArgs": [
+        "run",
+        "preview",
+        "--",
+        "--port",
+        "4173"
+      ],
       "port": 4173
     }
   ]
