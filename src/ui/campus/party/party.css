@@ -36,4 +36,10 @@
 .iso-legend i.party { background: #ffd447; box-shadow: 0 0 6px #ffd447; margin-left: 6px; }
 .motion-paused .party-toast { animation: none; }
 .iso-allclear { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; font: 800 11px var(--mono); letter-spacing: 1px; color: #ffd447; }
-.iso-allclear .text-button { font-family: var(--sans); letter-spacing: 0; }
+/* 피날레·크레딧 링크: 평소엔 글자처럼, 마우스·키보드가 오면 금빛 알약으로 밝아지고 화살표가 살짝 밀려 나온다. */
+.iso-allclear .text-button { font-family: var(--sans); letter-spacing: 0; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; color: #d6dde0;
+  transition: color .15s, background .15s, border-color .15s, box-shadow .15s; }
+.iso-allclear .text-button::after { content: '→'; display: inline-block; opacity: 0; transform: translateX(-4px); transition: opacity .15s, transform .15s; }
+.iso-allclear .text-button:hover, .iso-allclear .text-button:focus-visible { color: #ffe9a8; background: #ffd4471f; border-color: #ffd44766; box-shadow: 0 0 14px #ffd44733; }
+.iso-allclear .text-button:hover::after, .iso-allclear .text-button:focus-visible::after { opacity: 1; transform: none; }
+.iso-allclear .text-button:active { background: #ffd44733; }

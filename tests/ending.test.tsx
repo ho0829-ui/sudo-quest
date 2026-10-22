@@ -90,8 +90,8 @@ describe("엔딩 음악(캉캉 8비트)", () => {
 });
 
 describe("음악 볼륨", () => {
-  it("처음엔 작은 볼륨으로, 서서히 커지며 시작한다(갑자기 큰 소리 방지)", () => {
-    expect(DEFAULT_VOLUME).toBeLessThanOrEqual(0.4);
+  it("처음엔 작은 볼륨(25%)으로, 서서히 커지며 시작한다(갑자기 큰 소리 방지)", () => {
+    expect(DEFAULT_VOLUME).toBe(0.25);
     expect(FADE_IN).toBeGreaterThanOrEqual(1.5);
   });
 

@@ -5,7 +5,7 @@ const ON_KEY = "incident-game/music";
 const VOLUME_KEY = "incident-game/music-volume";
 
 /** 처음 볼륨(0~1). 갑자기 큰 소리에 놀라지 않게 작게 시작한다. */
-export const DEFAULT_VOLUME = 0.35;
+export const DEFAULT_VOLUME = 0.25;
 
 export function loadMusicOn(): boolean {
   try { return localStorage.getItem(ON_KEY) !== "off"; } catch { return true; }
