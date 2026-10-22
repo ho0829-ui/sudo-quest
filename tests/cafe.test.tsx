@@ -181,5 +181,18 @@ describe("카페 화면", () => {
     expect(html).toContain("카페 문을 여는 중");
     expect(html).toContain("COMMUNITY LOUNGE");
     expect(html).toContain("오늘의 이야기 —");
+    expect(html).toContain("카페 접기");
+  });
+
+  it("카페를 접어 두었으면 장면 없이 펼치기 띠만 그리고, 저장소가 막히면 펼친 채로 그린다", async () => {
+    const { CafeScene } = await import("../src/ui/community/cafe/CafeScene");
+    vi.stubGlobal("localStorage", { getItem: (k: string) => (k === "incident-game/cafe-folded" ? "1" : null), setItem: () => {} });
+    const folded = renderToStaticMarkup(<CafeScene motion party={false} onOpen={() => {}} onWrite={() => {}} />);
+    expect(folded).toContain("카페 펼치기");
+    expect(folded).not.toContain("<svg");
+    vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
+    const blocked = renderToStaticMarkup(<CafeScene motion party={false} onOpen={() => {}} onWrite={() => {}} />);
+    expect(blocked).toContain("<svg");
+    vi.unstubAllGlobals();
   });
 });

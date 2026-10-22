@@ -112,11 +112,12 @@
 @media (max-width: 860px) { .briefing-grid { grid-template-columns: 1fr; } .briefing-site { border-left: 0; border-top: 1px solid #1f2833; } .briefing-site .room-vignette { max-width: 280px; justify-self: center; } }
 
 /* ---------- 자료실(지식 탐색) ---------- */
-.archive-hero { display: grid; grid-template-columns: minmax(0, 1fr) 230px; align-items: center; gap: 20px; margin-bottom: 18px; padding: 20px 22px; border: 1px solid #2a2216; border-radius: 12px; background: radial-gradient(ellipse at 85% 60%, #ffcf8a1f, transparent 55%), #0c0b09; position: relative; overflow: hidden; }
+.archive-hero { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: center; gap: 20px; margin-bottom: 18px; padding: 20px 22px; border: 1px solid #2a2216; border-radius: 12px; background: radial-gradient(ellipse at 85% 60%, #ffcf8a1f, transparent 55%), #0c0b09; position: relative; overflow: hidden; }
 .archive-hero::before { content: ''; position: absolute; inset: 0 0 auto; height: 2px; background: linear-gradient(90deg, #ffcf8a, transparent 70%); box-shadow: 0 0 12px #ffcf8a; }
 .archive-kicker { font: 700 10px var(--mono); letter-spacing: 2px; color: #ffcf8a; }
-.archive-hero h2 { margin: 8px 0; }
-.archive-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.archive-hero h2 { margin: 6px 0; }
+.archive-hero p { margin: 0; font-size: 12.5px; line-height: 1.6; }
+.archive-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .archive-stats b { margin-left: 4px; font-family: var(--mono); }
 .product-tag { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 5px; border: 1px solid currentColor; font: 700 9.5px var(--mono); letter-spacing: .8px; }
 .product-curl { color: #00d4ff; } .product-linux { color: #00ff66; } .product-aws-alb { color: #ff9a3d; }

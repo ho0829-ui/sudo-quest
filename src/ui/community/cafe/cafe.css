@@ -26,3 +26,7 @@
 .cafe-visitor.is-outside, .cafe-tag.is-outside { opacity: 0; pointer-events: none; }
 .cafe-board-title { font: 800 6px var(--sans); fill: #1d2433; }
 .cafe-glass-text { font: 700 5px var(--mono); fill: #bfe6fa; letter-spacing: 1px; opacity: .8; }
+/* 카페 접기 버튼. 접으면 장면 없이 안내 띠만 남는다(접은 상태는 이 브라우저에 기억). */
+.cafe-fold { margin-left: auto; padding: 5px 11px; border-radius: 20px; font-size: 12px; color: #d8b8a5; border: 1px solid var(--cafe-line); background: transparent; white-space: nowrap; }
+.cafe-fold:hover { color: var(--cafe); border-color: #b77d5d; }
+.cafe-scene.is-folded .cafe-caption { border-top: 0; min-height: 0; }

@@ -31,7 +31,7 @@ export function CommunityScreen({ postId, writing, preset, onOpen, onWrite, onCr
   return <section className="community-screen">
     <header className="board-hero">
       <div><span className="board-eyebrow"><i /> COMMUNITY LOUNGE</span><h1>장애 뒤에, 한 잔의 대화.</h1>
-        <p>막혔던 순간도, 해결한 기쁨도.<br />함께 배우는 운영자들의 작은 카페입니다.</p>
+        <p>막혔던 순간도, 해결한 기쁨도. 함께 배우는 운영자들의 작은 카페입니다.</p>
         <div className="board-hero-tags"><span>질문을 편하게</span><span>경험을 솔직하게</span><span>서로에게 친절하게</span></div></div>
       <div className="board-coffee" aria-hidden="true"><div className="board-steam"><i /><i /><i /></div><div className="board-cup">$ brew ideas</div><div className="board-saucer" /><small>TAKE A BREAK · SHARE A FIX</small></div>
     </header>

@@ -20,7 +20,16 @@ const VIEW_BOX = "-275 -104 702 508";
 // 좁은 화면은 카페 전체를 담으면 사람이 너무 작아져서 가운데(커피 바·장테이블 쪽)만 잘라 보여 준다.
 const VIEW_BOX_NARROW = "-150 -78 410 352";
 const ENTERING = 2;
+const FOLD_KEY = "incident-game/cafe-folded";
 const media = (query: string) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(query).matches;
+
+/** 카페 접기는 이 브라우저에만 기억하는 편의 기능이다. 저장이 막혀도 펼친 채로 동작한다. */
+function loadFolded(): boolean {
+  try { return localStorage.getItem(FOLD_KEY) === "1"; } catch { return false; }
+}
+function saveFolded(folded: boolean) {
+  try { localStorage.setItem(FOLD_KEY, folded ? "1" : "0"); } catch { /* 무시 */ }
+}
 
 interface CafeSceneProps {
   /** 앱의 모션 설정. 꺼져 있으면 손님이 제자리에 머문다. */
@@ -42,6 +51,8 @@ export function CafeScene({ motion, party, onOpen, onWrite }: CafeSceneProps) {
   const entering = useMemo(() => new Set(moving ? visitors.filter(v => v.fresh).slice(0, ENTERING).map(v => v.author) : []), [visitors, moving]);
   const crowd = useWander(visitors.map(v => v.author), entering, moving, env.narrow ? NARROW_SPOTS : undefined);
   const [active, setActive] = useState<string | null>(null);
+  const [folded, setFolded] = useState(loadFolded);
+  const toggle = () => { setFolded(!folded); saveFolded(!folded); setActive(null); };
   const focused = visitors.find(v => v.author === active) ?? null;
 
   // 깊이 정렬: 가구·배경 직원(furniture.tsx)과 손님을 바닥 위치(x+y) 순서로 그린다.
@@ -55,6 +66,11 @@ export function CafeScene({ motion, party, onOpen, onWrite }: CafeSceneProps) {
 
   const [signX, signY] = project([10.1, 5.2, 1.9]);
   const status = latest.error ? "offline" : latest.loading ? "loading" : visitors.length ? "open" : "empty";
+  // 접으면 장면 대신 한 줄 띠만 남겨 글 목록을 첫 화면으로 올린다(1280×720 노트북 배려).
+  if (folded) return <section className="cafe-scene is-folded" aria-label="커뮤니티 카페 둘러보기">
+    <div className="cafe-caption"><p>☕ 카페 장면을 접어 두었어요{visitors.length ? ` · 손님 ${visitors.length}명` : ""}.</p>
+      <button type="button" className="cafe-fold" aria-expanded={false} onClick={toggle}>카페 펼치기 ▾</button></div>
+  </section>;
   return <section className="cafe-scene" aria-label="커뮤니티 카페 둘러보기">
     <svg className={`cafe-map${moving ? "" : " is-still"}`} viewBox={env.narrow ? VIEW_BOX_NARROW : VIEW_BOX} role="group"
       aria-label={`카페 손님 ${visitors.length}명. 손님을 고르면 그 사람이 쓴 최근 글이 열립니다.`}>
@@ -88,6 +104,7 @@ export function CafeScene({ motion, party, onOpen, onWrite }: CafeSceneProps) {
         : status === "offline" ? "게시판 서버에 연결되지 않아 손님이 아직 없어요. 아래에서 다시 불러올 수 있어요."
         : status === "empty" ? "아직 손님이 없어요. 첫 이야기를 남기면 카페에 들어옵니다."
         : `최근 글을 쓴 ${visitors.length}명이 카페에 있어요. ${env.touch ? "손님을 누르면 글 제목을, 한 번 더 누르면 글을 열어요." : "손님이나 말풍선을 누르면 그 글이 열려요."}`}</p>}
+      {!focused && <button type="button" className="cafe-fold" aria-expanded onClick={toggle}>카페 접기 ▴</button>}
     </div>
   </section>;
 }

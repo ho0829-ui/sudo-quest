@@ -1,13 +1,13 @@
 .community-screen { --cafe: #ffb487; --cafe-line: #49332d; max-width: 1160px; margin: 0 auto 40px; }
-.board-hero { position: relative; display: flex; justify-content: space-between; gap: 24px; padding: 42px; margin: 12px 0 30px; border: 1px solid var(--cafe-line); border-radius: 18px; background: radial-gradient(ellipse at 85% 50%, #51332955, transparent 65%), #111319; overflow: hidden; }
+.board-hero { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 26px 34px; margin: 0 0 18px; border: 1px solid var(--cafe-line); border-radius: 18px; background: radial-gradient(ellipse at 85% 50%, #51332955, transparent 65%), #111319; overflow: hidden; }
 .board-hero::before { content: ''; position: absolute; height: 2px; top: 0; left: 32px; right: 32px; background: linear-gradient(90deg, transparent, var(--cafe), transparent); box-shadow: 0 0 18px #ff9a6b70; }
 .board-eyebrow { font: 11px var(--font-mono, monospace); letter-spacing: .15em; color: var(--cafe); display: inline-flex; align-items: center; gap: 9px; }
 .board-eyebrow i { width: 6px; height: 6px; background: var(--cafe); border-radius: 50%; box-shadow: 0 0 10px #ffb48799; }
-.board-hero h1 { font-size: clamp(24px, 3vw, 36px); letter-spacing: -.04em; margin: 16px 0; word-break: keep-all; }
-.board-hero p { color: #a9a9b5; line-height: 1.9; }
-.board-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+.board-hero h1 { font-size: clamp(22px, 2.4vw, 30px); letter-spacing: -.04em; margin: 10px 0 6px; word-break: keep-all; }
+.board-hero p { margin: 0; color: #a9a9b5; line-height: 1.7; }
+.board-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .board-hero-tags span { font-size: 11px; color: #d8b8a5; border: 1px solid var(--cafe-line); border-radius: 20px; padding: 5px 10px; }
-.board-coffee { align-self: center; text-align: center; min-width: 220px; padding-top: 35px; position: relative; color: var(--cafe); }
+.board-coffee { align-self: center; text-align: center; min-width: 220px; padding-top: 35px; margin: -46px -10px -52px 0; position: relative; color: var(--cafe); transform: scale(.62); }
 .board-cup { position: relative; margin: auto; width: 142px; height: 100px; display: grid; place-items: center; background: linear-gradient(120deg, #49302b, #201b20); border: 2px solid #b77d5d; border-radius: 8px 8px 48px 48px; font: 13px monospace; box-shadow: inset 0 2px 12px #ffb48718, 0 12px 35px #0006; }
 .board-cup::after { content: ''; position: absolute; right: -30px; top: 12px; width: 26px; height: 42px; border: 3px solid #b77d5d; border-left: 0; border-radius: 0 20px 25px 0; }
 .board-saucer { width: 180px; height: 10px; border-radius: 50%; border: 1px solid #b77d5d; margin: -1px auto 24px; }
