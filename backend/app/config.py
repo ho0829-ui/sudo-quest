@@ -29,6 +29,9 @@ class Settings(BaseModel):
     candidate_limit: int = Field(default=8, ge=0, le=30)
     max_selected_documents: int = Field(default=4, ge=1, le=10)
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
+    # 공개 사이트(github.io)가 사설 주소(이 Mac의 tailnet IP 100.x)로 요청할 때 Chrome이 묻는 사설 네트워크 허용.
+    # 허용 출처(cors_origins)만 통과하므로, 공개 실행 스크립트에서만 켠다(scripts/serve-public.sh).
+    cors_allow_private_network: bool = False
 
     @model_validator(mode="after")
     def validate_config(self):

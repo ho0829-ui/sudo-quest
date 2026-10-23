@@ -8,6 +8,8 @@ cd "$(dirname "$0")/../backend"
 PAGES_ORIGIN="${PAGES_ORIGIN:-https://ho0829-ui.github.io}"
 export CORS_ORIGINS="$PAGES_ORIGIN,http://127.0.0.1:5173,http://localhost:5173"
 export LLM_MODEL="${PUBLIC_LLM_MODEL:-gpt-6.1-sol}"
+# 운영자 Mac·tailnet 기기에서는 공개 주소가 사설 IP(100.x)로 풀려 Chrome이 사설 네트워크 허용을 묻는다(허용 출처만 통과).
+export CORS_ALLOW_PRIVATE_NETWORK=true
 
 if lsof -nP -iTCP:8000 -sTCP:LISTEN >/dev/null 2>&1; then
   echo "8000 포트를 이미 다른 서버가 쓰고 있습니다. 그 서버를 끄고 다시 실행하세요." >&2

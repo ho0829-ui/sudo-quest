@@ -12,12 +12,12 @@ const CHROME = process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Conte
 const PORT = 9333;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export async function launch({ width = 1280, height = 720, scale = 1 } = {}) {
+export async function launch({ width = 1280, height = 720, scale = 1, args = [] } = {}) {
   const profile = mkdtempSync(join(tmpdir(), "sudo-quest-demo-"));
   const chrome = spawn(CHROME, [
     "--headless=new", `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
     "--no-first-run", "--no-default-browser-check", "--hide-scrollbars", "--mute-audio",
-    `--window-size=${width},${height}`, "about:blank",
+    `--window-size=${width},${height}`, ...args, "about:blank",
   ], { stdio: "ignore" });
   let target;
   for (let i = 0; i < 50 && !target; i++) {

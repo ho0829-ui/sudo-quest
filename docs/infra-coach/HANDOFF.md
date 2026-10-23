@@ -1,6 +1,18 @@
 # InfraCoach 현재 인수인계
 
-갱신: 2026-10-23 · 단계: 홈 테스트용 올클리어 미리보기 완료. 다음은 사람 검증 표본·공식 셀프/상호 점검과 배포 준비. 초보 관찰(21번)은 Choi 대기
+갱신: 2026-10-23 · 단계: **공개 배포 완료** — 게임 https://ho0829-ui.github.io/sudo-quest/ (GitHub Pages), 코치·지식·카페는 운영자 Mac(Tailscale Funnel https://macmini.taile20f54.ts.net). 초보 관찰(21번)·평가 표본 확인은 Choi 대기
+
+
+## 최신 상태 — 배포: GitHub Pages + 운영자 Mac (2026-10-23, Mac, Claude)
+
+- 사용자 결정: 로그인은 나중에, 배포 먼저. GMS 키가 오늘까지라 백엔드·카페까지 공개. 호스팅은 클라우드 대신 운영자 Mac + Tailscale Funnel(무료, 주소 고정), 생성 모델 gpt-6.1-sol, 서버는 수동 시작. push·PR·Tailscale 설치·Funnel·저장소 변수 허락.
+- 프론트: `src/api/base.ts`(`VITE_API_BASE`, 공개 주소·비밀 아님), 공개 배포에서 서버가 꺼지면 배지 "서버 쉬는 중". 워크플로 `master` 기준, 저장소 변수 `API_BASE_URL`.
+- 백엔드: `scripts/serve-public.sh`(127.0.0.1:8000, CORS는 Pages 출처만, `CORS_ALLOW_PRIVATE_NETWORK=true`, `LLM_MODEL=gpt-6.1-sol`, `.env`는 그대로). launch.json `api-public`.
+- 사용자 작업: Tailscale 설치(sudo 비밀번호)·로그인·Welcome 건너뛰기·HTTPS 인증서·Funnel 허용, Pages Source = GitHub Actions, PR #1 합치기. 저장소 이름이 `sudo-quest`로 바뀌어 있었음(로컬 remote는 옛 주소 — GitHub가 넘겨 줌, 원격 주소 변경은 권한 확인에서 막혀 그대로).
+- 점검: Actions 배포 성공. 밖의 방문자 경로(공개 DNS → 중계 IP)로 헤드리스 Chrome에서 배지 RAG 준비됨·카페 18글·지식 131항목·코치 실제 답변(유료 1회). 카페 쓰기 201·읽기 200·삭제 204·재조회 404, 다른 출처 쓰기 403. **이 Mac에서는 Chrome 로컬 네트워크 접근 권한(LNA) 때문에 막힘** → 권한 허용 시 정상(가이드 4절).
+- 검사: vitest 958, backend 88 OK. 상세 운영법 `24_배포_가이드.md`.
+- 주의: 공개 API는 앱의 미리보기 서버로 떠 있음 — 앱 종료·재시작 시 `scripts/serve-public.sh`로 다시 켤 것. Mac 잠자기 방지는 사용자 설정.
+
 
 ## 최신 상태 — 홈 히든 올클리어 버튼 (2026-10-23, Mac, Codex)
 
