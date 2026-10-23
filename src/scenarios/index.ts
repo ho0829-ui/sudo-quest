@@ -16,6 +16,17 @@ import { webSslExpired } from "./web-ssl-expired";
 import { awsAlbHealthcheck } from "./aws-alb-healthcheck";
 import { awsIamS3 } from "./aws-iam-s3";
 import { dbMaxConnections } from "./db-max-connections";
+import { kubernetesImagePull } from "./kubernetes-image-pull";
+import { kubernetesCrashloop } from "./kubernetes-crashloop";
+import { kubernetesOom } from "./kubernetes-oom";
+import { dockerPortAllocated } from "./docker-port-allocated";
+import { dockerMissingEnv } from "./docker-missing-env";
+import { kubernetesReadiness } from "./kubernetes-readiness";
+import { kubernetesServiceSelector } from "./kubernetes-service-selector";
+import { dockerDiskFull } from "./docker-disk-full";
+import { linuxTooManyFiles } from "./linux-too-many-files";
+import { webUpstream502 } from "./web-upstream-502";
+import { webTlsChain } from "./web-tls-chain";
 
 export const scenarios: Scenario[] = [
   linuxDiskFull,
@@ -31,6 +42,18 @@ export const scenarios: Scenario[] = [
   awsSecurityGroup,
   awsAlbHealthcheck,
   awsIamS3,
+  kubernetesImagePull,
+  // 실습 번호는 이 순서다. 기존 번호가 밀리지 않게 새 실습은 끝에 붙인다.
+  kubernetesCrashloop,
+  kubernetesOom,
+  dockerPortAllocated,
+  dockerMissingEnv,
+  kubernetesReadiness,
+  kubernetesServiceSelector,
+  dockerDiskFull,
+  linuxTooManyFiles,
+  webUpstream502,
+  webTlsChain,
 ];
 
 export function getScenario(id: string): Scenario | undefined {

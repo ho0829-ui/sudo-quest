@@ -1,14 +1,14 @@
 /* 라이브러리 없이 쓰는 스타일. 색과 간격은 전부 여기 변수로 모아둔다. */
 
 :root {
-  --bg: #0f1116;
-  --panel: #171a21;
-  --panel-2: #1e222b;
-  --border: #2a2f3a;
-  --text: #e4e7ee;
-  --muted: #9aa3b2;
-  --accent: #5eb3f6;
-  --green: #6bd968;
+  --bg: #0a0e13;
+  --panel: #0f161c;
+  --panel-2: #141c25;
+  --border: #1b2733;
+  --text: #e2eef1;
+  --muted: #94b0b8;
+  --accent: #5edcf6;
+  --green: #68c4d9;
   --red: #ff6b6b;
   --yellow: #f0c674;
   --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "D2Coding", monospace;
@@ -52,7 +52,7 @@ button:disabled {
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #0b1017;
+  color: #090d11;
   font-weight: 600;
 }
 
@@ -185,7 +185,7 @@ button.primary {
 /* ---------- 터미널 ---------- */
 
 .terminal {
-  background: #0b0d12;
+  background: #080b0f;
   border: 1px solid var(--border);
   border-radius: 10px;
   font-family: var(--mono);
@@ -335,6 +335,26 @@ button.primary {
   white-space: pre-wrap;
 }
 
+/* 새 탭으로 여는 바깥 링크. 어두운 배경에서 브라우저 기본 파란색은 읽기 어렵다. */
+.external-link {
+  color: var(--accent);
+}
+
+.evidence-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.evidence-kind {
+  display: inline-block;
+  min-width: 84px;
+  margin-right: 8px;
+  color: var(--muted);
+}
+
 .score-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -353,6 +373,11 @@ button.primary {
   font-size: 20px;
   font-weight: 600;
   font-family: var(--mono);
+}
+
+/* 소요 시간·명령어 칸의 짧은 평(점수와 무관). 감점 줄과 같은 높이로 칸을 맞춘다. */
+.score-item .score-note {
+  color: #8fd8ea;
 }
 
 .grade {
@@ -386,16 +411,8 @@ button.primary {
 .compare ol li.matched {
   color: var(--green);
 }
-.backend-status {
-  margin: 12px 0;
-  padding: 12px;
-  border: 1px solid #64748b;
-  border-radius: 8px;
-  font-size: 0.875rem;
-}
-.backend-status button { margin-left: 12px; }
 .workspace-tabs { display: flex; gap: 10px; margin: 20px 0; }
-button[aria-pressed="true"] { border-color: var(--accent); background: #20384c; }
+button[aria-pressed="true"] { border-color: var(--accent); background: #1d2a37; }
 .knowledge-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; }
 .knowledge-items { display: grid; gap: 8px; margin-top: 14px; }
 .knowledge-items button { text-align: left; }
@@ -413,3 +430,5 @@ button[aria-pressed="true"] { border-color: var(--accent); background: #20384c; 
 .condition-card { text-align: left; }
 .coach select, .coach textarea { display: block; width: 100%; margin: 6px 0 8px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); color: var(--text); font: inherit; }
 .coach-turn { border-top: 1px solid var(--border); padding: 8px 0; }
+.example-questions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.example-questions button { font-size: 12px; padding: 6px 11px; border-radius: 20px; background: #10161d; border-color: #1e2b38; color: #b7d4dc; text-align: left; }

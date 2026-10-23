@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, nginxConfigIsValid, serviceIsActive } from "../engine/judge";
 import { crashService, logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -129,4 +129,10 @@ export const webNginxConfig: Scenario = {
     realWorldNote:
       "`restart` 와 `reload` 의 차이는 실무에서 아주 중요합니다. restart는 일단 프로세스를 죽이고 새로 띄우기 때문에 설정이 잘못되면 그대로 장애가 됩니다. reload는 새 설정을 읽어보고 문제가 있으면 기존 프로세스를 그대로 둡니다. 운영 중인 웹 서버에는 reload를 쓰세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "nginx 명령줄 스위치 — -t 설정 검사, -s reload", url: "https://nginx.org/en/docs/switches.html" },
+    { kind: "official-doc", title: "nginx Beginner's Guide — 설정 반영(reload)과 프로세스 동작", url: "https://nginx.org/en/docs/beginners_guide.html" },
+    { kind: "postmortem", title: "danluu/post-mortems — Config Errors 모음(설정 실수로 인한 공개 장애 회고)", url: "https://raw.githubusercontent.com/danluu/post-mortems/master/README.md" },
+  ],
 };

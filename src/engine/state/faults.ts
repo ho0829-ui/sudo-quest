@@ -80,6 +80,19 @@ export function restartedAt(name: string, agoMs: number): Fault {
   };
 }
 
+/**
+ * 과거 시점에 서비스를 멈춘(꺼 둔) 것으로 만든다. 죽은 것(failed)이 아니라 누가 내린 것(inactive)이다.
+ * journal에는 systemd의 "Stopped ..." 기록이 그 시각으로 남는다.
+ */
+export function stoppedAt(name: string, agoMs: number): Fault {
+  return (state) => {
+    const saved = state.clock;
+    state.clock = saved - agoMs;
+    if (!stopService(state, name)) throw new Error(`서비스를 찾을 수 없습니다: ${name}`);
+    state.clock = saved;
+  };
+}
+
 /** 시계를 앞뒤로 움직인다. (인증서 만료 같은 시나리오용) */
 export function setClock(epochMs: number): Fault {
   return (state) => {

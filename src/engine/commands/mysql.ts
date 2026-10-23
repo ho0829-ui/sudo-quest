@@ -48,19 +48,48 @@ function runQuery(db: Database, sql: string): { output: string; error?: string }
   const set = /^SET\s+GLOBAL\s+([\w_]+)\s*=\s*'?([^';]+)'?$/i.exec(query);
   if (set) {
     const [, name, value] = set;
-    if (!(name in db.variables)) {
+    if (!Object.hasOwn(db.variables, name)) {
       return { output: "", error: `ERROR 1193 (HY000) at line 1: Unknown system variable '${name}'` };
     }
-    db.variables[name] = value.trim();
+    const text = value.trim();
+    // 현재 모델의 설정은 모두 정수다. Infinity 같은 문자열로 복구 판정을 우회하지 못하게 한다.
+    if (!/^\d+$/.test(text) || !Number.isSafeInteger(Number(text)) || Number(text) < 1 || (name === "max_connections" && Number(text) > 100_000)) {
+      return { output: "", error: `ERROR 1231 (42000) at line 1: Variable '${name}' can't be set to the value of '${text}'` };
+    }
+    db.variables[name] = text;
     return { output: "" };
   }
 
+  if (/^SHOW\s+(FULL\s+)?PROCESSLIST$/i.test(query)) return { output: processList(db) };
+  if (/^SHOW\s+DATABASES$/i.test(query)) {
+    return { output: renderList("Database", ["information_schema", "mysql", "performance_schema", "shop", "sys"]) };
+  }
+
+  // 모델에 없는 문장은 실제 서버의 문법 오류 형식으로 거절한다.
   return {
     output: "",
-    error:
-      "ERROR: 이 시뮬레이터는 SHOW VARIABLES / SHOW STATUS / SET GLOBAL 만 지원합니다.\n" +
-      "예: mysql -e \"SHOW VARIABLES LIKE 'max_connections'\"",
+    error: `ERROR 1064 (42000) at line 1: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '${query.slice(0, 40)}' at line 1`,
   };
+}
+
+/**
+ * SHOW PROCESSLIST: 연결 수(Threads_connected)만큼 줄을 만든다. 상태에서 계산하므로
+ * 연결이 상한에 붙어 있으면 목록도 그만큼 길다(`| wc -l` 로 셀 수 있다).
+ */
+function processList(db: Database): string {
+  const count = Number(db.status.Threads_connected ?? 1);
+  const rows = ["Id\tUser\tHost\tdb\tCommand\tTime\tState\tInfo"];
+  for (let i = 0; i < count; i++) {
+    const app = (i % 6) + 1;
+    rows.push(`${1000 + i}\tshop_app\tapp-0${app}:${40000 + i}\tshop\tSleep\t${(i * 7) % 60}\t\tNULL`);
+  }
+  return rows.join("\n");
+}
+
+function renderList(header: string, values: string[]): string {
+  const width = Math.max(header.length, ...values.map((v) => v.length));
+  const line = `+${"-".repeat(width + 2)}+`;
+  return [line, `| ${header.padEnd(width)} |`, line, ...values.map((v) => `| ${v.padEnd(width)} |`), line].join("\n");
 }
 
 export const mysql: Command = {
@@ -75,10 +104,8 @@ export const mysql: Command = {
     const sql = flagValue(tokens, "e", "execute");
     if (!sql) {
       if (hasFlag(tokens, "e", "execute")) return fail("mysql: option '-e' requires an argument", 1);
-      return fail(
-        `mysql: 이 시뮬레이터는 대화형 셸을 지원하지 않습니다. -e 로 쿼리를 넘겨주세요\n사용법: ${mysql.usage}`,
-        1,
-      );
+      // 대화형 입력을 기다릴 수 없으므로, 입력이 끝난(EOF) 실제 클라이언트처럼 접속했다가 바로 나간다.
+      return ok(`Welcome to the MySQL monitor.  Commands end with ; or \\g.\nServer version: ${state.database.version}\n\nmysql> Bye`);
     }
 
     const result = runQuery(state.database, sql);

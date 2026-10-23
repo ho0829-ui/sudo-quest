@@ -1,0 +1,496 @@
+{
+  "run_at": "2026-10-23 07:59",
+  "summary": {
+    "questions": 18,
+    "embedding_calls_for_questions": 1,
+    "top_k": 4,
+    "scoped_hit_at_k": 1.0,
+    "scoped_mrr": 0.944,
+    "markers_found": "32/33",
+    "global_hit_at_4": 1.0,
+    "global_hit_at_10": 1.0,
+    "item_auto_select_hit_at_3": 1.0
+  },
+  "rows": [
+    {
+      "id": "L1",
+      "item_id": "linux-errno-ECONNREFUSED",
+      "gold_doc_ids": [
+        "linux-connect-ECONNREFUSED"
+      ],
+      "scoped_doc_ids": [
+        "linux-connect-ECONNREFUSED",
+        "linux-errno-ECONNREFUSED"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "found no one listening"
+      ],
+      "markers_total": 1,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "linux-errno-ECONNREFUSED",
+        "linux-errno-ECONNRESET",
+        "linux-errno-ETIMEDOUT"
+      ]
+    },
+    {
+      "id": "L2",
+      "item_id": "linux-errno-ENOSPC",
+      "gold_doc_ids": [
+        "linux-write-ENOSPC"
+      ],
+      "scoped_doc_ids": [
+        "linux-write-ENOSPC",
+        "linux-open-ENOSPC",
+        "linux-errno-ENOSPC"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "has no room for the data"
+      ],
+      "markers_total": 1,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "linux-errno-ENOSPC",
+        "linux-errno-EIO",
+        "linux-errno-EDQUOT"
+      ]
+    },
+    {
+      "id": "L3",
+      "item_id": "linux-rlimit-nofile",
+      "gold_doc_ids": [
+        "linux-rlimit-nofile"
+      ],
+      "scoped_doc_ids": [
+        "linux-rlimit-nofile"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "one greater than the maximum file descriptor",
+        "EMFILE"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "linux-rlimit-nofile",
+        "linux-errno-EMFILE",
+        "linux-errno-ENFILE"
+      ]
+    },
+    {
+      "id": "C1",
+      "item_id": "curl-6",
+      "gold_doc_ids": [
+        "curl-exit-6",
+        "curl-option-resolve"
+      ],
+      "scoped_doc_ids": [
+        "libcurl-6",
+        "curl-exit-6",
+        "curl-option-resolve",
+        "curl-option-resolve"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 0.5,
+      "markers_found": [
+        "could not be resolved",
+        "--resolve"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "curl-6",
+        "curl-7",
+        "curl-5"
+      ]
+    },
+    {
+      "id": "C2",
+      "item_id": "curl-35",
+      "gold_doc_ids": [
+        "curl-exit-35",
+        "curl-option-verbose"
+      ],
+      "scoped_doc_ids": [
+        "libcurl-35",
+        "curl-exit-35",
+        "curl-option-verbose",
+        "curl-option-verbose"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 0.5,
+      "markers_found": [
+        "SSL handshaking failed",
+        "verbose"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "curl-35",
+        "curl-59",
+        "curl-58"
+      ]
+    },
+    {
+      "id": "C3",
+      "item_id": "curl-60",
+      "gold_doc_ids": [
+        "curl-exit-60",
+        "curl-option-cacert"
+      ],
+      "scoped_doc_ids": [
+        "curl-exit-60",
+        "libcurl-60",
+        "curl-option-cacert",
+        "curl-option-cacert"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "Peer certificate cannot be authenticated",
+        "--cacert"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "curl-60",
+        "curl-58",
+        "curl-77"
+      ]
+    },
+    {
+      "id": "A1",
+      "item_id": "aws-alb-http-502-issues",
+      "gold_doc_ids": [
+        "alb-http-502-issues"
+      ],
+      "scoped_doc_ids": [
+        "alb-http-502-issues",
+        "alb-http-502-issues",
+        "alb-health-overview",
+        "alb-health-overview"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "TCP RST",
+        "keep-alive duration"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-alb-http-502-issues",
+        "aws-alb-http-504-issues",
+        "aws-alb-http-500-issues"
+      ]
+    },
+    {
+      "id": "A2",
+      "item_id": "aws-alb-target-not-inservice",
+      "gold_doc_ids": [
+        "alb-target-not-inservice"
+      ],
+      "scoped_doc_ids": [
+        "alb-target-not-inservice",
+        "alb-target-not-inservice",
+        "alb-health-overview",
+        "alb-target-not-inservice"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "passes one\nhealth check",
+        "ephemeral ports"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-alb-target-not-inservice",
+        "aws-alb-http-503-issues",
+        "aws-alb-client-cannot-connect"
+      ]
+    },
+    {
+      "id": "A3",
+      "item_id": "aws-alb-http-413-issues",
+      "gold_doc_ids": [
+        "alb-http-413-issues"
+      ],
+      "scoped_doc_ids": [
+        "alb-http-413-issues"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "exceeds 1 MB",
+        "64 K"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-alb-http-413-issues",
+        "aws-alb-http-414-issues",
+        "aws-alb-http-400-issues"
+      ]
+    },
+    {
+      "id": "W1",
+      "item_id": "aws-ec2-connection-timeout",
+      "gold_doc_ids": [
+        "aws-ec2-connection-timeout"
+      ],
+      "scoped_doc_ids": [
+        "aws-ec2-connection-timeout",
+        "aws-ec2-connection-timeout",
+        "aws-ec2-connection-timeout",
+        "aws-ec2-connection-timeout"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "allows inbound traffic from your local"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-ec2-connection-timeout",
+        "aws-security-group-basics",
+        "aws-alb-client-cannot-connect"
+      ]
+    },
+    {
+      "id": "W2",
+      "item_id": "aws-iam-implicit-deny",
+      "gold_doc_ids": [
+        "aws-iam-implicit-deny"
+      ],
+      "scoped_doc_ids": [
+        "aws-iam-implicit-deny"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "missing Allow statement",
+        "adding the Allow statement"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-iam-implicit-deny",
+        "aws-iam-access-denied",
+        "aws-s3-403-permission-tips"
+      ]
+    },
+    {
+      "id": "W3",
+      "item_id": "aws-s3-403-permission-tips",
+      "gold_doc_ids": [
+        "aws-s3-403-permission-tips"
+      ],
+      "scoped_doc_ids": [
+        "aws-s3-403-permission-tips",
+        "aws-s3-403-permission-tips"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "get-caller-identity",
+        "policy\nsimulator"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "aws-s3-403-permission-tips",
+        "aws-iam-access-denied",
+        "aws-alb-http-403-issues"
+      ]
+    },
+    {
+      "id": "D1",
+      "item_id": "docker-run-publish",
+      "gold_doc_ids": [
+        "docker-run-publish"
+      ],
+      "scoped_doc_ids": [
+        "docker-run-publish"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "all interfaces",
+        "UFW"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "docker-run-publish",
+        "docker-port-publishing",
+        "docker-run-env"
+      ]
+    },
+    {
+      "id": "D2",
+      "item_id": "docker-restart-policy",
+      "gold_doc_ids": [
+        "docker-restart-policy"
+      ],
+      "scoped_doc_ids": [
+        "docker-restart-policy",
+        "docker-restart-policy",
+        "docker-restart-policy",
+        "docker-restart-policy"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "unless-stopped",
+        "manually stopped"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "docker-restart-policy",
+        "k8s-crashloopbackoff",
+        "k8s-image-pull-policy"
+      ]
+    },
+    {
+      "id": "D3",
+      "item_id": "docker-system-df",
+      "gold_doc_ids": [
+        "docker-system-df"
+      ],
+      "scoped_doc_ids": [
+        "docker-system-df"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "amount of disk space used by the Docker daemon"
+      ],
+      "markers_total": 1,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "docker-system-df",
+        "docker-prune-images",
+        "docker-prune-build-cache"
+      ]
+    },
+    {
+      "id": "K1",
+      "item_id": "k8s-crashloopbackoff",
+      "gold_doc_ids": [
+        "k8s-crashloopbackoff"
+      ],
+      "scoped_doc_ids": [
+        "k8s-crashloopbackoff",
+        "k8s-crashloopbackoff",
+        "k8s-crashloopbackoff",
+        "k8s-crashloopbackoff"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "exponential",
+        "10 minutes"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "k8s-crashloopbackoff",
+        "k8s-imagepullbackoff",
+        "k8s-debugging-pods"
+      ]
+    },
+    {
+      "id": "K2",
+      "item_id": "k8s-readiness-probe",
+      "gold_doc_ids": [
+        "k8s-readiness-probe"
+      ],
+      "scoped_doc_ids": [
+        "k8s-readiness-probe"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "removes the Pod's IP address",
+        "whole lifecycle"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "k8s-readiness-probe",
+        "k8s-define-readiness",
+        "k8s-service-definition"
+      ]
+    },
+    {
+      "id": "K3",
+      "item_id": "k8s-oomkilled",
+      "gold_doc_ids": [
+        "k8s-oomkilled"
+      ],
+      "scoped_doc_ids": [
+        "k8s-oomkilled",
+        "k8s-oomkilled",
+        "k8s-oomkilled",
+        "k8s-oomkilled"
+      ],
+      "scoped_hit": true,
+      "scoped_rr": 1.0,
+      "markers_found": [
+        "exceed its memory request",
+        "memory limit"
+      ],
+      "markers_total": 2,
+      "global_hit_at_4": true,
+      "global_hit_at_10": true,
+      "item_hit_at_3": true,
+      "auto_items": [
+        "k8s-oomkilled",
+        "k8s-describe-pod",
+        "k8s-crashloopbackoff"
+      ]
+    }
+  ]
+}

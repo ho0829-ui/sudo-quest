@@ -1,0 +1,382 @@
+{
+  "written_at": "2026-10-23",
+  "note": "정답 문서 절(gold_doc_ids)과 핵심 사실(expected_facts)은 실행 전에 backend/data/corpus/documents.json의 공식 문서 원문 절을 읽고 작성했다. markers는 근거 청크 안에 있어야 할 원문 문구(검색 평가용)다. 코치 질문의 요청 본문은 coach_requests_v2.json(게임 엔진으로 실제 명령을 실행해 프론트 buildCoachRequest로 만든 것)에 있다.",
+  "questions": [
+    {
+      "id": "L1",
+      "item_id": "linux-errno-ECONNREFUSED",
+      "question": "connect()가 ECONNREFUSED로 실패하면 정확히 무슨 뜻인가요?",
+      "gold_doc_ids": [
+        "linux-connect-ECONNREFUSED"
+      ],
+      "expected_facts": [
+        "스트림 소켓의 connect()가 원격 주소에서 연결을 기다리는(listening) 대상을 찾지 못했다는 뜻이다."
+      ],
+      "markers": [
+        "found no one listening"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "L2",
+      "item_id": "linux-errno-ENOSPC",
+      "question": "write()가 ENOSPC를 돌려주는 건 어떤 상황인가요?",
+      "gold_doc_ids": [
+        "linux-write-ENOSPC"
+      ],
+      "expected_facts": [
+        "fd가 가리키는 파일이 있는 장치에 데이터를 쓸 공간이 없다."
+      ],
+      "markers": [
+        "has no room for the data"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "L3",
+      "item_id": "linux-rlimit-nofile",
+      "question": "RLIMIT_NOFILE 값은 정확히 무엇을 뜻하고, 이 한도를 넘어 파일을 열려고 하면 어떤 오류가 나나요?",
+      "gold_doc_ids": [
+        "linux-rlimit-nofile"
+      ],
+      "expected_facts": [
+        "프로세스가 열 수 있는 최대 파일 디스크립터 번호보다 1 큰 값이다.",
+        "open·pipe·dup 등으로 한도를 넘으려 하면 EMFILE 오류가 난다."
+      ],
+      "markers": [
+        "one greater than the maximum file descriptor",
+        "EMFILE"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "C1",
+      "item_id": "curl-6",
+      "question": "curl이 종료 코드 6으로 끝났습니다. DNS를 거치지 않고 특정 IP로 연결해 보려면 어떤 옵션을 쓰나요?",
+      "gold_doc_ids": [
+        "curl-exit-6",
+        "curl-option-resolve"
+      ],
+      "expected_facts": [
+        "종료 코드 6은 원격 호스트 이름을 해석하지 못했다는 뜻이다.",
+        "--resolve <host:port:addr>로 특정 호스트·포트에 쓸 주소를 직접 지정할 수 있다(명령줄의 /etc/hosts 대안)."
+      ],
+      "markers": [
+        "could not be resolved",
+        "--resolve"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "C2",
+      "item_id": "curl-35",
+      "question": "curl 35 오류는 무슨 뜻이고, 원인을 더 자세히 보려면 무엇을 쓰나요?",
+      "gold_doc_ids": [
+        "curl-exit-35",
+        "curl-option-verbose"
+      ],
+      "expected_facts": [
+        "SSL 연결 오류, 즉 SSL 핸드셰이크가 실패했다는 뜻이다.",
+        "-v(--verbose)로 동작 과정을 자세히 출력해 디버깅할 수 있다."
+      ],
+      "markers": [
+        "SSL handshaking failed",
+        "verbose"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "C3",
+      "item_id": "curl-60",
+      "question": "curl 60이 납니다. 다른 CA 인증서 파일로 서버 인증서를 검증하려면 어떻게 하나요?",
+      "gold_doc_ids": [
+        "curl-exit-60",
+        "curl-option-cacert"
+      ],
+      "expected_facts": [
+        "알려진 CA 인증서로 상대(peer) 인증서를 인증할 수 없다는 뜻이다.",
+        "--cacert <file>로 PEM 형식 CA 인증서 파일을 지정해 검증한다(CURL_CA_BUNDLE 환경 변수보다 우선)."
+      ],
+      "markers": [
+        "Peer certificate cannot be authenticated",
+        "--cacert"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "A1",
+      "item_id": "aws-alb-http-502-issues",
+      "question": "ALB가 502를 반환할 때, 타깃과의 연결 쪽에서 생길 수 있는 원인은 무엇인가요?",
+      "gold_doc_ids": [
+        "alb-http-502-issues"
+      ],
+      "expected_facts": [
+        "연결을 맺을 때 타깃에서 TCP RST를 받았다.",
+        "요청 처리 중 타깃이 RST/FIN으로 연결을 닫았다 — 타깃 keep-alive 시간이 ALB 유휴 제한 시간보다 짧은지 확인한다.",
+        "타깃과의 SSL 핸드셰이크 오류."
+      ],
+      "markers": [
+        "TCP RST",
+        "keep-alive duration"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "A2",
+      "item_id": "aws-alb-target-not-inservice",
+      "question": "ALB에 등록한 타깃이 InService가 되지 않습니다. 무엇을 확인해야 하나요?",
+      "gold_doc_ids": [
+        "alb-target-not-inservice"
+      ],
+      "expected_facts": [
+        "헬스 체크를 한 번 통과해야 서비스에 들어가므로 헬스 체크 실패를 의심한다.",
+        "인스턴스 보안 그룹이 헬스 체크 포트·프로토콜로 로드밸런서 트래픽을 허용하는지.",
+        "네트워크 ACL이 헬스 체크 포트와 임시 포트(1024-65535)를 허용하는지, ping 경로가 존재하는지."
+      ],
+      "markers": [
+        "passes one\nhealth check",
+        "ephemeral ports"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "A3",
+      "item_id": "aws-alb-http-413-issues",
+      "question": "ALB에서 HTTP 413이 나는 원인은 무엇인가요?",
+      "gold_doc_ids": [
+        "alb-http-413-issues"
+      ],
+      "expected_facts": [
+        "타깃이 Lambda이고 요청 본문이 1MB를 넘는다.",
+        "요청 줄당 16K, 헤더 하나당 16K, 전체 요청 헤더 64K를 넘는다."
+      ],
+      "markers": [
+        "exceeds 1 MB",
+        "64 K"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "W1",
+      "item_id": "aws-ec2-connection-timeout",
+      "question": "EC2에 SSH로 접속하면 Connection timed out이 납니다. 먼저 무엇을 확인해야 하나요?",
+      "gold_doc_ids": [
+        "aws-ec2-connection-timeout"
+      ],
+      "expected_facts": [
+        "보안 그룹 인바운드 규칙이 내 컴퓨터의 공인 IPv4 주소에서 22번(SSH) 포트를 허용하는지 확인한다.",
+        "규칙의 Source가 단일 IP인데 내 IP가 고정이 아니면 바뀌어서 규칙에서 빠질 수 있다."
+      ],
+      "markers": [
+        "allows inbound traffic from your local",
+        "not static"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "W2",
+      "item_id": "aws-iam-implicit-deny",
+      "question": "'is not authorized to perform ... because no identity-based policy allows ...' 오류는 어떻게 해결하나요?",
+      "gold_doc_ids": [
+        "aws-iam-implicit-deny"
+      ],
+      "expected_facts": [
+        "자격 증명 기반 정책에 해당 작업을 허용(Allow)하는 문이 없어 생긴 암묵적 거부다.",
+        "정책에 그 작업의 Allow 문을 추가한다."
+      ],
+      "markers": [
+        "missing Allow statement",
+        "adding the Allow statement"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "W3",
+      "item_id": "aws-s3-403-permission-tips",
+      "question": "S3에서 403이 날 때 요청자의 권한은 어떻게 확인하나요?",
+      "gold_doc_ids": [
+        "aws-s3-403-permission-tips"
+      ],
+      "expected_facts": [
+        "요청자를 식별한다(서명 없는 요청은 익명, presigned URL은 서명한 사용자·역할의 정책).",
+        "aws sts get-caller-identity로 쓰고 있는 IAM 사용자·역할을 확인한다.",
+        "IAM 정책 시뮬레이터로 정책을 시험한다."
+      ],
+      "markers": [
+        "get-caller-identity",
+        "policy\nsimulator"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "D1",
+      "item_id": "docker-run-publish",
+      "question": "docker run -p 80:80 처럼 IP 없이 포트를 공개하면 어떻게 되나요? UFW로 막아 두었으면 안전한가요?",
+      "gold_doc_ids": [
+        "docker-run-publish"
+      ],
+      "expected_facts": [
+        "IP를 지정하지 않으면 모든 인터페이스(0.0.0.0)에 공개되어 외부에서 접근할 수 있다.",
+        "Docker가 자체 iptables 규칙을 관리하므로 UFW로 그 포트를 막아도 공개된다.",
+        "127.0.0.1:80:8080처럼 IP를 지정해 바인딩할 수 있다."
+      ],
+      "markers": [
+        "all interfaces",
+        "UFW"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "D2",
+      "item_id": "docker-restart-policy",
+      "question": "Docker 재시작 정책 always와 unless-stopped는 어떻게 다른가요?",
+      "gold_doc_ids": [
+        "docker-restart-policy"
+      ],
+      "expected_facts": [
+        "always는 컨테이너가 멈추면 항상 재시작하고, 수동으로 멈춘 경우에는 데몬이 재시작될 때 다시 시작한다.",
+        "unless-stopped는 (수동 등으로) 멈춘 컨테이너를 데몬 재시작 뒤에도 다시 시작하지 않는다.",
+        "기본값은 no다."
+      ],
+      "markers": [
+        "unless-stopped",
+        "manually stopped"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "D3",
+      "item_id": "docker-system-df",
+      "question": "Docker가 디스크를 얼마나 쓰고 있는지 보려면 어떤 명령을 쓰나요?",
+      "gold_doc_ids": [
+        "docker-system-df"
+      ],
+      "expected_facts": [
+        "docker system df가 Docker 데몬이 사용하는 디스크 공간 정보를 보여 준다."
+      ],
+      "markers": [
+        "amount of disk space used by the Docker daemon"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "K1",
+      "item_id": "k8s-crashloopbackoff",
+      "question": "CrashLoopBackOff는 정확히 어떤 상태이고, 백오프 지연은 언제 초기화되나요?",
+      "gold_doc_ids": [
+        "k8s-crashloopbackoff"
+      ],
+      "expected_facts": [
+        "크래시를 반복하는 컨테이너에 지수 백오프 지연이 적용되고 있는 상태다.",
+        "컨테이너가 일정 시간(예: 10분) 정상 실행되면 백오프 지연이 초기화된다."
+      ],
+      "markers": [
+        "exponential",
+        "10 minutes"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "K2",
+      "item_id": "k8s-readiness-probe",
+      "question": "readiness probe가 실패하면 서비스로 가는 트래픽은 어떻게 되나요?",
+      "gold_doc_ids": [
+        "k8s-readiness-probe"
+      ],
+      "expected_facts": [
+        "EndpointSlice 컨트롤러가 그 파드 IP를 일치하는 모든 서비스의 EndpointSlice에서 제거한다.",
+        "readiness probe는 컨테이너 수명 전체 동안 실행된다."
+      ],
+      "markers": [
+        "removes the Pod's IP address",
+        "whole lifecycle"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "K3",
+      "item_id": "k8s-oomkilled",
+      "question": "컨테이너가 메모리 limit를 넘으면 어떻게 되나요? request는 넘어도 되나요?",
+      "gold_doc_ids": [
+        "k8s-oomkilled"
+      ],
+      "expected_facts": [
+        "노드에 여유 메모리가 있으면 request는 넘을 수 있다.",
+        "limit보다 많이 쓰면 종료 후보가 되고, 계속 넘으면 종료되며, 재시작 가능하면 kubelet이 재시작한다."
+      ],
+      "markers": [
+        "exceed its memory request",
+        "memory limit"
+      ],
+      "kind": "in_corpus"
+    },
+    {
+      "id": "O1",
+      "item_id": "docker-system-df",
+      "question": "docker system df 출력의 RECLAIMABLE 비율은 어떻게 계산되나요?",
+      "gold_doc_ids": [],
+      "expected_facts": [
+        "색인된 docker system df 절은 디스크 사용량 정보를 보여 준다는 설명뿐이라 계산 방법은 확인되지 않는다 → 보류해야 맞다."
+      ],
+      "markers": [],
+      "kind": "out_of_corpus"
+    },
+    {
+      "id": "O2",
+      "item_id": "linux-errno-ENOSPC",
+      "question": "ext4 파일 시스템에서 root 예약 블록 비율을 바꾸는 tune2fs 옵션은 무엇인가요?",
+      "gold_doc_ids": [],
+      "expected_facts": [
+        "색인 문서(errno·write·open의 ENOSPC 절)에 tune2fs는 없다 → 보류해야 맞다."
+      ],
+      "markers": [],
+      "kind": "out_of_corpus"
+    },
+    {
+      "id": "O3",
+      "item_id": "curl-6",
+      "question": "내일 서울 날씨와 점심 메뉴를 알려 주세요.",
+      "gold_doc_ids": [],
+      "expected_facts": [
+        "주제 밖 질문 → 보류해야 맞다."
+      ],
+      "markers": [],
+      "kind": "out_of_corpus"
+    }
+  ],
+  "coach": [
+    {
+      "id": "P1",
+      "scenario": "kubernetes-crashloop",
+      "gold_item_ids": [
+        "k8s-crashloopbackoff",
+        "k8s-pod-logs-previous",
+        "k8s-describe-pod",
+        "k8s-container-terminated",
+        "k8s-debugging-pods"
+      ],
+      "kind": "coach"
+    },
+    {
+      "id": "P2",
+      "scenario": "docker-port-allocated",
+      "gold_item_ids": [
+        "docker-run-publish",
+        "docker-port-publishing",
+        "linux-errno-EADDRINUSE",
+        "docker-logs"
+      ],
+      "kind": "coach"
+    },
+    {
+      "id": "P3",
+      "scenario": "linux-too-many-files",
+      "gold_item_ids": [
+        "linux-rlimit-nofile",
+        "linux-errno-EMFILE",
+        "linux-errno-ENFILE"
+      ],
+      "kind": "coach"
+    }
+  ]
+}

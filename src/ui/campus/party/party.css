@@ -1,0 +1,45 @@
+/* 운영실 파티. 모든 움직임은 transform·opacity만 쓰고, 모션 끄기(.motion-paused)·동작 줄이기 설정을 따른다. */
+.iso-party-banner { font: 700 6.5px var(--mono); letter-spacing: .4px; }
+.iso-party-sign { font: 800 9px var(--mono); letter-spacing: 1.2px; }
+.iso-party-tiny { font: 700 4.2px var(--mono); }
+.iso-balloon { animation: iso-float 3.6s ease-in-out infinite; }
+.iso-confetti { transform-box: fill-box; transform-origin: center; animation: party-fall 4s linear infinite; }
+.iso-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: party-flicker .5s ease-in-out infinite alternate; }
+.iso-pong { animation: party-pong 1.4s ease-in-out infinite; }
+.iso-mirror { transform-box: fill-box; transform-origin: center; animation: iso-spin 6s linear infinite; }
+.iso-sparkle { animation: iso-glow 1.8s ease-in-out infinite; }
+.iso-spot { transform-box: fill-box; transform-origin: 50% 0; animation: party-spot 4s ease-in-out infinite alternate; }
+.iso-cannon-shot { transform-box: fill-box; transform-origin: 0 100%; opacity: 0; animation: party-shot 3.2s ease-out infinite; }
+@keyframes party-fall { 0% { opacity: 0; transform: translateY(-6px) rotate(0); } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(46px) rotate(320deg); } }
+@keyframes party-flicker { from { transform: scaleY(.85); } to { transform: scaleY(1.12); } }
+@keyframes party-pong { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(calc(var(--dx) / 2), calc(var(--dy) / 2 - 9px)); } 50% { transform: translate(var(--dx), var(--dy)); } 75% { transform: translate(calc(var(--dx) / 2), calc(var(--dy) / 2 - 9px)); } }
+@keyframes party-spot { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@keyframes party-shot { 0%, 50% { opacity: 0; transform: scale(.2); } 60% { opacity: 1; } 100% { opacity: 0; transform: scale(1.15) translateY(-6px); } }
+
+/* 시작 연출: 처음 파티가 열릴 때 한 번만. 평소(모션 끔·줄이기 포함)에는 보이지 않는다. */
+.party-burst-flash, .party-burst-piece { opacity: 0; }
+.iso-room.is-kickoff .party-burst-flash { transform-box: fill-box; transform-origin: center; animation: party-flash 1.4s ease-out 1 1.4s; }
+.iso-room.is-kickoff .party-burst-piece { animation: party-burst 2.2s cubic-bezier(.15, .7, .3, 1) 1 1.5s; }
+.motion-paused .party-burst { display: none; }
+@keyframes party-flash { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: .35; } 100% { opacity: 0; transform: scale(1.3); } }
+@keyframes party-burst { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--bx), calc(var(--by) + 50px)) rotate(540deg); } }
+
+/* 지도 위 안내 띠: "OO 운영실 파티 시작" */
+/* left·right를 함께 주고 width: fit-content로 가운데 정렬한다(left: 50%면 좁은 화면에서 폭이 절반으로 줄어 여러 줄이 된다). */
+.party-toast { position: absolute; left: 12px; right: 12px; top: 46px; z-index: 2; width: fit-content; margin-inline: auto; display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid #ffd44766; background: #1a1408ee; color: #ffe9a8; font-size: 12.5px; font-weight: 700;
+  box-shadow: 0 10px 30px #0008, 0 0 24px #ffd44733; animation: party-toast 6.5s ease-in-out forwards; pointer-events: none; }
+.party-toast i { width: 8px; height: 8px; border-radius: 50%; background: #ffd447; box-shadow: 0 0 10px #ffd447; flex: none; }
+@keyframes party-toast { 0% { opacity: 0; transform: translateY(-8px); } 8%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
+.iso-hud-status.party { color: #ffd447; background: #ffd4471a; }
+.iso-hud-next { font-size: 11px; color: var(--muted); }
+.iso-legend i.party { background: #ffd447; box-shadow: 0 0 6px #ffd447; margin-left: 6px; }
+.motion-paused .party-toast { animation: none; }
+/* ALL CLEAR 줄: 표시와 두 링크를 같은 글꼴·크기·이모지 형식으로 맞추고, 모두 같은 안쪽 여백을 줘서 간격이 고르다.
+   링크는 평소 글자처럼 보이다가 마우스·키보드가 오면 금빛 알약으로 밝아진다(크기·위치는 그대로라 흔들리지 않는다). */
+.iso-allclear { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0 0 -10px; }
+.iso-allclear-item { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent;
+  font: 800 11px var(--mono); letter-spacing: 1px; line-height: 1.4; color: #ffd447; background: none; }
+.iso-allclear button.iso-allclear-item { color: #e9dcae; cursor: pointer; transition: color .15s, background .15s, border-color .15s, box-shadow .15s; }
+.iso-allclear button.iso-allclear-item:hover, .iso-allclear button.iso-allclear-item:focus-visible { color: #ffe9a8; background: #ffd4471f; border-color: #ffd44766; box-shadow: 0 0 14px #ffd44733; }
+.iso-allclear button.iso-allclear-item:active { background: #ffd44733; }

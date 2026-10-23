@@ -6,6 +6,9 @@
  * 그래야 플레이어가 파일을 지우면 df 결과가 저절로 바뀐다.
  */
 
+import type { DockerState } from "./docker/types";
+import type { KubernetesState } from "./kubernetes/types";
+
 // ---------- 파일시스템 ----------
 
 interface NodeBase {
@@ -16,6 +19,8 @@ interface NodeBase {
   mode: number;
   /** 마지막 수정 시각 (epoch ms) */
   mtime: number;
+  /** 심볼릭 링크면 가리키는 대상. /proc/PID/fd의 항목처럼 계산으로 만든 노드에서 쓴다. */
+  link?: string;
 }
 
 export interface FileNode extends NodeBase {
@@ -74,7 +79,9 @@ export interface Service {
    * 이게 있으면 listenPorts의 주소 대신 설정 파일의 값을 쓴다.
    * "설정을 고치고 재시작하면 바인딩이 바뀐다"가 여기서 재현된다.
    */
-  bindConfig?: { path: string; key: string };
+  bindConfig?: { path: string; key: string; portKey?: string };
+  /** 설정 파일을 쓰는 서비스(nginx)가 마지막으로 시작·reload할 때 읽은 내용. 요청 처리는 이것을 따른다. */
+  configSnapshot?: string;
   /** 문법을 검사할 설정 파일 경로 */
   configPath?: string;
   /** 그 파일을 어떤 검증기로 볼지. configValidators의 키. */
@@ -83,6 +90,16 @@ export interface Service {
   lastExitReason?: string;
   memKB: number;
   cpu: number;
+  /** 동시에 유지해야 하는 연결 수(예: 실시간 알림 접속). 연결마다 파일 디스크립터를 하나 쓴다. state/limits.ts가 계산한다. */
+  connections?: number;
+  /** 연결 말고 늘 열어 두는 파일·파이프 수(표준 입출력·로그·이벤트 루프 등). 없으면 8 */
+  baseFds?: number;
+  /** fd 한도에 막혀 새 연결을 받지 못할 때 앱이 남기는 로그 한 줄 */
+  fdExhaustedLog?: string;
+  /** 이 서비스 포트로 온 HTTP 요청의 경로별 응답(200). 없으면 우리 서버의 nginx 웹 루트를 돌려준다. */
+  http?: { responses: Record<string, string>; headers?: Record<string, string> };
+  /** systemctl daemon-reload 때 unit 파일·drop-in에서 읽은 설정. 다음 시작부터 새 프로세스에 적용된다. */
+  loaded?: { nofile?: { soft: number; hard: number }; source: string };
 }
 
 // ---------- 프로세스 ----------
@@ -97,6 +114,10 @@ export interface Process {
   listenPorts?: { addr: string; port: number }[];
   /** systemd 서비스가 띄운 프로세스면 서비스 이름 */
   service?: string;
+  /** docker-proxy처럼 컨테이너로 연결을 넘기는 프로세스면 그 컨테이너 ID. 로컬 요청의 응답을 컨테이너가 만든다. */
+  container?: string;
+  /** 열린 파일 수 한도(RLIMIT_NOFILE). 없으면 systemd 기본값(soft 1024, hard 524288) */
+  nofile?: { soft: number; hard: number };
 }
 
 // ---------- 로그 ----------
@@ -168,6 +189,8 @@ export interface Network {
   /** 가상 인터넷의 DNS 레코드: 도메인 → IP */
   records: Record<string, string>;
   world: RemoteHost[];
+  /** 이 서버(curl·openssl)가 믿는 루트 인증서의 주체 DN. 중간 인증서는 없다(실제 OS CA 묶음과 같다). */
+  trustedRoots?: string[];
 }
 
 // ---------- 데이터베이스 ----------
@@ -193,6 +216,15 @@ export interface Certificate {
   issuer: string;
   notBefore: number;
   notAfter: number;
+  /** 주체 DN(예: "CN = shop.example.com"). 없으면 CN = domain으로 본다. */
+  subject?: string;
+  /**
+   * PEM 본문(가짜 base64)의 식별 문자열. 파일 내용에 이 문자열이 들어 있으면 그 파일에 이 인증서가 있는 것이다.
+   * 그래서 cat a.crt b.crt | tee chain.crt 로 만든 파일의 체인이 따로 기록하지 않아도 계산된다(state/certs.ts).
+   */
+  pem?: string;
+  /** 짝이 되는 개인 키의 식별 문자열. 키 파일 내용에 있어야 nginx가 이 인증서를 쓸 수 있다. */
+  keyId?: string;
 }
 
 // ---------- AWS ----------
@@ -264,6 +296,8 @@ export interface AwsState {
   loadBalancers?: LoadBalancer[];
   targetGroups?: TargetGroup[];
   roles?: IamRole[];
+  /** 가상 IAM에서 존재 여부를 확인할 수 있는 AWS 관리형 정책 이름 */
+  availableManagedPolicies?: string[];
   /**
    * 인스턴스가 실제로 응답하는 경로들.
    * 헬스체크 통과 여부를 "정해두는" 대신 여기서 계산한다.
@@ -298,4 +332,10 @@ export interface SystemState {
   database?: Database;
   /** AWS 시나리오에서만 쓴다 */
   aws?: AwsState;
+  /** Kubernetes 실습에만 있는 가상 클러스터 */
+  kubernetes?: KubernetesState;
+  /** Docker 실습에만 있는 가상 Docker 엔진 */
+  docker?: DockerState;
+  /** 이 터미널(셸)에서 ulimit로 바꾼 한도. 셸에만 적용되고 서비스에는 영향이 없다. */
+  shellLimits?: { nofile?: { soft: number; hard: number } };
 }

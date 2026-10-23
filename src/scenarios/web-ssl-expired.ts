@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { httpResponds } from "../engine/judge";
 import { logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -116,4 +116,10 @@ export const webSslExpired: Scenario = {
     realWorldNote:
       "인증서 만료는 '가장 예측 가능한 장애'입니다. 날짜가 정해져 있는데도 매년 대형 서비스들이 이걸로 멈춥니다. 이유는 늘 같습니다 — 갱신 자동화는 해뒀는데 그 자동화가 실패했을 때 알아차릴 방법이 없었던 것입니다. 자동화를 믿지 말고, 자동화를 감시하세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "postmortem", title: "crates.io 인증서 만료 장애 회고(2016-11-07)", url: "https://internals.rust-lang.org/t/crates-io-expiry-postmortem-2016-11-07/4344" },
+    { kind: "postmortem", title: "docs.gluster.org 인증서 자동 갱신 실패 회고(2018-11)", url: "https://lists.gluster.org/pipermail/gluster-devel/2018-November/055698.html" },
+    { kind: "official-doc", title: "Let's Encrypt FAQ — 인증서 유효 기간과 자동 갱신", url: "https://letsencrypt.org/docs/faq/" },
+  ],
 };

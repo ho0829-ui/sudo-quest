@@ -1,6 +1,22 @@
+import { TerminalLoader } from "../components/TerminalLoader";
 import { useEffect, useRef, useState } from "react";
 import { getItems, getJob, startChat, type Item } from "../../api/knowledge";
+import { isAnswer } from "../../api/validate";
 import { ConditionSearch } from "../components/ConditionSearch";
+import { RichAnswer, RichLine } from "../components/RichAnswer";
+import { RoomVignette } from "../campus/RoomVignette";
+import { ExternalLink } from "../components/ExternalLink";
+import { sanitizeTurns, settlePending, useStoredState } from "../useStoredState";
+
+function reviveTurns(value: unknown): Record<string, Turn[]> | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const result: Record<string, Turn[]> = {};
+  for (const [item, stored] of Object.entries(value)) {
+    const turns = sanitizeTurns(stored, isAnswer);
+    if (turns) result[item] = settlePending(turns);
+  }
+  return result;
+}
 import { historyFor, type Turn } from "../chatHistory";
 
 const stages: Record<string, string> = {
@@ -9,14 +25,26 @@ const stages: Record<string, string> = {
   retrieve: "관련 근거 검색 중", generate: "근거 기반 답변 생성·검증 중", cache: "저장된 답변 확인 중",
 };
 
+/** 처음 질문하는 사람이 "무엇을 물어야 할지" 막히지 않게 하는 예시. 원인·확인·구분 세 방향이다. */
+/** 제품 이름을 CSS 클래스용 이름으로. "AWS ALB" → "aws-alb" */
+export function productSlug(product: string): string {
+  return product.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+const EXAMPLE_QUESTIONS = [
+  "어떤 조건에서 이 오류가 발생하나요?",
+  "이 오류가 났을 때 무엇부터 확인해야 하나요?",
+  "비슷한 다른 오류와 어떻게 구분하나요?",
+];
+
 export function KnowledgeScreen() {
   const [items, setItems] = useState<Item[]>([]);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useStoredState("incident-game/knowledge/selected", () => "", v => (typeof v === "string" ? v : null));
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("");
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Record<string, Turn[]>>({});
+  const [turns, setTurns] = useStoredState<Record<string, Turn[]>>("incident-game/knowledge/turns", () => ({}), reviveTurns);
   const [pending, setPending] = useState<{ item: string; stage: string } | null>(null);
   const active = useRef(true);
   useEffect(() => {
@@ -47,7 +75,7 @@ export function KnowledgeScreen() {
       const { job_id } = await startChat(item, text, history);
       const deadline = Date.now() + 240000;
       while (active.current && Date.now() < deadline) {
-        const job = await getJob(job_id);
+        const job = await getJob(job_id, isAnswer);
         if (!active.current) return;
         if (job.status === "failed") throw new Error(job.message || "답변 생성에 실패했습니다.");
         if (job.status === "complete" && job.result) {
@@ -66,10 +94,19 @@ export function KnowledgeScreen() {
   }
 
   const item = items.find(row => row.item_id === selected);
+  // 제품별 주제 수(실제 목록에서 센다). 머리 배지에 쓴다.
+  const products = [...items.reduce((map, row) => map.set(row.product, (map.get(row.product) ?? 0) + 1), new Map<string, number>())];
   return <section className="knowledge">
-    <header>
-      <h2>공식 문서로 배우는 장애 지식</h2>
-      <p className="muted">curl·Linux·AWS ALB 오류 {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 운영 환경의 진단·복구 판단을 대신하지 않으니, 실서버 조치 전에는 원문 문서와 담당자 절차를 확인하세요.</p>
+    <header className="archive-hero">
+      <div>
+        <div className="archive-kicker">ARCHIVE · 자료실</div>
+        <h2>공식 문서로 배우는 장애 지식</h2>
+        <p className="muted">{products.map(([name]) => name).join("·")} {items.length}개 주제 · 공식 문서 근거를 확인하는 학습용 답변입니다. 실제 운영 환경의 진단·복구 판단을 대신하지 않으니, 실서버 조치 전에는 원문 문서와 담당자 절차를 확인하세요.</p>
+        <div className="archive-stats">
+          {products.map(([name, count]) => <span key={name} className={`product-tag product-${productSlug(name)}`}>{name} <b>{count}</b></span>)}
+        </div>
+      </div>
+      <RoomVignette kind="library" className="archive-room" />
     </header>
     {error && <p role="alert">{error} <button onClick={() => void load()}>다시 불러오기</button></p>}
     {!ready && !error && <p role="status">지식 색인이 준비되지 않아 질문할 수 없습니다. 위 안내대로 색인을 만든 뒤 <button onClick={() => void load()}>다시 확인</button>해주세요.</p>}
@@ -80,7 +117,7 @@ export function KnowledgeScreen() {
         <div className="knowledge-items">
           {items.filter(row => `${row.title_ko} ${row.product}`.toLowerCase().includes(filter.toLowerCase())).map(row =>
             <button key={row.item_id} aria-pressed={selected === row.item_id} onClick={() => { setSelected(row.item_id); setQuestion(""); }}>
-              <span className="muted small">{row.product}</span><br />{row.title_ko}
+              <span className={`product-tag product-${productSlug(row.product)}`}>{row.product}</span><br />{row.title_ko}
             </button>)}
         </div>
       </aside>
@@ -93,12 +130,12 @@ export function KnowledgeScreen() {
               <h4>질문</h4><p className="answer-text">{turn.question}</p>
               {turn.error && <p role="alert">{turn.error}</p>}
               {turn.result && <>
-                <h4>문서 기반 답변</h4><p className="answer-text">{turn.result.answer}</p>
-                {turn.result.suggested_checks.length > 0 && <ul>{turn.result.suggested_checks.map((check, i) => <li key={i}>{check}</li>)}</ul>}
+                <h4>문서 기반 답변</h4><RichAnswer text={turn.result.answer} />
+                {turn.result.suggested_checks.length > 0 && <ul>{turn.result.suggested_checks.map((check, i) => <li key={i}><RichLine text={check} /></li>)}</ul>}
                 {turn.result.warnings.map((warning, i) => <p className="muted" key={i}>{warning}</p>)}
                 {turn.result.citations.length > 0 && <details open><summary>답변에 사용한 근거 {turn.result.citations.length}건</summary>
                   {turn.result.citations.map(c => <div className="source-card" key={c.evidence_id}>
-                    <a href={c.source_url} target="_blank" rel="noreferrer">[근거 {c.evidence_id}] {c.title}</a>
+                    <ExternalLink href={c.source_url}>[근거 {c.evidence_id}] {c.title}</ExternalLink>
                     <div className="muted small">{c.source_type === "item_metadata" ? "항목 메타데이터" : "공식 상세 문서"} · {c.publisher} · {c.license}</div>
                     <details><summary>검색한 근거 본문 보기</summary><p className="answer-text">{c.text}</p></details>
                   </div>)}
@@ -108,10 +145,15 @@ export function KnowledgeScreen() {
               </>}
             </article>)}
           </div>
-          {pending && <p role="status">{pending.item === selected ? stages[pending.stage] || "처리 중" : "다른 항목의 답변을 처리 중입니다."}</p>}
+          {pending && <TerminalLoader label={pending.item === selected ? stages[pending.stage] || "처리 중" : "다른 항목의 답변을 처리 중입니다."} />}
           <form onSubmit={e => { e.preventDefault(); void submit(); }}>
             <label htmlFor="knowledge-question">공식 문서에 질문하기</label>
-            <textarea id="knowledge-question" value={question} onChange={e => setQuestion(e.target.value)} maxLength={2000} rows={3} placeholder="어떤 조건에서 이 오류가 발생하나요?" />
+            {/* 예시는 입력창에 채우기만 한다. 유료 호출이므로 보내기는 사용자가 직접 누른다. */}
+            <div className="example-questions" role="group" aria-label="예시 질문">
+              {EXAMPLE_QUESTIONS.map(example => <button key={example} type="button"
+                onClick={() => { setQuestion(example); document.getElementById("knowledge-question")?.focus(); }}>{example}</button>)}
+            </div>
+            <textarea id="knowledge-question" value={question} onChange={e => setQuestion(e.target.value)} maxLength={2000} rows={3} placeholder="직접 입력하거나 위 예시를 눌러 고쳐 써 보세요." />
             <button className="primary" disabled={!ready || !!pending || !question.trim()}>근거 찾아 질문하기</button>
           </form>
         </>}

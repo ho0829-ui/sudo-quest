@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { targetGroupIsHealthy } from "../engine/judge";
 import { logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -126,4 +126,9 @@ export const awsAlbHealthcheck: Scenario = {
     realWorldNote:
       "AWS 문서 기준으로, 타깃이 모두 unhealthy일 때는 fail-open이고 503의 대표 원인은 '등록된 타깃이 없거나 모두 unused(미등록·리스너 규칙에서 미사용·비활성 AZ·중지/종료)'인 경우입니다. 502는 타깃과의 연결·응답 문제, 504는 연결·응답 시간 초과입니다. CloudWatch의 HTTPCode_ELB_5XX(로드밸런서가 만든 에러)와 HTTPCode_Target_5XX(애플리케이션이 만든 에러)를 구분하는 것도 중요합니다. 참고: Target group health checks, Troubleshoot your Application Load Balancers (docs.aws.amazon.com).",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "Application Load Balancer — Target group health checks", url: "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html" },
+    { kind: "official-doc", title: "Application Load Balancer — 문제 해결", url: "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html" },
+  ],
 };

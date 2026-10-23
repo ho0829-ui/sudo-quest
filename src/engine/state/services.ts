@@ -13,8 +13,11 @@
  * 시나리오는 원인만 심어두면 되고, "그래서 서비스가 뜨지 못한다"는 판단은 엔진이 한다.
  */
 import { configValidators } from "./config/nginx";
+import { nginxTlsProblem } from "./config/nginxSites";
+import { daemonStarted, daemonStopped } from "./docker/lifecycle";
 import { diskUsage, nextPid, portOwner } from "./derived";
 import { findNode } from "./fs";
+import { fdUsage } from "./limits";
 import { addLog } from "./log";
 import type { Service, SystemState } from "./types";
 
@@ -37,26 +40,39 @@ function blockingReason(state: SystemState, service: Service): string | null {
     if (availKB < service.requiresFreeKB) return "No space left on device";
   }
 
-  // 설정 파일 문법 검사. nginx -t 와 똑같은 함수를 쓰므로 결과가 어긋나지 않는다.
-  if (service.configPath && service.configValidator) {
-    const node = findNode(state.fs, service.configPath);
-    if (!node || node.kind !== "file") {
-      return `open() "${service.configPath}" failed (2: No such file or directory)`;
-    }
-    const check = configValidators[service.configValidator](node.content);
-    if (!check.ok && check.error) {
-      return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
-    }
-  }
+  return configProblem(state, service) ?? portProblem(state, service.listenPorts ?? [], service.mainPid);
+}
 
-  for (const listen of service.listenPorts ?? []) {
+/** 설정 파일 문법 검사. nginx -t 와 똑같은 함수를 쓰므로 결과가 어긋나지 않는다. */
+function configProblem(state: SystemState, service: Service): string | null {
+  if (!service.configPath || !service.configValidator) return null;
+  const node = findNode(state.fs, service.configPath);
+  if (!node || node.kind !== "file") {
+    return `open() "${service.configPath}" failed (2: No such file or directory)`;
+  }
+  const check = configValidators[service.configValidator](node.content);
+  if (!check.ok && check.error) {
+    return `[emerg] ${check.error.message} in ${service.configPath}:${check.error.line}`;
+  }
+  // 문법이 맞아도 인증서·키를 읽지 못하면 시작하지 못한다.
+  return service.configValidator === "nginx" ? nginxTlsProblem(state, node.content) : null;
+}
+
+/** 시작·reload에 성공한 순간의 설정 내용을 기억한다. 이후 요청은 이 내용으로 처리한다. */
+function snapshotConfig(state: SystemState, service: Service) {
+  if (!service.configPath) return;
+  const node = findNode(state.fs, service.configPath);
+  if (node?.kind === "file") service.configSnapshot = node.content;
+}
+
+function portProblem(state: SystemState, ports: { addr: string; port: number }[], ownPid?: number): string | null {
+  for (const listen of ports) {
     const owner = portOwner(state, listen.addr, listen.port);
     // 자기 자신이 이미 쓰고 있는 건 충돌이 아니다
-    if (owner && owner.pid !== service.mainPid) {
+    if (owner && owner.pid !== ownPid) {
       return `bind() to ${listen.addr}:${listen.port} failed (98: Address already in use)`;
     }
   }
-
   return null;
 }
 
@@ -74,10 +90,11 @@ function effectiveListenPorts(state: SystemState, service: Service) {
   const node = findNode(state.fs, service.bindConfig.path);
   if (!node || node.kind !== "file") return ports;
 
-  // "host: 0.0.0.0" 또는 "host = 0.0.0.0" 형태를 읽는다
-  const pattern = new RegExp(`^\\s*${service.bindConfig.key}\\s*[:=]\\s*([^\\s#]+)`, "m");
-  const matched = pattern.exec(node.content);
-  return matched ? ports.map((listen) => ({ ...listen, addr: matched[1] })) : ports;
+  // "host: 0.0.0.0" 또는 "host = 0.0.0.0" 형태를 읽는다. portKey가 있으면 포트도 설정 파일 값을 쓴다.
+  const read = (key: string) => new RegExp(`^\\s*${key}\\s*[:=]\\s*([^\\s#]+)`, "m").exec(node.content)?.[1];
+  const addr = read(service.bindConfig.key);
+  const port = service.bindConfig.portKey ? Number(read(service.bindConfig.portKey)) : NaN;
+  return ports.map((listen) => ({ ...listen, addr: addr ?? listen.addr, port: Number.isInteger(port) && port > 0 ? port : listen.port }));
 }
 
 export function startService(state: SystemState, name: string): StartOutcome {
@@ -117,6 +134,7 @@ export function startService(state: SystemState, name: string): StartOutcome {
   }
 
   const pid = nextPid(state);
+  snapshotConfig(state, service);
   service.state = "active";
   service.mainPid = pid;
   service.since = state.clock;
@@ -129,6 +147,8 @@ export function startService(state: SystemState, name: string): StartOutcome {
     command: service.execStart,
     listenPorts: effectiveListenPorts(state, service),
     service: service.name,
+    // 한도는 마지막 daemon-reload 때 읽은 unit 설정을 따른다. 파일만 고치고 reload를 안 하면 옛 값이다.
+    ...(service.loaded?.nofile ? { nofile: { ...service.loaded.nofile } } : {}),
   });
   addLog(state, {
     tag: "systemd",
@@ -136,12 +156,20 @@ export function startService(state: SystemState, name: string): StartOutcome {
     unit: service.name,
     message: `Started ${service.name}.service - ${service.description}.`,
   });
+  // dockerd가 다시 뜨면 재시작 정책에 따라 컨테이너를 되살린다(state/docker/lifecycle.ts).
+  if (service.name === "docker") daemonStarted(state);
+  // 필요한 연결이 한도보다 많으면 곧바로 다시 막힌다. 재시작만으로는 고쳐지지 않는다.
+  const started = state.processes.find((p) => p.pid === pid)!;
+  if (service.fdExhaustedLog && fdUsage(state, started).saturated) {
+    addLog(state, { tag: service.name, unit: service.name, pid, priority: "err", message: service.fdExhaustedLog });
+  }
   return { ok: true };
 }
 
 export function stopService(state: SystemState, name: string): boolean {
   const service = findService(state, name);
   if (!service) return false;
+  if (service.name === "docker") daemonStopped(state);
   state.processes = state.processes.filter((p) => p.service !== service.name);
   service.state = "inactive";
   service.mainPid = undefined;
@@ -153,4 +181,37 @@ export function stopService(state: SystemState, name: string): boolean {
     message: `Stopped ${service.name}.service - ${service.description}.`,
   });
   return true;
+}
+
+export type ReloadOutcome = { ok: true } | { ok: false; why: "inactive" | "not-applicable" | "rejected"; reason?: string };
+
+/**
+ * reload: 실행 중인 서비스가 설정만 다시 읽는다.
+ * 새 설정이 잘못되면 거부하고 기존 프로세스를 그대로 둔다. 그래서 운영 중엔 restart보다 안전하다
+ * (restart는 일단 죽이고 새로 띄우므로 설정 오타가 곧 장애가 된다).
+ * 설정 파일이 없는 서비스는 실제 systemd처럼 reload를 지원하지 않는다.
+ */
+export function reloadService(state: SystemState, name: string): ReloadOutcome {
+  const service = findService(state, name);
+  if (!service || !service.configPath) return { ok: false, why: "not-applicable" };
+  if (service.state !== "active") return { ok: false, why: "inactive" };
+
+  addLog(state, { tag: "systemd", pid: 1, unit: service.name, message: `Reloading ${service.name}.service - ${service.description}...` });
+  const ports = effectiveListenPorts(state, service);
+  const reason = configProblem(state, service) ?? portProblem(state, ports, service.mainPid);
+  if (reason) {
+    addLog(state, { tag: service.name, unit: service.name, priority: "err", message: reason });
+    addLog(state, {
+      tag: "systemd", pid: 1, unit: service.name, priority: "err",
+      message: `${service.name}.service: Control process exited, code=exited, status=1/FAILURE`,
+    });
+    addLog(state, { tag: "systemd", pid: 1, unit: service.name, priority: "err", message: `Reload failed for ${service.name}.service - ${service.description}.` });
+    return { ok: false, why: "rejected", reason };
+  }
+
+  const process = state.processes.find((p) => p.pid === service.mainPid);
+  if (process) process.listenPorts = ports;
+  snapshotConfig(state, service);
+  addLog(state, { tag: "systemd", pid: 1, unit: service.name, message: `Reloaded ${service.name}.service - ${service.description}.` });
+  return { ok: true };
 }

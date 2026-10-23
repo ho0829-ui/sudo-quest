@@ -11,6 +11,10 @@ export interface CommandContext {
   user: string;
   /** help 명령이 목록을 만들 때 쓴다 */
   available: string[];
+  /** 파이프 앞 명령의 출력. 파일 인자가 없을 때 grep·head·tail·sort·wc·cat이 읽는다. */
+  stdin?: string;
+  /** 출력이 터미널이 아니라 파이프나 파일로 간다(ls는 이때 한 줄에 하나씩 쓴다). */
+  piped?: boolean;
 }
 
 export interface CommandResult {
@@ -25,6 +29,11 @@ export interface Command {
   /** help에 한 줄로 표시되는 설명 */
   summary: string;
   usage: string;
+  /**
+   * 하위 명령을 가진 명령이 지원하는 경로. 예: aws의 "elbv2 describe-target-groups".
+   * 코치가 지원하지 않는 하위 명령을 제안하지 않게 할 때 쓴다. 없으면 하위 명령을 따지지 않는다.
+   */
+  operations?: readonly string[];
   run(ctx: CommandContext): CommandResult;
 }
 

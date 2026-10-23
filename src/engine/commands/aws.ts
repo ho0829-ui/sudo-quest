@@ -8,19 +8,48 @@ import { positionals } from "../parser/parse";
 import { targetHealth } from "../state/aws";
 import type { SecurityGroup, SecurityGroupRule, SystemState } from "../state/types";
 import { fail, ok, type Command, type CommandContext, type CommandResult } from "./types";
+import { parseAwsOptions, validIpv4Cidr } from "./awsOptions";
 
-/** "--group-id sg-123 --port 22" 같은 긴 옵션들을 뽑아낸다. */
-function options(tokens: string[]): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i];
-    if (!token.startsWith("--")) continue;
-    const [key, inlineValue] = token.slice(2).split("=");
-    const value = inlineValue ?? (tokens[i + 1]?.startsWith("--") ? "" : tokens[i + 1]);
-    result[key] = value ?? "";
-  }
-  return result;
+/**
+ * 이 가상 aws가 지원하는 서비스와 하위 명령. 오류 안내와 코치 제안 검사가 같은 표를 쓴다.
+ * 새 하위 명령을 구현하면 여기에도 추가해야 한다(tests/commands.test.ts가 표와 구현이 맞는지 본다).
+ */
+export const AWS_OPERATIONS = {
+  ec2: ["describe-instances", "describe-security-groups", "authorize-security-group-ingress"],
+  elbv2: ["describe-load-balancers", "describe-target-groups", "describe-target-health", "modify-target-group"],
+  iam: ["list-roles", "list-attached-role-policies", "attach-role-policy"],
+  sts: ["get-caller-identity"],
+} as const;
+type AwsService = keyof typeof AWS_OPERATIONS;
+
+const AWS_USAGE = [
+  "usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]",
+  "To see help text, you can run:",
+  "",
+  "  aws help",
+  "  aws <command> help",
+  "  aws <command> <subcommand> help",
+  "",
+].join("\n");
+
+/** 실제 AWS CLI v2처럼 고를 수 있는 값을 두 칸씩 " | "로 보여 준다. */
+function choices(values: readonly string[]): string {
+  const width = Math.max(...values.map((v) => v.length));
+  const rows: string[] = [];
+  for (let i = 0; i < values.length; i += 2) rows.push(values[i + 1] ? `${values[i].padEnd(width)} | ${values[i + 1]}` : values[i]);
+  return rows.join("\n");
 }
+
+function invalidChoice(argument: "command" | "operation", values: readonly string[]): CommandResult {
+  return fail(`${AWS_USAGE}\naws: error: argument ${argument}: Invalid choice, valid choices are:\n\n${choices(values)}`, 252);
+}
+
+function unknownSubcommand(service: AwsService, _operation: string | undefined): CommandResult {
+  return invalidChoice("operation", AWS_OPERATIONS[service]);
+}
+
+/** 필수 옵션이 빠졌을 때 CLI가 요청을 보내기 전에 거절하는 메시지. */
+const missing = (option: string) => fail(`${AWS_USAGE}\naws: error: the following arguments are required: ${option}`, 252);
 
 const json = (value: unknown) => JSON.stringify(value, null, 4);
 
@@ -131,7 +160,7 @@ function elbv2(state: SystemState, operation: string | undefined, opts: Record<s
       );
     }
     const path = opts["health-check-path"];
-    if (!path) return fail("ModifyTargetGroup: --health-check-path 가 필요합니다", 254);
+    if (!path) return missing("--health-check-path");
     if (!path.startsWith("/")) {
       return fail(
         `An error occurred (ValidationError) when calling the ModifyTargetGroup operation: Health check path must begin with a '/'`,
@@ -142,11 +171,7 @@ function elbv2(state: SystemState, operation: string | undefined, opts: Record<s
     return ok(json({ TargetGroups: [{ TargetGroupArn: group.arn, HealthCheckPath: group.healthCheckPath }] }));
   }
 
-  return fail(
-    `usage: aws elbv2 <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-      "지원: describe-load-balancers, describe-target-groups, describe-target-health, modify-target-group",
-    252,
-  );
+  return unknownSubcommand("elbv2", operation);
 }
 
 /** aws iam — 역할과 정책 */
@@ -186,23 +211,26 @@ function iam(state: SystemState, operation: string | undefined, opts: Record<str
       );
     }
     const arn = opts["policy-arn"];
-    if (!arn) return fail("AttachRolePolicy: --policy-arn 이 필요합니다", 254);
+    if (!arn) return missing("--policy-arn");
+    if (!/^arn:aws:iam::aws:policy\/[A-Za-z0-9+=,.@_-]+$/.test(arn)) {
+      return fail("An error occurred (ValidationError) when calling the AttachRolePolicy operation: Invalid policy ARN", 254);
+    }
     const policy = arn.split("/").pop() ?? arn;
+    if (!requireAws(state).availableManagedPolicies?.includes(policy)) {
+      return fail(`An error occurred (NoSuchEntity) when calling the AttachRolePolicy operation: Policy ${arn} does not exist.`, 254);
+    }
     if (!role.attachedPolicies.includes(policy)) role.attachedPolicies.push(policy);
     return ok("");
   }
 
-  return fail(
-    `usage: aws iam <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-      "지원: list-roles, list-attached-role-policies, attach-role-policy",
-    252,
-  );
+  return unknownSubcommand("iam", operation);
 }
 
 export const aws: Command = {
   name: "aws",
   summary: "AWS 리소스를 조회하고 수정한다 (ec2 / elbv2 / iam / sts)",
   usage: "aws <ec2|elbv2|iam|sts> <하위명령> [--옵션 값]",
+  operations: Object.entries(AWS_OPERATIONS).flatMap(([service, ops]) => ops.map((op) => `${service} ${op}`)),
   run({ state, tokens }: CommandContext) {
     // 값을 받는 긴 옵션들. 이 목록에 없으면 옵션의 값이 하위명령으로 잘못 읽힌다.
     const VALUE_OPTIONS = [
@@ -213,7 +241,10 @@ export const aws: Command = {
     const args = positionals(tokens, VALUE_OPTIONS);
     const service = args[0];
     const operation = args[1];
-    const opts = options(tokens);
+    const parsedOptions = parseAwsOptions(tokens, `${service} ${operation}`);
+    if (parsedOptions.error) return fail(`aws: error: ${parsedOptions.error}`, 252);
+    const opts = parsedOptions.options;
+    if (!state.aws) return fail("Unable to locate credentials. You can configure credentials by running \"aws configure\".", 253);
     const cloud = requireAws(state);
 
     if (service === "sts" && operation === "get-caller-identity") {
@@ -226,11 +257,13 @@ export const aws: Command = {
       );
     }
 
+    if (service === "sts") return unknownSubcommand("sts", operation);
     if (service === "elbv2") return elbv2(state, operation, opts);
     if (service === "iam") return iam(state, operation, opts);
 
     if (service !== "ec2") {
-      return fail(`usage: aws <command> <subcommand> [parameters]\nUnknown service: ${service ?? "(없음)"}`, 252);
+      return service === undefined ? fail(`${AWS_USAGE}\naws: error: the following arguments are required: command`, 252)
+        : invalidChoice("command", Object.keys(AWS_OPERATIONS));
     }
 
     if (operation === "describe-instances") {
@@ -287,14 +320,19 @@ export const aws: Command = {
       }
 
       const protocol = opts["protocol"] ?? "tcp";
-      const port = Number(opts["port"]);
+      const port = protocol === "-1" ? -1 : Number(opts["port"]);
       const cidr = opts["cidr"];
       if (!cidr || (protocol !== "-1" && !Number.isInteger(port))) {
         return fail(
-          "An error occurred (MissingParameter) when calling the AuthorizeSecurityGroupIngress operation: --port 와 --cidr 가 필요합니다",
+          "An error occurred (MissingParameter) when calling the AuthorizeSecurityGroupIngress operation: The request must contain the parameter ipPermissions",
           254,
         );
       }
+
+      if (!["tcp", "udp", "-1"].includes(protocol) || !validIpv4Cidr(cidr) || (protocol !== "-1" && (port < 0 || port > 65535))) {
+        return fail("An error occurred (InvalidParameterValue) when calling the AuthorizeSecurityGroupIngress operation: Invalid protocol, port or CIDR", 254);
+      }
+      if (opts["dry-run"]) return fail("An error occurred (DryRunOperation) when calling the AuthorizeSecurityGroupIngress operation: Request would have succeeded, but DryRun flag is set.", 255);
 
       const duplicate = group.ingress.some(
         (r) => r.protocol === protocol && r.fromPort === port && r.cidr === cidr,
@@ -310,10 +348,6 @@ export const aws: Command = {
       return ok(json({ Return: true }));
     }
 
-    return fail(
-      `usage: aws ec2 <subcommand>\nUnknown subcommand: ${operation ?? "(없음)"}\n` +
-        "지원: describe-instances, describe-security-groups, authorize-security-group-ingress",
-      252,
-    );
+    return unknownSubcommand("ec2", operation);
   },
 };

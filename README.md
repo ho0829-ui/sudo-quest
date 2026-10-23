@@ -1,333 +1,84 @@
-# InfraCoach — 인프라 장애 대응 학습
+# SUDO QUEST — 브라우저에서 배우는 인프라 장애 대응
 
-가상 장애 대응 게임에 **공식 문서 근거 RAG 코치**를 붙인 인프라 학습 서비스입니다(AI 코어 프로젝트 2회차).
+> Investigate and fix virtual infrastructure incidents in a browser terminal, with an AI coach grounded in documentation.
 
-- **지식 탐색·질의응답**: curl·Linux errno·AWS ALB 오류 100개 항목을 공식 문서 근거로 설명합니다. 모든 주장에 [근거 N]과 원문 링크가 붙고, 문서에 없으면 답을 보류합니다.
-- **조건으로 항목 찾기**: "curl에서 인증서 검증과 관련된 오류"처럼 자연어로 조건을 적으면 맞는 항목만 보여줍니다.
-- **실습 코치**: 실습 중 막히면 내가 실행한 명령의 출력과 공식 문서만으로 다음 점검을 안내합니다. 정답·풀이는 코치에게 전달되지 않고, 복구 판정은 게임 엔진이 합니다.
+SUDO QUEST는 장애 티켓을 읽고 가상 CLI로 단서를 찾은 뒤 원인을 판단하고 시스템을 복구하는 학습 게임입니다. Linux 명령만 외우는 대신, 관찰 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 24개 실습에서 반복합니다. 명령은 브라우저 안의 가상 상태에만 적용되며 실제 서버·클라우드에는 실행되지 않습니다.
 
-| 구분 | 기능 |
+![장애 티켓부터 CLI 조사, 복구, 결과 리포트까지](docs/assets/demo/main.gif)
+
+**상태:** 로컬 실행 가능 · 공개 배포 준비 중. 게임은 프론트엔드만으로 플레이할 수 있습니다. AI 코치·지식 탐색·커뮤니티는 별도의 FastAPI 서버가 필요합니다.
+
+## 무엇을 배울 수 있나
+
+처음에는 [5분 튜토리얼](docs/assets/demo/tutorial.gif)에서 `help`·서비스 상태·로그를 읽습니다. 본 실습은 정답 명령 한 줄을 맞히는 방식이 아닙니다. 장애 상황을 조사하고 원인을 선택한 뒤, **바뀐 시스템 상태가 복구 조건을 충족해야** 클리어됩니다. 리포트에서는 사용한 명령과 출력, 원인·조치·예방책을 되짚습니다.
+
+| 분야 | 실습 | 조사하고 이해하는 것 |
+|---|---:|---|
+| **Linux 운영** | 5개 | 디스크 포화, 파일 권한, 포트 충돌, OOM, 열린 파일 수. `df`·`journalctl`·`systemctl` 등의 출력으로 자원과 서비스 상태를 연결합니다. |
+| **네트워크** | 3개 | 방화벽, DNS, localhost 바인딩. `curl`·`dig`·`ss`로 이름 해석부터 접속 경로까지 실패 지점을 좁힙니다. |
+| **웹·DB** | 5개 | nginx 설정·upstream 502, TLS 만료·체인, MySQL 연결 한도. 웹 응답과 애플리케이션·DB 설정을 함께 확인합니다. |
+| **클라우드 / AWS** | 3개 | 보안 그룹, ALB 헬스 체크, IAM/S3 권한. AWS CLI 형태의 조회·변경으로 네트워크 접근과 권한, 실제 서비스 상태를 구분합니다. |
+| **Docker** | 3개 | 포트 선점, 환경 변수 누락, 이미지·빌드 캐시로 인한 디스크 부족. 컨테이너 상태와 호스트 자원의 관계를 살핍니다. |
+| **Kubernetes** | 5개 | ImagePullBackOff, CrashLoopBackOff, OOMKilled, readiness probe, Service selector. `kubectl` 출력과 배포·파드·엔드포인트의 관계를 추적합니다. |
+
+실습마다 티켓에는 증상만 제시하고, 원인을 찾을 단서는 가상 로그·설정·명령 출력에 둡니다. 복구 후에는 [공식 문서 근거와 회고](docs/SCENARIO_GUIDE.md#좋은-시나리오의-조건)를 확인할 수 있습니다. 실제 인프라의 모든 동작을 재현하는 실습 환경은 아니며, 지원하는 명령·옵션은 화면에서 안내합니다.
+
+| 서버실 캠퍼스에서 실습 선택 | CLI 조사와 힌트 용어 풀이 |
 |---|---|
-| 필수 F2001~F2012 | 항목 100건 색인, 검색어 추출·후보 선별·문서 수집, 두 컬렉션 검색·병합, retrieve→generate 그래프, 인용 표시, 항목별 대화, 게임 코치(특화), 조건 탐색, 진행 상태·오류 안내 |
-| 심화 F2013 | React/TypeScript 화면 직접 구현(FastAPI와 분리, 요청·응답 계약) |
-| 심화 F2015 | RAG 사용 전후 답변 비교(9문항) |
+| ![분야별 운영실이 있는 서버실 캠퍼스](docs/assets/readme/01-campus.jpg) | ![가상 터미널과 조사 힌트](docs/assets/readme/03-play-glossary.jpg) |
 
-제출 문서: [요구사항 정의서](docs/submission/요구사항정의서.md) · [RAG 파이프라인 설계문서](docs/submission/RAG_파이프라인_설계문서.md) · [검증 결과](docs/submission/검증결과.md) · [RAG 전후 비교](docs/submission/RAG_전후비교.md) · [청크·Top-k 비교](docs/submission/청크_TopK_비교.md) · [출처 고지](THIRD_PARTY_NOTICES.md)
+## 어떻게 만들었나
 
-## RAG 코치 실행하기 (로컬)
+![프론트엔드 가상 실습과 선택적으로 연결되는 API·검색 색인·커뮤니티](docs/assets/pipelines/overview.svg)
 
-확인 환경: Windows 11, Node 24.18 / npm 11.16, Python 3.11.9. 명령은 저장소 루트의 PowerShell 기준입니다. 자세한 설정은 [backend/README.md](backend/README.md)에 있습니다.
+### 프론트엔드 · 상태가 이어지는 가상 CLI
 
-```powershell
-# 1. 설치
+**React + TypeScript + Vite** 화면은 서버실 캠퍼스, 퀘스트 브리핑, 터미널, 힌트, 리포트와 학습 기록을 제공합니다. 핵심 규칙은 React 밖의 순수 TypeScript 엔진에 두었습니다. `src/ui → src/scenarios → src/engine` 방향으로 연결되고, 세션 기록은 브라우저에 저장됩니다. 첫 화면과 실습 실행부는 나눠 로드합니다.
+
+```text
+입력 → 파싱·허용 명령 확인 → 가상 상태 복사 → 명령 실행
+     → 현재 상태에서 출력 계산 → 기록 → 복구 조건 판정
+```
+
+예를 들어 로그 파일을 제거하면 가상 파일 크기가 바뀌고, 다음 `df -h`는 그 크기를 반영해 사용량을 다시 계산합니다. 디스크 공간을 확보해도 서비스는 별도로 재시작해야 합니다. 원인 선택과 `resolution(state)`를 모두 충족해야 클리어되므로, 정답 문자열과 입력을 단순 비교하지 않습니다. 파이프·리다이렉션 등은 지원 범위 안에서만 해석하며 실제 셸이나 호스트 파일시스템에 명령을 전달하지 않습니다. [가상 CLI 상세 흐름](docs/submission/PIPELINES.md#1-가상-cli-입력이-어떻게-화면과-서버-상태를-바꾸는가) · [엔진 설계](docs/ENGINE_DESIGN.md)
+
+### 백엔드 · 선택적으로 붙는 학습 서비스
+
+Python/FastAPI는 지식 항목, 코치·지식 질문, 조건 탐색과 익명 커뮤니티 API를 담당합니다. 질문은 `202 + job_id`로 받고 진행 상태를 폴링해 긴 검색·생성 작업을 화면에서 추적합니다. 지식 검색은 Chroma 색인을, 게시글·댓글은 SQLite를 사용합니다. 백엔드가 꺼져도 가상 게임과 리포트는 계속 동작합니다.
+
+코치 요청에는 플레이어에게 이미 보인 티켓·연 힌트·최근 명령과 출력만 담습니다. 숨겨진 장애 주입(`faults`), 정답 ID, 모범 풀이, 전체 상태는 보내지 않으며 API 계약에서도 허용하지 않습니다. 단, 판정 코드와 정답 데이터는 브라우저 번들에 있어 경쟁용 비공개 채점 시스템으로 쓰지 않습니다. [요청 빌더](src/api/coach.ts) · [API 계약](backend/app/contracts.py) · [백엔드 실행 안내](backend/README.md)
+
+### RAG · 관찰과 문서 근거를 구분하는 코치
+
+공식 문서와 항목 메타데이터를 바탕으로 131개 지식 항목을 관리합니다. 문서는 필요한 절만 수집·청킹·임베딩하고, Chroma의 `knowledge_items`와 `reference_chunks`에 나눠 색인합니다. 항목 수와 문서 청크 수는 다른 지표입니다.
+
+```text
+질문 → 검색어 생성 → 문서 후보 선별 → 필요한 절 추가 색인
+     → 항목 안에서 근거 검색 → LangGraph retrieve → generate
+     → 인용 번호 검증 → 답변과 실제 인용 근거 표시
+```
+
+실습 코치는 별도 경로에서 `[실습 기록 N]`과 `[근거 N]`을 구분합니다. 일반 지식 답변은 문서 근거가 부족하면 보류하고, 두 경로 모두 존재하지 않는 인용 번호를 반환 전에 검사합니다. 같은 검색·임베딩·답변의 반복 비용을 줄이기 위한 캐시와 실패 시 안내도 있습니다. [RAG 색인·답변 도식](docs/submission/PIPELINES.md#2-rag-준비-질문-전에-무엇을-색인하는가) · [설계 결정](docs/infra-coach/adr/README.md) · [코치 시연](docs/assets/demo/coach.gif)
+
+## 검증과 한계
+
+**2026-10-23 로컬 검증 기록:** 프론트엔드 Vitest 957개, 백엔드 unittest 87개, TypeScript 타입 검사와 빌드가 통과했습니다. 시나리오의 장애 주입·복구 경로뿐 아니라 정답 밖 명령 탐색, 코치의 숨겨진 정보 차단, 인용·오류 처리도 검사합니다. 이번 README 수정으로 이 테스트를 새로 실행했다는 뜻은 아닙니다.
+
+[RAG 평가 v2](docs/infra-coach/22_RAG_근거_보강.md)는 24문항 중 답변 성공 23건을 기록했습니다. 작은 표본이고 개발 도우미가 채점했으며 공개 운영 예정 모델의 결과도 아닙니다. 실제 사용자 평가나 일반적인 정확도 지표로 해석하지 않습니다. 공식 문서의 수집·이용 조건과 알려진 한계는 [데이터 출처](docs/DATA_SOURCES.md)에, 과제 기준 검증표는 [제출 README](docs/submission/README.md)에 정리했습니다.
+
+## 로컬에서 실행
+
+```bash
 npm ci
-python -m venv backend/.venv
-backend/.venv/Scripts/python.exe -X utf8 -m pip install -r backend/requirements.lock.txt
-Copy-Item backend/.env.example backend/.env    # 이미 있으면 생략
-```
-
-2. `backend/.env`의 `GMS_KEY=`에 본인 키를 넣습니다. 키는 이 파일에만 두고, 코드·문서·브라우저에는 넣지 않습니다(`.env`는 Git 제외). 사용 모델은 생성 `gpt-6.1-sol`, 임베딩 `text-embedding-3-large`입니다. 다른 공급자를 쓰려면 `LLM_*`·`EMBEDDING_*` 변수를 설정합니다.
-
-```powershell
-# 3. 데이터 준비 (backend 폴더에서)
-Set-Location backend
-.venv/Scripts/python.exe -X utf8 -m scripts.check_providers           # 키·모델 연결 확인 (짧은 유료 호출 2회)
-.venv/Scripts/python.exe -X utf8 -m scripts.validate_catalog          # 100개 항목의 원문 절 확인 (유료 호출 없음)
-.venv/Scripts/python.exe -X utf8 -m scripts.prepare_corpus            # 공식 문서 수집·임베딩·색인 (첫 실행만 유료)
-
-# 4. 서버 (터미널 A, backend 폴더)
-.venv/Scripts/python.exe -X utf8 -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000
-```
-
-```powershell
-# 5. 화면 (터미널 B, 저장소 루트)
 npm run dev
 ```
 
-http://127.0.0.1:5173 을 엽니다. 상단 상태 줄에 "지식 100건 · 지식 RAG 준비됨"이 보이면 준비가 끝난 것입니다. 키나 색인이 없으면 화면에 해결 방법이 표시됩니다. Python 서버가 없어도 게임 자체는 동작합니다.
+`http://127.0.0.1:5173`에서 게임을 시작할 수 있습니다. AI 코치·지식 탐색·게시판까지 사용하려면 Python 3.11 백엔드와 색인이 필요합니다. `npm run setup:env`는 설정 파일이 없을 때만 만들며, 키는 사용자가 `backend/.env`에 직접 입력합니다. 브라우저 코드나 `VITE_*` 변수에 비밀 키를 넣지 않습니다. 전체 절차는 [실행 안내](docs/RUNNING.md)를 따릅니다.
 
-- 카탈로그(`backend/catalog/`)는 저장소에 포함되어 있습니다. 출처 페이지나 주석을 바꿨을 때만 `scripts.build_catalog`와 `scripts.build_section_catalog`를 다시 실행합니다.
-- 청크·임베딩 설정을 바꾸면 기존 색인을 재사용하지 않습니다. `.env`의 `CHROMA_PATH`를 새 경로로 바꾸고 `prepare_corpus`를 다시 실행합니다.
-- 시연 순서 예: 지식 탐색에서 "장치에 남은 공간 없음(ENOSPC)" 선택 → "write에서 ENOSPC와 EDQUOT는 각각 어떤 조건에서 발생하나요?" → 조건 탐색 "ALB에서 타깃 연결 문제로 생기는 5xx 오류" → 실습 "웹사이트가 갑자기 안 열려요"에서 `systemctl status nginx`, `df -h` 실행 후 코치에게 질문.
+## 만든 사람
 
-### 테스트
+- **Choi:** 기획과 요구사항 결정
+- **Claude:** 가상 엔진·실습·UI·RAG 구현과 평가
+- **GPT (Codex):** Kubernetes 초기 실습, 정답 밖 탐색 점검, 퀘스트 연출, 문서 정리
 
-```powershell
-npm test; npm run typecheck; npm run build
-Set-Location backend
-.venv/Scripts/python.exe -X utf8 -m unittest discover -s tests
-```
-
-2026-10-21 기준 결과: Vitest 197개, 백엔드 37개 통과. 상세 결과표는 [검증 결과](docs/submission/검증결과.md)에 있습니다.
-
-### 데이터 출처와 이용 조건
-
-| 출처 | 라이선스 |
-|---|---|
-| curl 매뉴얼·libcurl 오류 코드 (curl.se) | curl license |
-| Linux man-pages errno(3), connect/open/write(2) (man7.org, man-pages 6.19) | GPL-2.0-or-later / Linux-man-pages-copyleft |
-| AWS ALB 문제 해결·타깃 그룹 헬스체크 (docs.aws.amazon.com) | CC BY-SA 4.0 |
-
-수집은 등록된 공식 페이지만 대상으로 합니다. robots.txt를 확인하고, 호스트당 1초 간격을 두며, 429면 재시도하지 않습니다. 원문 캐시는 Git에서 제외합니다. 저장소에 들어 있는 발췌와 변경 사항은 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 고지했습니다.
-
-### 알려진 한계
-
-- 실습의 원인 보기는 정답이 항상 첫 번째에 오는 등 화면에 정답 데이터가 들어 있습니다. 코치(서버)로는 전달되지 않지만, 브라우저 코드를 읽으면 정답을 볼 수 있습니다.
-- 한국어 항목 주석 100건은 LLM 보조로 작성했고 사람 검수 전입니다.
-- 첫 질문 응답은 약 20~40초입니다(생성 3회 직렬). 같은 질문은 캐시로 즉시 응답합니다.
-- 로컬 시연 기준입니다. GitHub Pages 배포본에서는 게임만 동작하고 RAG 서버는 동작하지 않습니다.
-
----
-
-아래는 기존 게임의 설명입니다.
-
-브라우저 안의 가상 터미널에서 명령어를 입력하며, 일부러 망가뜨린 가상 서버의 **장애 원인을 찾고 복구하는 학습 게임**입니다.
-
-정답을 알려주는 게임이 아니라 **사고 과정을 훈련하는 게임**입니다.
-증상 확인 → 범위 좁히기 → 가설 → 검증 → 조치 → 재발 방지의 흐름을 13개 시나리오로 반복해서 익힙니다.
-
-> **▶️ 플레이하기:** https://\<GitHub-사용자명\>.github.io/\<저장소명\>/
-> *(저장소를 push하고 Settings → Pages → Source를 "GitHub Actions"로 바꾸면 자동 배포됩니다)*
-
-```
-ubuntu@web-01:~$ systemctl status nginx
-× nginx.service - A high performance web server and a reverse proxy server
-     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
-     Active: failed (Result: exit-code) since Fri 2026-09-11 09:00:20 UTC; 14min 40s ago
-
-Sep 11 09:00:00 web-01 nginx[1102]: open() "/var/log/nginx/access.log" failed (28: No space left on device)
-
-ubuntu@web-01:~$ df -h
-Filesystem Size Used Avail Use% Mounted on
-/dev/root  8.0G 8.0G   19M 100% /
-```
-
----
-
-## 📸 스크린샷
-
-| 시나리오 선택 | 장애 조사 | 결과 리포트 |
-|---|---|---|
-| *(스크린샷 자리)* | *(스크린샷 자리)* | *(스크린샷 자리)* |
-
-*(플레이 GIF 자리 — 디스크 가득 참 시나리오를 처음부터 끝까지 푸는 30초 영상)*
-
----
-
-## 왜 만들었나
-
-인프라 공부를 하면서 가장 아쉬웠던 건, **장애를 겪어볼 기회가 없다**는 점이었습니다.
-책으로 `df -h` 를 배워도, 실제로 디스크가 가득 찬 서버 앞에서 "무엇부터 봐야 하는지"는 배울 수 없습니다.
-
-그렇다고 연습하려고 진짜 서버를 망가뜨릴 수도 없습니다. 그래서 만들었습니다.
-
-- **안전합니다.** 실제 명령을 실행하는 코드가 한 줄도 없습니다. 전부 메모리 안의 가상 상태입니다.
-- **현실적입니다.** 명령어 출력은 실제 리눅스/AWS CLI 형식을 그대로 따릅니다.
-- **설치가 필요 없습니다.** 링크 하나로 바로 플레이합니다. 서버도 DB도 API 키도 없습니다.
-
----
-
-## 시나리오 13개
-
-| ID | 카테고리 | 난이도 | 증상 | 핵심 학습 |
-|---|---|---|---|---|
-| `linux-disk-full` | 리눅스 | 초급 | 웹사이트 접속 불가 | 원인을 없애도 서비스는 스스로 살아나지 않는다 |
-| `linux-permission` | 리눅스 | 초급 | 403 Forbidden | 403은 서버가 살아 있다는 뜻이다 |
-| `linux-port-conflict` | 리눅스 | 중급 | 재시작 후 기동 실패 | 원인과 증상 사이에 시간차가 있을 수 있다 |
-| `linux-oom` | 리눅스 | 중급 | 앱이 반복해서 죽음 | 죽은 프로세스가 범인이 아닐 수 있다 |
-| `network-firewall` | 네트워크 | 초급 | 밖에서만 접속 불가 | 서버 안 헬스체크는 이 장애를 못 잡는다 |
-| `network-dns` | 네트워크 | 초급 | 외부 API 호출 실패 | 이름 해석 실패와 연결 실패는 다르다 |
-| `network-bind-localhost` | 네트워크 | 중급 | 안에서만 됨 | 바인딩 주소가 접근 범위를 결정한다 |
-| `web-nginx-config` | 웹/DB | 초급 | 설정 변경 후 다운 | restart와 reload의 차이 |
-| `web-ssl-expired` | 웹/DB | 중급 | 브라우저 보안 경고 | 자동화를 믿지 말고 자동화를 감시하라 |
-| `db-max-connections` | 웹/DB | 고급 | 특정 시간대만 500 | 스케일 아웃은 공짜가 아니다 |
-| `aws-security-group` | AWS | 초급 | 새 EC2 접속 불가 | timeout과 refused의 차이 |
-| `aws-alb-healthcheck` | AWS | 중급 | 헬스 알람이 울리는데 사이트는 열림 | 모든 타깃이 unhealthy면 ALB는 fail-open한다 (AWS 문서 기준) |
-| `aws-iam-s3` | AWS | 중급 | S3 업로드 실패 | AccessDenied 메시지를 끝까지 읽어라 |
-
-각 시나리오는 **장애 티켓 → 조사 → 원인 제출 → 복구 조치 → 포스트모템** 순서로 진행되고,
-3단계 힌트(방향 질문 → 볼 곳 제시 → 거의 정답)와 점수(시간·명령어 수·힌트·오답)를 제공합니다.
-
----
-
-## 아키텍처
-
-### 의존 방향은 한 방향으로만 흐른다
-
-```mermaid
-graph LR
-    UI["ui/<br/>React 컴포넌트"] --> SC["scenarios/<br/>시나리오 데이터"]
-    UI --> EN
-    SC --> EN["engine/<br/>순수 TypeScript"]
-
-    style EN fill:#1e3a5f,stroke:#5eb3f6,color:#fff
-    style SC fill:#2d4a22,stroke:#6bd968,color:#fff
-    style UI fill:#4a3b1e,stroke:#f0c674,color:#fff
-```
-
-`engine/`은 React를 전혀 모릅니다. 그래서 **브라우저 없이 Vitest로 전부 테스트할 수 있습니다.**
-게임 규칙(점수·힌트·클리어 판정)도 React 컴포넌트가 아니라 엔진에 있습니다.
-
-### 명령어 한 줄이 처리되는 길
-
-```mermaid
-flowchart TD
-    A["사용자 입력<br/>sudo rm /var/log/app.log"] --> B["parser<br/>sudo 분리 · 토큰화 · 리다이렉션"]
-    B --> C["structuredClone(state)<br/>원본은 건드리지 않는다"]
-    C --> D["glob 확장<br/>/var/log/* → 실제 파일 목록"]
-    D --> E["명령어 실행<br/>권한 검사 → 상태 변경"]
-    E --> F["리다이렉션 처리<br/>stdout을 파일로"]
-    F --> G["{ stdout, stderr, exitCode, state }"]
-    G --> H{"resolution(state)"}
-    H -->|true| I["복구 완료"]
-    H -->|false| A
-```
-
-### 폴더 구조
-
-```
-src/
-  engine/          # 순수 TypeScript. React를 절대 import 하지 않는다
-    state/         #   상태 모델 + 파생값 계산 + 서비스 규칙 + 장애 주입
-    parser/        #   입력 문자열 → 명령어 + 인자
-    commands/      #   명령어 구현 (1파일 = 관련 명령어 묶음)
-    judge/         #   복구 판정 헬퍼
-    session/       #   세션과 점수
-  scenarios/       # 시나리오 데이터 파일 (1파일 = 1시나리오)
-  ui/              # React 컴포넌트
-tests/             # Vitest (175개)
-```
-
----
-
-## 설계에서 중요하게 생각한 것
-
-### 1. 명령어 출력을 시나리오에 하드코딩하지 않는다
-
-이 프로젝트에서 가장 중요한 원칙입니다.
-
-시나리오는 **초기 상태 + 장애 주입**만 정의하고, `df -h` 같은 출력은 **그때의 상태를 읽어서 계산**합니다.
-
-```ts
-// df의 사용량 = 기본 사용량 + 그 마운트에 속한 모든 파일 크기의 합
-const usedKB = disk.reservedKB + fileKB;
-```
-
-그래서 플레이어가 로그 파일을 지우면 `df -h` 결과가 **저절로** 100% → 26%로 바뀝니다.
-이 원칙이 없으면 "조치를 했는데 출력이 그대로"인 가짜 게임이 됩니다.
-
-| 명령어 | 저장된 값이 아니라… | 이렇게 계산 |
-|---|---|---|
-| `df -h` | 사용량을 저장 ✕ | 기본 사용량 + 파일 크기 합 |
-| `ss -tlnp` | 포트 목록을 저장 ✕ | 프로세스가 연 리스닝 소켓 |
-| `free -m` | 사용량을 저장 ✕ | 기본 사용량 + 프로세스 메모리 합 |
-| `curl` | 응답을 저장 ✕ | DNS → 방화벽 → 리스닝 → TLS → 권한 |
-
-### 2. "서비스가 왜 못 뜨는가"는 엔진이 판단한다
-
-시나리오 어디에도 "nginx가 실패한다"는 코드가 없습니다.
-시나리오는 5.9GB 로그 파일 하나를 놓아둘 뿐이고, 엔진이 공통 규칙으로 판단합니다.
-
-1. 디스크 여유 부족 → `No space left on device`
-2. 포트 점유 → `Address already in use`
-3. 설정 문법 오류 → `[emerg] ... is not terminated by ";"`
-
-덕분에 플레이어가 원인을 없애면 **시나리오를 고치지 않아도** 서비스가 정상적으로 뜹니다.
-
-### 3. 네트워크는 요청 체인 하나로 통일했다
-
-`curl`, `ping`, `dig`를 따로 만들지 않고 하나의 경로를 통과시킵니다.
-
-```
-이름 해석 → 로컬/원격 판별 → 방화벽 → 리스닝 확인 → TLS 확인 → 권한 확인
-```
-
-각 단계가 실패하면 **실제 curl의 에러 코드**를 냅니다 — `(6)` DNS, `(7)` 거부, `(28)` 타임아웃, `(60)` 인증서.
-그리고 **로컬 연결은 방화벽을 거치지 않게** 했습니다. 이 한 줄 덕분에 "서버 안에서는 되는데 밖에서는 안 되는" 상황이 하드코딩 없이 자연스럽게 생깁니다.
-
-### 4. 라이브러리를 쓰지 않았다
-
-런타임 의존성은 `react`, `react-dom` **두 개뿐**입니다.
-
-- **라우터 ✕** — 화면이 4개뿐이라 `useState` 하나로 충분합니다. GitHub Pages 하위 경로 문제도 피합니다.
-- **상태 관리 라이브러리 ✕** — 세션이 하나뿐입니다.
-- **immer ✕** — `structuredClone`으로 복사 후 수정합니다. 브라우저 기본 제공이고, "복사 → 고침 → 반환"이 읽기에도 가장 명확합니다.
-- **CSS 프레임워크 ✕** — CSS 변수 몇 개로 충분합니다.
-
-### 5. 새 시나리오는 파일 하나만 추가하면 된다
-
-엔진을 고쳐야만 추가되는 시나리오가 나오면, 그건 **엔진이 충분히 일반적이지 않다는 신호**입니다.
-시나리오에 특수 분기를 넣는 대신 엔진을 일반화했습니다. → [시나리오 추가 가이드](docs/SCENARIO_GUIDE.md)
-
----
-
-## 테스트
-
-```bash
-npm test
-```
-
-**197개 테스트**(2026-10-21 기준, 코치 요청 정답 유출 검사 포함) 중 핵심은 시나리오 자동 검증입니다. 시나리오 13개를 순회하며 검사합니다.
-
-1. 장애 주입 직후 `resolution`이 `false`인가
-2. `solutionPath`를 순서대로 실행하면 `resolution`이 `true`가 되는가
-3. 모범 풀이에 `command not found`, `No such file` 같은 실패 신호가 없는가
-4. 스키마가 유효한가 (힌트 3개, 정답이 보기 안에 있는지, 오답에 해설이 있는지)
-
-**풀 수 없는 시나리오는 CI에서 실패합니다.** 이 테스트가 실제로 개발 중에 버그 3개를 잡았습니다.
-
-- `httpResponds`가 403 응답을 "정상"으로 판정하던 문제
-- `portIsListening("0.0.0.0", …)`이 `127.0.0.1` 바인딩을 통과시키던 문제
-- 프리셋 설정이 조용히 누락되어 시나리오를 풀 수 없게 된 문제
-
----
-
-## 기술 스택
-
-| 분류 | 선택 | 이유 |
-|---|---|---|
-| 빌드 | Vite | 빠르고 설정이 적다 |
-| 언어 | TypeScript (strict) | 상태 모델이 복잡해 타입이 곧 문서가 된다 |
-| UI | React 19 | 상태 → 화면 매핑이 단순해진다 |
-| 테스트 | Vitest | Vite와 설정을 공유한다 |
-| 배포 | GitHub Pages + Actions | 서버 없이 링크 하나로 공유 |
-| 저장 | localStorage | 진행 상황만 저장. 실패해도 게임은 정상 동작 |
-
----
-
-## 로컬에서 실행하기
-
-```bash
-git clone <저장소 주소>
-cd <저장소 폴더>
-npm install
-npm run dev
-```
-
-브라우저에서 http://localhost:5173 을 엽니다.
-
-```bash
-npm test        # 테스트 실행
-npm run typecheck   # 타입 검사
-npm run build       # 배포용 빌드 (dist/)
-```
-
----
-
-## 기여하기
-
-시나리오를 추가하는 건 **파일 하나를 만드는 일**입니다. 엔진 코드를 고칠 필요가 없습니다.
-
-자세한 방법과 템플릿은 **[docs/SCENARIO_GUIDE.md](docs/SCENARIO_GUIDE.md)** 를 봐주세요.
-
----
-
-## 앞으로 하고 싶은 것
-
-- 모니터링 대시보드 화면 (CPU/메모리/에러율 그래프로 단서 제공)
-- 여러 장애가 동시에 발생하는 복합 시나리오
-- AI가 소크라테스식으로 힌트를 주는 모드
-- 실제 Docker 컨테이너 실습 모드
-
-엔진 구조는 이런 확장을 염두에 두고 만들었습니다.
-장애 주입(fault)은 배열이라 여러 개를 겹칠 수 있고, 상태 모델에는 시뮬레이션 시각(clock)이 있습니다.
+[작업 기록](docs/infra-coach/HANDOFF.md) · [시나리오 추가 가이드](docs/SCENARIO_GUIDE.md) · [제3자 고지](THIRD_PARTY_NOTICES.md)

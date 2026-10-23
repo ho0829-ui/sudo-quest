@@ -8,6 +8,8 @@ interface TerminalProps {
   state: SystemState;
   lines: TerminalLine[];
   available?: string[];
+  /** 바깥(코치 제안)에서 입력줄에 넣을 명령. nonce가 바뀔 때만 반영한다. */
+  draft?: { text: string; nonce: number };
   onSubmit: (input: string) => void;
 }
 
@@ -18,7 +20,7 @@ function promptOf(state: SystemState, cwd: string = state.cwd): string {
   return `${state.user}@${state.hostname}:${path}$`;
 }
 
-export function Terminal({ state, lines, available, onSubmit }: TerminalProps) {
+export function Terminal({ state, lines, available, draft, onSubmit }: TerminalProps) {
   const [input, setInput] = useState("");
   /** Tab을 눌렀을 때 후보가 여럿이면 화면에 보여줄 목록 */
   const [candidates, setCandidates] = useState<string[]>([]);
@@ -36,7 +38,18 @@ export function Terminal({ state, lines, available, onSubmit }: TerminalProps) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [lines.length, candidates]);
 
+  // 제안 명령은 입력줄에 넣기만 한다. 실행 여부는 플레이어가 Enter로 정한다.
+  useEffect(() => {
+    if (!draft || draft.nonce === 0) return;
+    setInput(draft.text);
+    setCandidates([]);
+    setHistoryIndex(null);
+    inputRef.current?.focus();
+  }, [draft?.nonce]);
+
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    // 한글 조합을 확정하는 Enter가 명령 실행까지 일으키지 않게 한다.
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
     if (event.key === "Enter") {
       onSubmit(input);
       setInput("");
@@ -45,7 +58,7 @@ export function Terminal({ state, lines, available, onSubmit }: TerminalProps) {
       return;
     }
 
-    if (event.key === "Tab") {
+    if (event.key === "Tab" && !event.shiftKey && input.trim()) {
       event.preventDefault(); // Tab의 기본 동작(포커스 이동)을 막는다
       const result = complete(state, input, available ?? DEFAULT_COMMANDS);
       setInput(result.input);
@@ -89,8 +102,8 @@ export function Terminal({ state, lines, available, onSubmit }: TerminalProps) {
           <pre>
             <span className="prompt">{promptOf(state, line.cwd)}</span> {line.input}
           </pre>
-          {line.stdout && <pre>{line.stdout}</pre>}
-          {line.stderr && <pre className="stderr">{line.stderr}</pre>}
+          {line.stdout && <pre><OutputLines text={line.stdout} /></pre>}
+          {line.stderr && <pre className="stderr"><OutputLines text={line.stderr} /></pre>}
         </div>
       ))}
 
@@ -112,4 +125,12 @@ export function Terminal({ state, lines, available, onSubmit }: TerminalProps) {
       </div>
     </div>
   );
+}
+
+/**
+ * 출력 한 줄을 한 블록으로 그린다. 좁은 화면에서 긴 로그 줄이 접히면, 접힌 부분만 들여 써서(CSS의 .out-line)
+ * 어디서 새 줄이 시작하는지 보이게 한다. 빈 줄은 높이가 0이 되지 않게 공백 하나를 넣는다.
+ */
+function OutputLines({ text }: { text: string }) {
+  return <>{text.replace(/\n$/, "").split("\n").map((row, i) => <span key={i} className="out-line">{row || " "}</span>)}</>;
 }

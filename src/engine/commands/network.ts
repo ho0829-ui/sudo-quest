@@ -1,5 +1,6 @@
 /** 네트워크 명령어들: curl, ss, ufw */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { listeningSockets } from "../state/derived";
 import { table } from "../state/format";
 import { addLog } from "../state/log";
@@ -59,8 +60,8 @@ export const curl: Command = {
 
     if (!outcome.ok) {
       // curl의 실제 에러 코드를 그대로 쓴다. 이 숫자 자체가 단서가 된다.
-      const code =
-        outcome.stage === "dns" ? 6 : outcome.stage === "tls" ? 60 : outcome.stage === "refused" ? 7 : 28;
+      const codes: Record<string, number> = { dns: 6, tls: 60, refused: 7, reset: 56 };
+      const code = codes[outcome.stage ?? ""] ?? 28;
       const detail =
         outcome.stage === "dns"
           ? `Could not resolve host: ${url.host}`
@@ -76,11 +77,11 @@ export const curl: Command = {
       lines.push(`> GET ${url.path} HTTP/1.1`, `> Host: ${url.host}`, ">");
     }
 
+    const headers = outcome.headers ?? { Server: "nginx/1.24.0", "Content-Type": "text/html" };
     const header = [
       `HTTP/1.1 ${outcome.status} ${REASON_PHRASES[outcome.status ?? 200] ?? ""}`.trim(),
-      "Server: nginx/1.24.0",
+      ...Object.entries(headers).map(([key, value]) => `${key}: ${value}`),
       `Content-Length: ${(outcome.body ?? "").length}`,
-      "Content-Type: text/html",
     ].join("\n");
 
     if (headOnly) return ok([...lines, header].join("\n"));
@@ -111,9 +112,10 @@ export const ss: Command = {
 /** "80/tcp", "443", "http" 같은 입력을 포트 번호로 바꾼다. */
 function parsePortSpec(spec: string): { port: number; proto: "tcp" | "udp" } | null {
   const named: Record<string, number> = { http: 80, https: 443, ssh: 22 };
-  const [portPart, protoPart] = spec.split("/");
+  const [portPart, protoPart, extra] = spec.split("/");
   const port = named[portPart] ?? Number(portPart);
-  if (!Number.isInteger(port) || port <= 0) return null;
+  if (!Number.isInteger(port) || port <= 0 || port > 65535 || extra !== undefined) return null;
+  if (protoPart !== undefined && protoPart !== "tcp" && protoPart !== "udp") return null;
   return { port, proto: protoPart === "udp" ? "udp" : "tcp" };
 }
 
@@ -122,6 +124,8 @@ export const ufw: Command = {
   summary: "방화벽 규칙을 보고 바꾼다 (status / allow / deny)",
   usage: "ufw <status [verbose] | allow <포트> | deny <포트> | enable | disable>",
   run({ state, tokens, user }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "");
+    if (unknown) return fail(`ERROR: Invalid option '${unknown}'`);
     const args = positionals(tokens);
     const sub = args[0] ?? "status";
     const { firewall } = state.network;
@@ -154,12 +158,12 @@ export const ufw: Command = {
     if (sub === "allow" || sub === "deny") {
       if (user !== "root") return fail("ERROR: You need to be root to run this script", 1);
       const spec = args[1];
-      if (!spec) return fail(`ERROR: Wrong number of arguments\n\n사용법: ${ufw.usage}`, 1);
+      if (!spec || args.length !== 2) return fail("ERROR: Wrong number of arguments", 1);
       const parsed = parsePortSpec(spec);
       if (!parsed) return fail(`ERROR: Bad port '${spec}'`, 1);
 
       const rule: FirewallRule = { port: parsed.port, proto: parsed.proto, action: sub };
-      const existing = firewall.rules.findIndex((r) => r.port === rule.port);
+      const existing = firewall.rules.findIndex((r) => r.port === rule.port && r.proto === rule.proto);
       const unchanged = existing !== -1 && firewall.rules[existing].action === sub;
 
       if (existing === -1) firewall.rules.push(rule);
@@ -176,6 +180,6 @@ export const ufw: Command = {
       return ok(sub === "enable" ? "Firewall is active and enabled on system startup" : "Firewall stopped and disabled on system startup");
     }
 
-    return fail(`ERROR: Invalid syntax\n\n사용법: ${ufw.usage}`, 1);
+    return fail("ERROR: Invalid syntax", 1);
   },
 };

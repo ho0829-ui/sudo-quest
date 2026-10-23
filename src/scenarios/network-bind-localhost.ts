@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, portIsListening, serviceIsActive } from "../engine/judge";
 import { logLine, putFile, restartedAt } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";
@@ -116,4 +116,9 @@ export const networkBindLocalhost: Scenario = {
     realWorldNote:
       "`ss -tlnp` 의 Local Address 열은 읽는 법만 알면 아주 강력합니다. 127.0.0.1 은 자기 자신만, 0.0.0.0 은 모든 인터페이스, 10.0.1.10 같은 구체적 주소는 그 인터페이스만입니다. '안에서는 되는데 밖에서는 안 된다'를 만나면 방화벽보다 먼저 이 열을 보세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "nginx core module — listen 지시어(주소·포트 바인딩)", url: "https://nginx.org/en/docs/http/ngx_http_core_module.html" },
+    { kind: "survey", title: "Uptime Institute, Annual Outage Analysis 2024 (네트워크·연결성이 IT 서비스 장애 1위)", url: "https://uptimeinstitute.com/resources/research-and-reports/annual-outage-analysis-2024" },
+  ],
 };

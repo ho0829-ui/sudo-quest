@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { iamRoleHasPolicy } from "../engine/judge";
 import { logLine, putFile } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";
@@ -111,4 +111,9 @@ export const awsIamS3: Scenario = {
     realWorldNote:
       "AWS 에러 메시지는 생각보다 친절합니다. 'User A is not authorized to perform: B on resource: C' 형식에서 A(누가), B(무엇을), C(어디에)가 그대로 나옵니다. 이 세 가지만 읽으면 어느 역할에 어떤 권한을 줘야 하는지 바로 알 수 있습니다. AccessDenied 를 만나면 메시지를 끝까지 읽으세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "IAM — Access denied 오류 문제 해결", url: "https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_access-denied.html" },
+    { kind: "official-doc", title: "Amazon S3 — 403 Access Denied 문제 해결", url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/troubleshoot-403-errors.html" },
+  ],
 };

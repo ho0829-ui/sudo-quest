@@ -1,0 +1,240 @@
+{
+  "kubernetes-crashloop": {
+    "session_id": "eval-v2-kubernetes-crashloop",
+    "question": "지금까지 확인한 것으로 보면 다음에 무엇을 점검해야 할까요?",
+    "ticket": "10:25쯤부터 주문하기 버튼을 누르면 오류가 납니다. 고객 문의가 몰리고 있어요.\n모니터링에 order-api 파드 재시작 경고가 계속 올라옵니다. 쇼핑몰 화면(shop-web)과 결제 게이트웨이는 정상으로 보입니다.\ndefault 네임스페이스이고, 배포 기록은 운영 호스트의 /home/ubuntu/releases.txt에 있습니다.",
+    "revealed_hints": [],
+    "observations": [
+      {
+        "command": "kubectl get pods",
+        "stdout": "NAME                               READY   STATUS             RESTARTS   AGE\nshop-web-0000000001-00001          1/1     Running            0          15m\nshop-web-0000000001-00002          1/1     Running            0          15m\nstatus-page-0000000001-00001       1/1     Running            0          15m\npayment-gateway-0000000001-00001   1/1     Running            0          30m\norder-api-0000000002-00001         0/1     CrashLoopBackOff   6          7m\norder-api-0000000002-00002         0/1     CrashLoopBackOff   6          7m",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "kubectl describe pod order-api-0000000002-00001",
+        "stdout": "Name:         order-api-0000000002-00001\nNamespace:    default\nNode:         worker-01\nLabels:       app=order-api\nStatus:       Running\nIP:           10.244.3.10\nControlled By: ReplicaSet/order-api-0000000002\nContainers:\n  order:\n    Image:          registry.example.com/shop/order-api:2.3.0\n    State:          Waiting\n      Reason:       CrashLoopBackOff\n    Last State:     Terminated\n      Reason:       Error\n      Exit Code:    1\n    Ready:          False\n    Restart Count:  6\n    Limits:\n      memory:  256Mi\n    Requests:\n      memory:  128Mi\n    Readiness:      http-get http://:8080/healthz delay=0s timeout=1s period=10s #success=1 #failure=3\n    Environment:\n      DB_HOST:  orders-db\n      DB_PORT:  5432\nConditions:\n  Type              Status\n  Initialized       True\n  Ready             False\n  ContainersReady   False\n  PodScheduled      True\nEvents:\nTYPE      REASON      AGE   MESSAGE\nNormal    Scheduled   7m    Successfully assigned default/order-api-0000000002-00001 to worker-01\nNormal    Pulled      7m    Successfully pulled image \"registry.example.com/shop/order-api:2.3.0\"\nNormal    Started     7m    Started container order\nWarning   BackOff     7m    Back-off restarting failed container order in pod order-api-0000000002-00001_default",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "kubectl logs deploy/order-api",
+        "stdout": "INFO  order-api 2.3.0 starting\nINFO  reading configuration from environment\nFATAL config: required environment variable PAYMENT_API_URL is not set",
+        "stderr": "Found 2 pods, using pod/order-api-0000000002-00001",
+        "exit_code": 0,
+        "truncated": false
+      }
+    ],
+    "omitted_observations": 0,
+    "available_commands": [
+      "help",
+      "ls",
+      "cat",
+      "cd",
+      "pwd",
+      "tail",
+      "head",
+      "grep",
+      "sort",
+      "wc",
+      "df",
+      "du",
+      "rm",
+      "systemctl",
+      "journalctl",
+      "kubectl"
+    ],
+    "command_operations": {
+      "kubectl": [
+        "get pod",
+        "get pods",
+        "get po",
+        "get deployment",
+        "get deployments",
+        "get deploy",
+        "get service",
+        "get services",
+        "get svc",
+        "get endpoints",
+        "get ep",
+        "get endpointslice",
+        "get endpointslices",
+        "get event",
+        "get events",
+        "get ev",
+        "get node",
+        "get nodes",
+        "get no",
+        "describe pod",
+        "describe pods",
+        "describe po",
+        "describe deployment",
+        "describe deployments",
+        "describe deploy",
+        "describe service",
+        "describe services",
+        "describe svc",
+        "logs",
+        "set image",
+        "set env",
+        "set resources",
+        "set selector",
+        "patch",
+        "rollout status",
+        "rollout history",
+        "rollout undo"
+      ]
+    },
+    "item_id": null,
+    "history": []
+  },
+  "docker-port-allocated": {
+    "session_id": "eval-v2-docker-port-allocate",
+    "question": "지금까지 확인한 것으로 보면 다음에 무엇을 점검해야 할까요?",
+    "ticket": "오늘 08:40에 shop-api 2.1.0 배포 완료 알림(deploy finished: 2.1.0)을 받았습니다.\n그런데 2.1.0의 새 기능인 쿠폰 목록이 열리지 않고, 2.1.0에서 고친 장바구니 금액 오류 문의도 계속 들어옵니다.\nAPI는 app-01 서버의 8080 포트에서 컨테이너로 돌고 있습니다. 배포 스크립트는 /opt/deploy, 배포 로그는 /var/log/deploy에 있습니다.",
+    "revealed_hints": [],
+    "observations": [
+      {
+        "command": "curl -s localhost:8080/version",
+        "stdout": "{\"service\":\"shop-api\",\"version\":\"2.0.3\"}",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "docker ps",
+        "stdout": "CONTAINER ID   IMAGE               COMMAND                  CREATED      STATUS      PORTS                    NAMES\n4d22d3c02292   nginx:1.25-alpine   \"nginx -g daemon off;\"   6 days ago   Up 6 days   0.0.0.0:8081->80/tcp     status-page\n966bbf51f826   shop-api:2.0.3      \"docker-entrypoint.s…\"   9 days ago   Up 9 days   0.0.0.0:8080->8080/tcp   shop-api-2.0.3",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "docker ps -a",
+        "stdout": "CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS      PORTS                    NAMES\n64cdc5528440   shop-api:2.1.0      \"docker-entrypoint.s…\"   35 minutes ago   Created                              shop-api-2.1.0\n4d22d3c02292   nginx:1.25-alpine   \"nginx -g daemon off;\"   6 days ago       Up 6 days   0.0.0.0:8081->80/tcp     status-page\n966bbf51f826   shop-api:2.0.3      \"docker-entrypoint.s…\"   9 days ago       Up 9 days   0.0.0.0:8080->8080/tcp   shop-api-2.0.3",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "cat /var/log/deploy/shop-api.log",
+        "stdout": "2026-09-02 09:14:58 deploy start: 2.0.3\nLoaded image: shop-api:2.0.3\n966bbf51f826ccfaaf74f524c33bdb19925162599adc1206bceb9f3c9dfbf2ed\ndeploy finished: 2.0.3\n2026-09-11 08:39:56 deploy start: 2.1.0\nLoaded image: shop-api:2.1.0\ndocker: Error response from daemon: driver failed programming external connectivity on endpoint shop-api-2.1.0 (64cdc55284406f3a592693ff8a3e285d6535dfeeab28eb1a303cc753ce0d7035): Bind for 0.0.0.0:8080 failed: port is already allocated.\nSee 'docker run --help'.\ndeploy finished: 2.1.0",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      }
+    ],
+    "omitted_observations": 0,
+    "available_commands": [
+      "help",
+      "ls",
+      "cat",
+      "cd",
+      "pwd",
+      "tail",
+      "head",
+      "grep",
+      "sort",
+      "wc",
+      "df",
+      "du",
+      "rm",
+      "systemctl",
+      "journalctl",
+      "docker",
+      "curl",
+      "ss",
+      "ps"
+    ],
+    "command_operations": {
+      "docker": [
+        "ps",
+        "images",
+        "logs",
+        "inspect",
+        "port",
+        "run",
+        "start",
+        "stop",
+        "restart",
+        "rm",
+        "rmi",
+        "container ls",
+        "container list",
+        "container ps",
+        "container logs",
+        "container inspect",
+        "container port",
+        "container run",
+        "container start",
+        "container stop",
+        "container restart",
+        "container rm",
+        "image ls",
+        "image list",
+        "system df",
+        "system prune",
+        "image prune",
+        "image rm",
+        "builder prune",
+        "buildx prune",
+        "container prune"
+      ]
+    },
+    "item_id": null,
+    "history": []
+  },
+  "linux-too-many-files": {
+    "session_id": "eval-v2-linux-too-many-files",
+    "question": "지금까지 확인한 것으로 보면 다음에 무엇을 점검해야 할까요?",
+    "ticket": "09:00 타임 세일 시작 뒤 상품 페이지의 실시간 재고 알림이 멈추고, API 요청이 응답 없이 끊깁니다.\nCPU·메모리·디스크는 여유가 있다고 합니다. 지난주 이 서버(web-01)로 옮겨 왔고, 예전 서버는 같은 트래픽을 버텼어요.\nAPI는 systemd 서비스 shop-api(포트 3000)입니다.",
+    "revealed_hints": [],
+    "observations": [
+      {
+        "command": "systemctl status shop-api",
+        "stdout": "● shop-api.service - Shop backend API (Node.js)\n     Loaded: loaded (/etc/systemd/system/shop-api.service; enabled; vendor preset: enabled)\n     Active: active (running) since Sat 2026-09-05 09:15:00 UTC; 6 days ago\n   Main PID: 1340 (node)\n      Tasks: 3 (limit: 2274)\n     Memory: 210M\n     CGroup: /system.slice/shop-api.service\n\nSep 11 09:05:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:05:01 web-01 node[1340]: Error: EMFILE: too many open files, open '/opt/app/views/product.html'\nSep 11 09:06:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:08:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:11:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:14:00 web-01 node[1340]: Error: accept EMFILE",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      },
+      {
+        "command": "journalctl -u shop-api -n 5",
+        "stdout": "-- Logs begin at Fri 2026-09-11 08:00:00 UTC, end at Fri 2026-09-11 09:15:00 UTC. --\nSep 11 09:05:01 web-01 node[1340]: Error: EMFILE: too many open files, open '/opt/app/views/product.html'\nSep 11 09:06:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:08:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:11:00 web-01 node[1340]: Error: accept EMFILE\nSep 11 09:14:00 web-01 node[1340]: Error: accept EMFILE",
+        "stderr": "",
+        "exit_code": 0,
+        "truncated": false
+      }
+    ],
+    "omitted_observations": 0,
+    "available_commands": [
+      "help",
+      "ls",
+      "cat",
+      "cd",
+      "pwd",
+      "tail",
+      "head",
+      "grep",
+      "sort",
+      "wc",
+      "df",
+      "du",
+      "rm",
+      "systemctl",
+      "journalctl",
+      "ps",
+      "free",
+      "curl",
+      "ss",
+      "lsof",
+      "ulimit",
+      "echo",
+      "tee",
+      "mkdir"
+    ],
+    "command_operations": {},
+    "item_id": null,
+    "history": []
+  }
+}

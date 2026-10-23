@@ -1,8 +1,9 @@
 /**
  * 입력 문자열을 명령어로 파싱한다.
  *
- * 지원: 따옴표, sudo 접두사, > / >> 리다이렉션
- * 미지원: 파이프(|), 변수, 백틱 — 실제 셸을 흉내 내는 비용이 너무 커서 뺐다.
+ * 지원: 따옴표, sudo 접두사, > / >> 리다이렉션, 파이프(|)
+ * 미지원: 변수, 백틱, &&·;·|| — 실제 셸을 흉내 내는 비용이 너무 커서 뺐다.
+ * 파이프는 로그를 거르는 실무 습관(`journalctl ... | grep error`)이 너무 흔해서 지원한다.
  */
 
 export interface ParsedCommand {
@@ -44,6 +45,33 @@ export function tokenize(input: string): string[] {
   }
   if (current || hasContent) tokens.push(current);
   return tokens;
+}
+
+/**
+ * 파이프(|)로 명령을 나눈다. 따옴표 안의 | 는 글자로 둔다(grep 'a|b').
+ * 빈 단계가 있으면(맨 앞·맨 뒤·연속 |) 실제 bash처럼 문법 오류로 null을 돌려준다.
+ */
+export function splitPipeline(input: string): string[] | null {
+  const parts: string[] = [];
+  let current = "";
+  let quote: '"' | "'" | null = null;
+  for (const ch of input) {
+    if (quote) {
+      if (ch === quote) quote = null;
+      current += ch;
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote = ch;
+    if (ch === "|") {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  parts.push(current);
+  if (parts.length > 1 && parts.some((part) => part.trim() === "")) return null;
+  return parts.map((part) => part.trim());
 }
 
 export function parse(input: string): ParsedCommand {
@@ -99,7 +127,10 @@ export function flagValue(tokens: string[], short: string, long?: string): strin
     const t = tokens[i];
     if (!isFlag(t)) continue;
     if (t.startsWith("--")) {
-      const [key, value] = [t.slice(2).split("=")[0], t.slice(2).split("=")[1]];
+      // SQL·설정 표현식의 '='도 옵션 값의 일부다. 첫 구분자 뒤를 통째로 보존한다.
+      const separator = t.indexOf("=");
+      const key = separator === -1 ? t.slice(2) : t.slice(2, separator);
+      const value = separator === -1 ? undefined : t.slice(separator + 1);
       if (long !== undefined && key === long) return value ?? tokens[i + 1];
       continue;
     }

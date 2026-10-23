@@ -14,6 +14,7 @@ from app.corpus import check_manifest
 from app.jobs import Jobs
 from app.explore import search
 from app.rag import respond
+from app.community.routes import community_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -32,8 +33,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="InfraCoach API", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware, allow_origins=settings.cors_origins,
-        allow_methods=["GET", "POST"], allow_headers=["Content-Type"],
+        allow_methods=["GET", "POST", "DELETE"], allow_headers=["Content-Type", "Authorization"],
     )
+    app.include_router(community_router(settings))
 
     @app.get("/api/health")
     def health():

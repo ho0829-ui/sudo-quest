@@ -8,8 +8,24 @@ import type { Check } from "../judge";
 import type { Fault } from "../state/faults";
 import type { HostPreset } from "../state/hosts";
 
-export type Category = "linux" | "network" | "web-db" | "aws";
+import type { Category } from "./categories";
+
+export type { Category } from "./categories";
 export type Difficulty = 1 | 2 | 3;
+
+/**
+ * 이 장애가 실제로 일어나는 일이라는 근거.
+ * - official-doc: 공식 문서가 이 증상·원인을 설명하거나 문제 해결 절차로 다룬다
+ * - postmortem: 공개된 장애 회고에 같은 원인이 나온다
+ * - survey: 업계 조사가 이 유형을 주요 원인으로 꼽는다
+ */
+export type EvidenceKind = "official-doc" | "postmortem" | "survey";
+
+export interface Evidence {
+  kind: EvidenceKind;
+  title: string;
+  url: string;
+}
 
 export interface RootCauseChoice {
   id: string;
@@ -59,4 +75,10 @@ export interface Scenario {
   solutionPath: string[];
 
   postmortem: Postmortem;
+
+  /**
+   * 실제성 근거. 1개 이상, 그중 하나는 공식 문서나 공개 회고여야 한다(테스트로 검사).
+   * 원인을 드러내므로 브리핑·티켓·코치 요청에는 쓰지 않고, 클리어 리포트에서만 보여 준다.
+   */
+  evidence: Evidence[];
 }

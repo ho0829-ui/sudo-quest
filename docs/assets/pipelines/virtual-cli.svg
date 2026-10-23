@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="850" viewBox="0 0 1600 850" role="img" aria-label="가상 CLI 실행 파이프라인">
+<title>가상 CLI 실행 파이프라인</title>
+<desc>실제 셸·실제 파일·실제 서버 명령을 호출하지 않음</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a101a"/><stop offset="1" stop-color="#111c2c"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#26384b" stroke-opacity=".35" stroke-width="1"/></pattern>
+<marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7fa4bb" stroke-width="2"/></marker>
+</defs>
+<rect width="1600" height="850" rx="28" fill="url(#bg)"/>
+<rect width="1600" height="850" rx="28" fill="url(#grid)"/>
+<path d="M56 120 H1544" stroke="#314657" stroke-width="2"/>
+<circle cx="68" cy="58" r="6" fill="#ff758b"/><circle cx="90" cy="58" r="6" fill="#ffc56c"/><circle cx="112" cy="58" r="6" fill="#67e8a1"/>
+<text x="145" y="65" fill="#8ba9bd" font-size="20" font-weight="700" letter-spacing="3" font-family="ui-monospace,Menlo,monospace">SUDO QUEST / ARCHITECTURE</text>
+<text x="58" y="107" fill="#f1f7ff" font-size="38" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">가상 CLI 실행 파이프라인</text>
+<text x="1544" y="105" text-anchor="end" fill="#88a2b5" font-size="18" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">실제 셸·실제 파일·실제 서버 명령을 호출하지 않음</text>
+<rect x="60" y="160" width="340" height="215" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 162 H378" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="194" r="5" fill="#52dfff"/>
+<text x="108" y="201" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">01 / BOOT</text>
+<text x="88" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">시나리오 시작</text>
+<text x="88" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">정상 호스트 프리셋 생성</text>
+<text x="88" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">장애 함수를 순서대로 적용</text>
+<path d="M87 356 H373" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="450" y="160" width="340" height="215" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M472 162 H768" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="480" cy="194" r="5" fill="#6df4a0"/>
+<text x="498" y="201" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">02 / SESSION</text>
+<text x="478" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">가상 서버 상태</text>
+<text x="478" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">파일 · 디스크 · 서비스 · 로그</text>
+<text x="478" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">프로세스 · 네트워크 등 보관</text>
+<path d="M477 356 H763" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="840" y="160" width="340" height="215" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M862 162 H1158" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="870" cy="194" r="5" fill="#b99bff"/>
+<text x="888" y="201" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">03 / INPUT</text>
+<text x="868" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">터미널 한 줄</text>
+<text x="868" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">예: df -h</text>
+<text x="868" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">사용자 입력을 세션에 전달</text>
+<path d="M867 356 H1153" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1230" y="160" width="340" height="215" rx="20" fill="#131f2e" stroke="#ffbd77" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1252 162 H1548" stroke="#ffbd77" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1260" cy="194" r="5" fill="#ffbd77"/>
+<text x="1278" y="201" fill="#ffbd77" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">04 / PARSE</text>
+<text x="1258" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">문법·허용 명령</text>
+<text x="1258" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">파이프 · 따옴표 · sudo 해석</text>
+<text x="1258" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">시나리오 명령 목록 확인</text>
+<path d="M1257 356 H1543" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="60" y="485" width="340" height="215" rx="20" fill="#131f2e" stroke="#ff82c8" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 487 H378" stroke="#ff82c8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="519" r="5" fill="#ff82c8"/>
+<text x="108" y="526" fill="#ff82c8" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">08 / RESULT</text>
+<text x="88" y="576" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">클리어 리포트</text>
+<text x="88" y="615" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">원인 확인 + 복구 조건 충족</text>
+<text x="88" y="646" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">명령 기록 · 회고 · 점수</text>
+<path d="M87 681 H373" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="450" y="485" width="340" height="215" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M472 487 H768" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="480" cy="519" r="5" fill="#b99bff"/>
+<text x="498" y="526" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">07 / SESSION</text>
+<text x="478" y="576" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">결과와 판정</text>
+<text x="478" y="615" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">stdout · stderr · exitCode 기록</text>
+<text x="478" y="646" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">새 상태에서 resolution 검사</text>
+<path d="M477 681 H763" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="840" y="485" width="340" height="215" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M862 487 H1158" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="870" cy="519" r="5" fill="#6df4a0"/>
+<text x="888" y="526" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">06 / EXECUTE</text>
+<text x="868" y="576" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">명령 구현과 계산</text>
+<text x="868" y="615" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">df: 파일 크기로 사용량 계산</text>
+<text x="868" y="646" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">systemctl: 시작 조건 확인</text>
+<path d="M867 681 H1153" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1230" y="485" width="340" height="215" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1252 487 H1548" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1260" cy="519" r="5" fill="#52dfff"/>
+<text x="1278" y="526" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">05 / CLONE</text>
+<text x="1258" y="576" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">상태 복사</text>
+<text x="1258" y="615" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">structuredClone(state)</text>
+<text x="1258" y="646" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">복사본만 조회·변경</text>
+<path d="M1257 681 H1543" stroke="#2b3c4e" stroke-width="1"/>
+<path d="M400 267 L440 267" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M450 592 L410 592" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M790 267 L830 267" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M840 592 L800 592" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1180 267 L1220 267" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1230 592 L1190 592" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1400 375 L1400 470" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="60" y="748" width="1480" height="55" rx="12" fill="#0e2630" stroke="#2c9daa"/>
+<text x="85" y="782" fill="#52dfff" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">예시: 거대 로그 파일 정리 → df 사용량 감소 → nginx 재시작 가능 → 가상 상태로 복구 판정</text>
+</svg>

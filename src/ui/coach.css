@@ -1,0 +1,73 @@
+/* 실습 화면의 AI 코치: 관제실 통신 채널처럼 보이게 하되, 장식은 실제 상태(연결 여부)만 표시한다. */
+.play-layout { grid-template-columns: minmax(0, 1fr) clamp(320px, 29vw, 410px); }
+@media (max-width: 980px) { .play-layout { grid-template-columns: 1fr; } }
+.coach-jump { display: none; }
+@media (max-width: 980px) {
+  .coach-jump { display: inline-flex; gap: 6px; align-items: center; position: fixed; right: 16px; bottom: 16px; z-index: 6; border-radius: 22px; padding: 10px 16px; font-size: 12px; font-weight: 650; color: #0f151b; background: #89d5e9; border-color: #89d5e9; box-shadow: 0 6px 24px #0009; }
+  .coach-jump .tab-badge { color: #8a5a12; }
+  #panel-coach { scroll-margin-top: 12px; }
+  .play-layout { padding-bottom: 64px; } /* 떠 있는 버튼이 마지막 버튼을 가리지 않게 */
+}
+.sidebar-stack { display: flex; flex-direction: column; gap: 14px; }
+
+.sidebar-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 9px; background: #0a0f13; }
+.sidebar-tabs button { border: 0; background: transparent; color: #8aa2a8; font-size: 12px; padding: 9px 8px; display: flex; justify-content: center; align-items: baseline; gap: 6px; }
+.sidebar-tabs button small { font: 9px var(--mono); color: #69858d; }
+.sidebar-tabs button[aria-selected="true"] { background: #7dcee314; color: #a4e0f0; box-shadow: inset 0 0 0 1px #7dcee330; }
+.tab-badge { color: var(--yellow); font-size: 9px; animation: coach-blink 1.2s ease-in-out infinite; }
+
+.coach { display: flex; flex-direction: column; gap: 12px; border-color: #202e3c; background: linear-gradient(180deg, #0e151b, var(--panel) 120px); }
+.coach-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.sidebar .coach-head h4 { margin: 0; color: #b9e3ee; }
+.coach-head p { margin: 4px 0 0; font-size: 11px; color: #79969d; }
+.coach-link { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; font: 9px var(--mono); letter-spacing: 1px; color: #8aa2a8; border: 1px solid #1d2935; border-radius: 20px; padding: 4px 9px; }
+.coach-link i { width: 6px; height: 6px; border-radius: 50%; background: #69858d; }
+.coach-link.ready { color: var(--ok); }
+.coach-link.ready i { background: var(--ok); box-shadow: 0 0 8px #5ee0a8aa; animation: coach-blink 2.4s ease-in-out infinite; }
+.coach-link.setup { color: var(--yellow); }
+.coach-link.setup i { background: var(--yellow); }
+.coach-link.offline { color: #e28d80; }
+.coach-link.offline i { background: #e28d80; }
+.coach-link.checking i { animation: coach-blink .8s ease-in-out infinite; }
+.coach-notice { margin: 0; font-size: 11px; color: #c9b38d; background: #2a241a; border: 1px solid #4a3d29; border-radius: 7px; padding: 8px 10px; }
+.coach-notice .text-button { padding: 0; color: var(--accent); font-size: 11px; }
+
+.coach-thread { display: flex; flex-direction: column; gap: 12px; max-height: 48vh; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
+.coach-empty { margin: 0; font-size: 12px; line-height: 1.7; color: #88a4ab; border: 1px dashed #202e3c; border-radius: 8px; padding: 12px; }
+.coach-turn { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; animation: coach-in .25s ease-out; }
+.coach-question { margin: 0 0 0 24px; font-size: 12px; background: #141d26; border: 1px solid #1d2935; border-radius: 9px 9px 2px 9px; padding: 8px 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.coach-question span, .coach-label { display: block; font: 8px var(--mono); letter-spacing: 1.6px; color: #688891; margin-bottom: 3px; }
+.coach-label { color: #74b6c7; }
+.coach-answer { font-size: 12px; line-height: 1.65; border-left: 2px solid var(--accent); background: #0b1015; border-radius: 2px 9px 9px 2px; padding: 9px 11px; }
+.coach-answer details { margin-top: 8px; }
+.coach-answer summary { cursor: pointer; color: #9ab3b9; }
+.coach-error { margin: 0; font-size: 12px; color: #f0a497; background: #2b1a18; border-radius: 7px; padding: 8px 10px; }
+.coach-pending { display: flex; gap: 4px; margin: 0; padding: 10px 12px; }
+.coach-pending i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: coach-blink 1s ease-in-out infinite; }
+.coach-pending i:nth-child(2) { animation-delay: .2s; }
+.coach-pending i:nth-child(3) { animation-delay: .4s; }
+.coach-stage { margin: 0; font: 10px var(--mono); color: #85bbc9; }
+.coach-stage::before { content: '> '; }
+
+.coach-checks { margin-top: 10px; }
+.coach-checks strong { font-size: 11px; color: #b5d1d8; font-weight: 600; }
+.coach-checks ul { margin: 6px 0 0; padding-left: 16px; display: grid; gap: 7px; }
+.coach-checks li > span { display: block; overflow-wrap: anywhere; }
+.use-command { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 5px; padding: 6px 8px; text-align: left; background: #080b0f; border-color: #222e3a; font-size: 10px; color: #8fc9d8; }
+.use-command code { font: 11px var(--mono); color: var(--text); overflow-wrap: anywhere; }
+.use-command span { flex-shrink: 0; font: 9px var(--mono); }
+
+.coach-nudge { display: grid; gap: 4px; text-align: left; font-size: 11px; line-height: 1.55; color: #e7cf9f; background: #2a2418; border-color: #574629; animation: coach-in .3s ease-out; }
+.coach-nudge strong { color: var(--yellow); font-size: 11px; }
+.coach-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.coach-chips button { font-size: 11px; padding: 6px 10px; border-radius: 20px; background: #10161d; border-color: #1e2b38; color: #b7d4dc; }
+.coach form { display: grid; gap: 6px; }
+.coach textarea { margin: 0; resize: vertical; min-height: 64px; font-size: 12px; }
+.coach-submit { display: flex; justify-content: space-between; align-items: center; font: 9px var(--mono); }
+.coach-submit .primary { padding: 8px 18px; font-size: 12px; }
+.coach-topic summary { cursor: pointer; font-size: 11px; color: #88a4ab; }
+.coach-topic select { margin-top: 6px; font-size: 11px; }
+.coach-privacy { margin: 0; font-size: 10px; line-height: 1.6; color: #6a848b; }
+
+@keyframes coach-blink { 50% { opacity: .35; } }
+@keyframes coach-in { from { opacity: 0; transform: translateY(4px); } }

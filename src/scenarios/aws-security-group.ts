@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { securityGroupAllows } from "../engine/judge";
 import { logLine } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";
@@ -104,4 +104,9 @@ export const awsSecurityGroup: Scenario = {
     realWorldNote:
       "AWS에서 접속이 안 될 때 확인 순서는 대체로 정해져 있습니다. 보안그룹 → 네트워크 ACL → 라우팅 테이블 → 서브넷(퍼블릭/프라이빗) → 그다음에야 인스턴스 안입니다. timeout이면 네트워크 계층, Connection refused면 인스턴스 안을 의심하세요. 이 구분 하나로 조사 범위가 절반으로 줄어듭니다.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "Amazon VPC — Security groups", url: "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html" },
+    { kind: "official-doc", title: "Amazon EC2 — 인스턴스 연결 문제 해결", url: "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html" },
+  ],
 };

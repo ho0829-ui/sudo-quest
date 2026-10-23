@@ -1,23 +1,27 @@
-/** 시스템 상태를 보는 명령어들: df, du, systemctl, journalctl, help */
+/** 시스템 상태를 보는 명령어들: df, du, journalctl, help (systemctl은 systemctl.ts) */
 import { flagValue, hasFlag, positionals } from "../parser/parse";
-import { allDiskUsage, duKB } from "../state/derived";
+import { allDiskUsage, duKB, mountFor } from "../state/derived";
 import { isDir, lookup, walk } from "../state/fs";
-import { formatAgo, formatFullTime, formatLogTime, humanKB, table } from "../state/format";
+import { formatFullTime, formatLogTime, humanKB, table } from "../state/format";
 import { formatJournalLine } from "../state/log";
-import { findService, startService, stopService } from "../state/services";
-import type { Service } from "../state/types";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
 export const df: Command = {
   name: "df",
   summary: "디스크 사용량을 본다 (-h 읽기 쉬운 단위)",
-  usage: "df [-h]",
+  usage: "df [-h] [경로...]",
   run({ state, tokens }: CommandContext) {
     const human = hasFlag(tokens, "h", "human-readable");
     const fmt = (kb: number) => (human ? humanKB(kb) : String(Math.round(kb)));
 
     const rows = [["Filesystem", "Size", "Used", "Avail", "Use%", "Mounted on"]];
-    for (const usage of allDiskUsage(state)) {
+    // 경로를 주면 그 경로가 속한 파일시스템만 보여 준다(df -h /var/lib/docker).
+    const paths = positionals(tokens);
+    for (const path of paths) {
+      if (!lookup(state, path).node) return fail(`df: ${path}: No such file or directory`);
+    }
+    const mounts = new Set(paths.map((path) => mountFor(state, lookup(state, path).abs).mount));
+    for (const usage of allDiskUsage(state).filter((u) => !mounts.size || mounts.has(u.disk.mount))) {
       rows.push([
         usage.disk.device,
         fmt(usage.disk.totalKB),
@@ -33,13 +37,25 @@ export const df: Command = {
 
 export const du: Command = {
   name: "du",
-  summary: "경로별 용량을 본다 (-s 합계만, -h 읽기 쉬운 단위)",
-  usage: "du [-sh] [경로...]",
+  summary: "경로별 용량을 본다 (-s 합계만, -h 읽기 쉬운 단위, -d N 깊이 제한)",
+  usage: "du [-sh] [-d N] [경로...]",
   run({ state, tokens }: CommandContext) {
-    const summarize = hasFlag(tokens, "s");
+    let summarize = hasFlag(tokens, "s");
     const human = hasFlag(tokens, "h");
-    const paths = positionals(tokens);
+    const paths = positionals(tokens, ["d", "max-depth"]);
     if (paths.length === 0) paths.push(".");
+
+    // -d N / -dN / -xhd1 / --max-depth=N. 실제 du처럼 숫자가 아니면 거부하고, -s와 함께 쓰면 경고한다.
+    const depthText = flagValue(tokens, "d", "max-depth");
+    let maxDepth: number | undefined;
+    if (depthText !== undefined) {
+      if (!/^\d+$/.test(depthText)) return fail(`du: invalid maximum depth '${depthText}'\nTry 'du --help' for more information.`);
+      maxDepth = Number(depthText);
+      if (summarize && maxDepth !== 0) {
+        return fail(`du: warning: summarizing conflicts with --max-depth=${maxDepth}\nTry 'du --help' for more information.`);
+      }
+      if (maxDepth === 0) summarize = true;
+    }
 
     const rows: string[][] = [];
     const errors: string[] = [];
@@ -58,7 +74,9 @@ export const du: Command = {
       }
       // -s가 없으면 하위 디렉터리를 각각 보여주고 마지막에 합계를 낸다 (실제 du와 같은 순서)
       for (const [childPath, child] of walk(node, abs)) {
-        if (child.kind === "dir" && childPath !== abs) rows.push([size(duKB(state, childPath)), childPath]);
+        if (child.kind !== "dir" || childPath === abs) continue;
+        const depth = childPath.slice(abs.length).split("/").filter(Boolean).length;
+        if (maxDepth === undefined || depth <= maxDepth) rows.push([size(duKB(state, childPath)), childPath]);
       }
       rows.push([size(duKB(state, abs)), path]);
     }
@@ -69,113 +87,19 @@ export const du: Command = {
   },
 };
 
-/** systemctl status 출력. 실제 출력 형식을 최대한 따라간다. */
-function statusText(service: Service, clock: number, journalTail: string[]): string {
-  const dot = service.state === "active" ? "●" : service.state === "failed" ? "×" : "○";
-  const activeLine =
-    service.state === "active"
-      ? `active (running) since ${formatFullTime(service.since)}; ${formatAgo(service.since, clock)}`
-      : service.state === "failed"
-        ? `failed (Result: exit-code) since ${formatFullTime(service.since)}; ${formatAgo(service.since, clock)}`
-        : `inactive (dead) since ${formatFullTime(service.since)}; ${formatAgo(service.since, clock)}`;
-
-  const lines = [
-    `${dot} ${service.name}.service - ${service.description}`,
-    `     Loaded: loaded (${service.unitPath}; ${service.enabled ? "enabled" : "disabled"}; vendor preset: enabled)`,
-    `     Active: ${activeLine}`,
-  ];
-
-  if (service.state === "active" && service.mainPid) {
-    lines.push(`   Main PID: ${service.mainPid} (${service.execStart.split(" ")[0].split("/").pop()})`);
-    lines.push("      Tasks: 3 (limit: 2274)");
-    lines.push(`     Memory: ${humanKB(service.memKB)}`);
-  } else {
-    lines.push(`    Process: ExecStart=${service.execStart} (code=exited, status=1/FAILURE)`);
-  }
-  lines.push(`     CGroup: /system.slice/${service.name}.service`);
-
-  if (journalTail.length) lines.push("", ...journalTail);
-  return lines.join("\n");
-}
-
-export const systemctl: Command = {
-  name: "systemctl",
-  summary: "서비스를 조회하고 제어한다 (status/start/stop/restart)",
-  usage: "systemctl <status|start|stop|restart|is-active|list-units> [서비스]",
-  run({ state, tokens, user }: CommandContext) {
-    const args = positionals(tokens);
-    const sub = args[0] ?? "list-units";
-    const name = args[1];
-
-    if (sub === "list-units" || sub === "list-unit-files") {
-      const rows = [["UNIT", "LOAD", "ACTIVE", "SUB", "DESCRIPTION"]];
-      for (const s of state.services) {
-        rows.push([
-          `${s.name}.service`,
-          "loaded",
-          s.state,
-          s.state === "active" ? "running" : s.state === "failed" ? "failed" : "dead",
-          s.description,
-        ]);
-      }
-      return ok(table(rows, ["left", "left", "left", "left", "left"]));
-    }
-
-    if (!name) return fail(`systemctl: 서비스 이름이 필요합니다\n사용법: ${systemctl.usage}`);
-    const service = findService(state, name);
-    if (!service) {
-      return fail(`Unit ${name.replace(/\.service$/, "")}.service could not be found.`, 4);
-    }
-
-    if (sub === "status") {
-      // status 아래에 최근 로그 몇 줄을 붙여준다. 실제 systemctl도 이렇게 보여주고,
-      // 여기가 플레이어에게 결정적인 단서가 되는 자리다.
-      const tailLines = state.journal
-        .filter((e) => e.unit === service.name)
-        .slice(-6)
-        .map((e) => formatJournalLine(e, state.hostname, formatLogTime(e.time)));
-      const text = statusText(service, state.clock, tailLines);
-      // 실제 systemctl status는 서비스가 정상이 아니면 exit code가 3이다
-      return { stdout: text, stderr: "", exitCode: service.state === "active" ? 0 : 3 };
-    }
-
-    if (sub === "is-active") {
-      return { stdout: service.state, stderr: "", exitCode: service.state === "active" ? 0 : 3 };
-    }
-
-    if (sub === "start" || sub === "restart" || sub === "stop") {
-      // 서비스 제어는 root 권한이 필요하다. sudo를 빼먹는 건 아주 흔한 실수라 그대로 재현한다.
-      if (user !== "root") {
-        return fail(
-          `Failed to ${sub} ${service.name}.service: Access denied\nSee system logs and 'systemctl status ${service.name}.service' for details.`,
-          4,
-        );
-      }
-      if (sub === "stop") {
-        stopService(state, service.name);
-        return ok();
-      }
-      if (sub === "restart") stopService(state, service.name);
-      const outcome = startService(state, service.name);
-      if (outcome.ok) return ok();
-      return fail(
-        `Job for ${service.name}.service failed because the control process exited with error code.\n` +
-          `See "systemctl status ${service.name}.service" and "journalctl -xeu ${service.name}.service" for details.`,
-        1,
-      );
-    }
-
-    return fail(`Unknown operation ${sub}.`);
-  },
-};
-
 export const journalctl: Command = {
   name: "journalctl",
   summary: "시스템 로그를 본다 (-u 서비스, -n 줄수)",
   usage: "journalctl [-u 서비스] [-n 줄수] [-xe]",
   run({ state, tokens }: CommandContext) {
     const unit = flagValue(tokens, "u", "unit");
-    const lines = Number(flagValue(tokens, "n", "lines") ?? 25);
+    const requested = flagValue(tokens, "n", "lines");
+    if ((hasFlag(tokens, "n", "lines") && requested === undefined) || (requested !== undefined && !/^\d+$/.test(requested))) {
+      return fail(`Failed to parse lines '${requested ?? ""}'`);
+    }
+    const lines = Number(requested ?? 25);
+    if (!Number.isSafeInteger(lines)) return fail(`Failed to parse lines '${requested}'`);
+    if (lines === 0) return ok();
 
     let entries = state.journal;
     if (unit) {

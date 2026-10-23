@@ -6,42 +6,39 @@
  */
 import { elapsedSeconds, type Session } from "./session";
 
-/** 이 명령어 수까지는 감점하지 않는다. 충분히 둘러볼 여유를 준다. */
-const FREE_COMMANDS = 12;
+/**
+ * 힌트 단계별 감점. 뒤 단계 힌트일수록 정답에 가까운 내용을 알려 주므로 더 많이 깎는다(3단계 = "거의 정답").
+ * 시나리오에 힌트가 더 있으면 마지막 값을 계속 쓴다.
+ */
+export const HINT_PENALTIES = [80, 100, 120] as const;
+export const WRONG_PENALTY = 80;
+
+/** n번째(0부터) 힌트를 열면 깎이는 점수. 힌트 버튼에 미리 보여 줄 때도 쓴다. */
+export function hintPenaltyAt(index: number): number {
+  return HINT_PENALTIES[Math.min(index, HINT_PENALTIES.length - 1)];
+}
 
 export interface ScoreBreakdown {
   base: number;
-  timePenalty: number;
-  commandPenalty: number;
   hintPenalty: number;
   wrongPenalty: number;
   total: number;
   grade: "S" | "A" | "B" | "C" | "D";
+  /** 걸린 시간·명령 수는 기록으로만 보여 준다(점수에 넣지 않는다). */
   elapsedSeconds: number;
 }
 
+/**
+ * 연습 모드 점수. 걸린 시간과 친 명령 수는 감점하지 않는다 — 천천히 둘러보며 배우는 것이 목적이라,
+ * 시간에 쫓기거나 명령을 아끼느라 확인을 건너뛰면 오히려 학습에 해롭다. 시간 경쟁은 나중의 챌린지 모드에서 다룬다.
+ * 감점은 "도움을 받은 만큼(힌트)"과 "잘못 단정한 만큼(오답)"만.
+ */
 export function calculateScore(session: Session, now: number = Date.now()): ScoreBreakdown {
-  const seconds = elapsedSeconds(session, now);
-
-  // 1분에 10점, 최대 200점까지만 깎는다. 오래 걸렸다고 0점이 되면 학습 의욕이 꺾인다.
-  const timePenalty = Math.min(200, Math.floor(seconds / 60) * 10);
-  const commandPenalty = Math.min(150, Math.max(0, session.commands.length - FREE_COMMANDS) * 5);
-  const hintPenalty = session.hintsUsed * 60;
-  const wrongPenalty = session.wrongAnswers.length * 80;
-
+  const hintPenalty = Array.from({ length: session.hintsUsed }, (_, i) => hintPenaltyAt(i)).reduce((sum, n) => sum + n, 0);
+  const wrongPenalty = session.wrongAnswers.length * WRONG_PENALTY;
   const base = 1000;
-  const total = Math.max(0, base - timePenalty - commandPenalty - hintPenalty - wrongPenalty);
-
-  return {
-    base,
-    timePenalty,
-    commandPenalty,
-    hintPenalty,
-    wrongPenalty,
-    total,
-    grade: gradeOf(total),
-    elapsedSeconds: seconds,
-  };
+  const total = Math.max(0, base - hintPenalty - wrongPenalty);
+  return { base, hintPenalty, wrongPenalty, total, grade: gradeOf(total), elapsedSeconds: elapsedSeconds(session, now) };
 }
 
 function gradeOf(total: number): ScoreBreakdown["grade"] {

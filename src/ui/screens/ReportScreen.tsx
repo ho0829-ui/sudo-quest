@@ -1,13 +1,26 @@
 import { calculateScore, formatDuration } from "../../engine/session/score";
 import type { Session } from "../../engine/session/session";
+import type { EvidenceKind } from "../../engine/scenario/types";
+import { InvestigationReview } from "../components/InvestigationReview";
+import { ExternalLink } from "../components/ExternalLink";
+import type { PartyNotice } from "../party";
+import { commandNote, timeNote } from "../reportNotes";
+
+const EVIDENCE_LABEL: Record<EvidenceKind, string> = { "official-doc": "공식 문서", postmortem: "공개 포스트모템", survey: "업계 조사" };
 
 interface ReportScreenProps {
   session: Session;
   onBackToList: () => void;
   onRetry: () => void;
+  /** 커뮤니티 카페에 이 실습의 회고를 남기러 간다(풀이 포함 표시가 켜진 양식). 튜토리얼에는 없다. */
+  onShare?: () => void;
+  /** 주 버튼을 바꾼다(튜토리얼: "1번 실습 시작하기"). 없으면 "다른 시나리오 풀기". */
+  next?: { label: string; run: () => void };
+  /** 이 클리어로 운영실 파티가 새로 열렸으면 그 안내. 버튼은 캠퍼스(홈)로 간다. */
+  party?: PartyNotice | null;
 }
 
-export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenProps) {
+export function ReportScreen({ session, onBackToList, onRetry, onShare, next, party }: ReportScreenProps) {
   const { scenario, commands } = session;
   const score = calculateScore(session);
   const { postmortem } = scenario;
@@ -25,14 +38,20 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
         <div style={{ fontSize: 22, fontWeight: 600, marginTop: 6 }}>{score.total}점</div>
 
         <div className="score-grid">
-          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} penalty={score.timePenalty} />
-          <ScoreItem label="명령어" value={`${commands.length}회`} penalty={score.commandPenalty} />
+          <ScoreItem label="소요 시간" value={formatDuration(score.elapsedSeconds)} note={timeNote(score.elapsedSeconds)} />
+          <ScoreItem label="명령어" value={`${commands.length}회`} note={commandNote(commands.length, scenario.solutionPath.length)} />
           <ScoreItem label="힌트" value={`${session.hintsUsed}회`} penalty={score.hintPenalty} />
           <ScoreItem label="오답" value={`${session.wrongAnswers.length}회`} penalty={score.wrongPenalty} />
         </div>
+        {party && <div className="party-callout" role="status">
+          <span>{party.message}</span>
+          <button className="primary" onClick={onBackToList}>{party.action}</button>
+        </div>}
       </div>
 
-      <div className="panel" style={{ marginBottom: 16 }}>
+      <InvestigationReview key={session.scenario.id} session={session} />
+
+      <div className="panel report-postmortem" style={{ marginBottom: 16 }}>
         <h2 style={{ marginTop: 0, fontSize: 18 }}>포스트모템</h2>
 
         <div className="report-section">
@@ -57,6 +76,23 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
             <p>{postmortem.realWorldNote}</p>
           </div>
         )}
+        {/* 학습 목표는 풀이 방법을 담고 있어 브리핑에서는 숨기고, 클리어 뒤 회고에서 보여 준다. */}
+        <div className="report-section">
+          <h3>이번 실습에서 익힌 것</h3>
+          <ul className="objectives small">
+            {session.scenario.learningObjectives.map((objective, index) => <li key={index}>{objective}</li>)}
+          </ul>
+        </div>
+        {/* 근거 자료의 제목에도 원인이 드러나므로 브리핑·코치 요청에는 넣지 않고 여기서만 보여 준다. */}
+        <div className="report-section">
+          <h3>참고 자료</h3>
+          <ul className="evidence-list small">
+            {scenario.evidence.map(item => <li key={item.url}>
+              <span className="evidence-kind">{EVIDENCE_LABEL[item.kind]}</span>
+              <ExternalLink href={item.url}>{item.title}</ExternalLink>
+            </li>)}
+          </ul>
+        </div>
       </div>
 
       <div className="panel" style={{ marginBottom: 16 }}>
@@ -88,9 +124,10 @@ export function ReportScreen({ session, onBackToList, onRetry }: ReportScreenPro
 
       <div className="row end">
         <button onClick={onRetry}>다시 풀기</button>
-        <button className="primary" onClick={onBackToList}>
-          다른 시나리오 풀기
-        </button>
+        {onShare && <button onClick={onShare}>커뮤니티에 회고 남기기</button>}
+        {next
+          ? <><button onClick={onBackToList}>홈으로</button><button className="primary" onClick={next.run}>{next.label}</button></>
+          : <button className="primary" onClick={onBackToList}>다른 시나리오 풀기</button>}
       </div>
     </div>
   );
@@ -103,14 +140,16 @@ function gistOf(command: string): string {
   return words.slice(0, 2).join(" ");
 }
 
-function ScoreItem({ label, value, penalty }: { label: string; value: string; penalty: number }) {
+/** penalty가 있으면 감점 줄, 없으면(시간·명령 수 — 점수와 무관) note로 짧은 평을 단다. */
+function ScoreItem({ label, value, penalty, note }: { label: string; value: string; penalty?: number; note?: string }) {
   return (
     <div className="score-item">
       <div className="small muted">{label}</div>
       <div className="value">{value}</div>
-      <div className="small" style={{ color: penalty > 0 ? "var(--red)" : "var(--muted)" }}>
+      {penalty !== undefined && <div className="small" style={{ color: penalty ? "var(--red)" : "var(--muted)" }}>
         {penalty > 0 ? `-${penalty}점` : "감점 없음"}
-      </div>
+      </div>}
+      {note && <div className="small score-note">{note}</div>}
     </div>
   );
 }

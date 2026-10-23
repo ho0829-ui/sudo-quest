@@ -54,7 +54,7 @@ npm test
 ## 템플릿
 
 ```ts
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names"; // 등록부(명령 구현)를 끌어오지 않는 이름 목록
 import { all, diskUsageBelow, serviceIsActive } from "../engine/judge";
 import { crashService, logLine, putFile } from "../engine/state/faults";
 import type { Scenario } from "../engine/scenario/types";
@@ -62,7 +62,7 @@ import type { Scenario } from "../engine/scenario/types";
 export const myScenario: Scenario = {
   id: "my-scenario",                   // 파일명과 같게
   title: "사이트가 안 열린다고 합니다",    // 증상을 신고자 말투로
-  category: "linux",                   // linux | network | web-db | aws
+  category: "linux",                   // linux | network | web-db | aws (engine/scenario/categories.ts)
   difficulty: 1,                       // 1 초급 | 2 중급 | 3 고급
 
   // 장애 티켓: 증상만! 원인을 절대 노출하지 않는다
@@ -138,8 +138,25 @@ export const myScenario: Scenario = {
     ].join("\n"),
     realWorldNote: "실무에서 이 장애가 어떤 모습으로 나타나는지 (선택)",
   },
+
+  // 실제로 일어나는 장애라는 근거. 클리어 뒤 리포트의 "참고 자료"에만 보인다.
+  evidence: [
+    { kind: "official-doc", title: "write(2) — ENOSPC", url: "https://man7.org/linux/man-pages/man2/write.2.html" },
+  ],
 };
 ```
+
+### 근거 자료 (`evidence`)
+
+"이 장애가 실제로 자주 일어나는가"를 데이터로 남깁니다. 테스트가 아래를 강제합니다.
+
+| 규칙 | 이유 |
+|---|---|
+| 1개 이상, 주소는 `https://` | 출처 없는 시나리오가 들어오지 않게 |
+| `official-doc`(공식 문서)나 `postmortem`(공개 포스트모템)이 하나 이상 | 3자 블로그·설문만으로는 근거가 약하다. `survey`(업계 조사)는 덧붙이는 용도 |
+| 브리핑·코치 요청에는 넣지 않는다 | 제목에 원인이 드러난다(예: "bind(2) — EADDRINUSE"). 리포트에서만 보여 준다 |
+
+링크는 넣기 전에 직접 열어 보고, 오류 문구·설정 이름이 실제로 그 페이지에 있는지 확인하세요.
 
 ---
 
@@ -184,15 +201,21 @@ const breakSomething: Fault = (state) => {
 ### 쓸 수 있는 명령어
 
 `withCommands(...)` 로 기본 묶음에 더합니다. 기본 묶음(생략 시)은
-`help ls cat cd pwd tail df du rm systemctl journalctl` 입니다.
+`help ls cat cd pwd tail head grep sort wc df du rm systemctl journalctl` 입니다.
+파이프(`journalctl -u nginx | grep error | wc -l`)도 됩니다.
+
+티켓·힌트·모범 풀이에 적은 명령은 **그 시나리오에서 실제로 실행돼야** 합니다.
+`tests/command-coverage.test.ts` 가 "지원하지 않는 옵션"으로 끝나는 명령을 잡아냅니다.
 
 | 분야 | 명령어 |
 |---|---|
-| 파일 | `ls` `cat` `cd` `pwd` `tail` `rm` `sed` `chmod` `chown` |
-| 시스템 | `df` `du` `free` `ps` `dmesg` `kill` `systemctl` `journalctl` |
+| 파일 | `ls` `cat` `cd` `pwd` `tail` `head` `grep`(-A/-B/-C 문맥 포함) `sort` `wc` `rm` `sed` `chmod` `chown` `echo`(-e, -n) `tee`(-a) `mkdir`(-p) |
+| 시스템 | `df`(경로) `du` `free` `ps` `dmesg` `kill` `systemctl`(status·start·stop·restart·reload·cat·show -p·daemon-reload) `journalctl` `ulimit`(-n, -S, -H, -a) `lsof`(-p, -i :포트) |
 | 네트워크 | `curl` `ss` `ufw` `ping` `dig` |
 | 웹/DB | `nginx` `openssl` `certbot` `mysql` |
 | AWS | `aws` (ec2 · elbv2 · iam · sts) |
+| Docker | `docker ps`(-a, -q, --format) · `images`(-f dangling=true) · `logs`(--tail) · `inspect`(-f) · `port` · `start` · `stop` · `restart` · `rm`(-f) · `rmi`(-f) · `run`(-d --name -p -e --env-file --restart), `system df` · `system prune` · `image prune` · `builder prune`(`buildx prune`) · `container prune`(-a, -f, --filter until=…), `docker container ls` 같은 묶음 형태 |
+| Kubernetes | `kubectl get` (pods/deploy/svc/endpoints/endpointslices/events/nodes, 이름·별칭·wide, `-l` 셀렉터, `--show-labels`), `describe pod/deploy/svc`, `logs`(-c, -p/--previous, --tail, deploy/NAME), `set image` · `set env`(--list, KEY-) · `set resources`(--limits/--requests) · `set selector`(Service), `patch deployment|svc -p '<JSON>'`(strategic·merge), `rollout status` · `history` · `undo`(--to-revision) |
 
 ### 호스트 프리셋
 
@@ -200,6 +223,8 @@ const breakSomething: Fault = (state) => {
 |---|---|
 | `ubuntu-web` | nginx + shop-api가 도는 웹 서버 (web-01). 대부분 여기서 시작 |
 | `aws-admin` | AWS CLI가 있는 운영 작업 서버 (ops-bastion). 클라우드 시나리오용 |
+| `kubernetes-admin` | kubectl이 있는 운영 호스트 (k8s-admin)와 가상 클러스터 |
+| `docker-host` | dockerd와 상태 페이지 컨테이너(8081)가 도는 앱 서버 (app-01). 운영 계정은 docker 그룹이라 sudo 없이 docker를 쓴다 |
 
 ---
 
@@ -214,6 +239,7 @@ const breakSomething: Fault = (state) => {
 - [ ] **원인과 무관한 정상 로그도 섞여 있다.** 실제 서버 로그는 깨끗하지 않다.
 - [ ] **힌트 1단계가 정답을 말하지 않는다.** 질문을 던진다.
 - [ ] **포스트모템의 `howToPrevent` 가 구체적이다.** "잘 관리한다" ✕ / "80%에서 경고 알림" ○
+- [ ] **`evidence` 에 공식 문서나 공개 포스트모템이 있다.** 링크를 직접 열어 확인했다.
 
 ### 티켓 쓰는 요령
 
@@ -275,6 +301,104 @@ it("플레이 화면 확인", () => {
 ```bash
 npx vitest run tests/_play.test.ts
 ```
+
+---
+
+## 오픈 예정 실습(`src/scenarios/upcoming.ts`)
+
+실습 목록의 잠긴 `OPENING SOON` 카드와 운영실 HUD의 "다음 실습 n개 준비 중"은 이 파일에서 나옵니다. 제목과 한 줄 소개만 적고(티켓처럼 원인은 쓰지 않습니다), 엔진·자동 검증 대상이 아닙니다. 그 실습을 실제 시나리오 파일로 만들면 **이 목록에서 지워 주세요.** 같은 분류에 실습이 늘면 그 운영실의 파티는 근무 모드로 돌아가고, 새 실습까지 풀면 다시 열립니다.
+
+## 새 분류(운영실) 추가
+
+도커·쿠버네티스처럼 **분류 자체가 새로 생길 때**만 필요합니다. 기존 분류에 문제를 더할 때는 위 3단계로 충분합니다.
+
+### 방을 먼저 지어 두는 분류(준비 중)
+
+지금은 모든 분류에 실습이 있습니다(`docker` 2개, `kubernetes` 3개). 새 분류의 방을 실습보다 먼저 지을 때는
+`src/ui/categories.ts` 에서 `comingSoon: true` 로 두고, 첫 시나리오를 넣을 때 지웁니다. 그러면
+목록 탭·레일·관제실 화면·경보등이 함께 열립니다. 둘 중 하나만 하면 `tests/campus.test.ts` 가 실패해 알려 줍니다.
+
+### 완전히 새 분류
+
+1. `src/engine/scenario/categories.ts` 의 `CATEGORY_IDS` 에 id를 더한다.
+2. `npm run typecheck` 를 돌리면 **빠진 곳이 컴파일 오류로 나온다.** 그 세 곳을 채운다.
+   - `src/ui/categories.ts` — 이름·태그·운영실 이름("○○ 운영실")·설명·아이콘·캠퍼스 칸(`slot`)
+   - `src/ui/campus/themes.ts` — 네온 색(화면에서 이웃한 방과 색상이 겹치지 않게)과 바닥·벽 색
+   - `src/ui/campus/art/RoomArt.tsx` — 방 안 그림 컴포넌트(`art/` 에 새 파일)
+3. 지금 3×3 격자는 방 9개로 꽉 찼다. 새 칸을 쓰려면 `GRID_SIZE` 를 늘리고 바깥 칸(예: `[3,0]`)을 준다.
+   문·복도·지도 크기·관제실 미니맵은 `src/ui/campus/layout.ts` 가 칸에서 계산하므로 손댈 필요가 없다.
+4. 시나리오를 1개 이상 넣거나, 아직 없으면 `comingSoon: true` 로 둔다.
+5. `npm test` — `tests/campus.test.ts` 가 칸 중복·격자 밖·색 중복·복도 끊김·이름 규칙·준비 중 표시를 검사한다.
+
+새 명령어(`docker`, `kubectl` 등)가 필요하면 엔진 작업이므로 시나리오와 따로 PR을 올려 주세요.
+
+### nginx 라우팅·인증서 체인
+
+- nginx는 시작·reload에 성공할 때 읽은 설정(`Service.configSnapshot`)으로 요청을 처리합니다. 파일만 고치면 reload 전까지 옛 설정 그대로입니다. 설정을 바꾼 채로 시작하는 장애라면 fault에서 `configSnapshot`도 그 내용으로 맞추세요.
+- `state/config/nginxSites.ts`가 server(`listen`·`server_name`·`ssl_certificate`·`ssl_certificate_key`)·location(접두사·`=`)·`upstream`·`proxy_pass`·`root`를 해석합니다. proxy_pass에 URI가 있으면 접두사를 바꿔 넘기고, upstream이 연결을 거부하면 502, 시간 초과(fd 포화 등)면 504를 nginx 오류 페이지로 돌려줍니다.
+- 인증서는 `Certificate.pem`(파일에 들어 있으면 그 인증서가 있는 것)·`subject`·`keyId`를 주면 체인이 파일 내용에서 계산됩니다(`state/certs.ts`). 클라이언트는 `network.trustedRoots`의 루트만 믿으므로 중간 인증서가 빠지면 curl 60·s_client 21이 됩니다. 묶음의 첫 인증서가 키와 짝이 아니면 `nginx -t`·시작이 key values mismatch로 실패합니다. PEM 정보가 없는 예전 인증서는 도메인으로 찾고 만료만 봅니다.
+- `sed`는 `s#…#…#`처럼 `/` 말고 다른 구분자도 받습니다. 리다이렉션 `> /dev/null`은 누구나 쓸 수 있습니다.
+
+### 열린 파일 수·/proc·systemd unit
+
+- 서비스에 `connections`(동시 연결 수)·`baseFds`를 주면 열린 fd를 `state/limits.ts`가 계산합니다. 필요한 fd가 프로세스 한도(`Process.nofile`, 없으면 systemd 기본 soft 1024/hard 524288)를 넘으면 그 포트로 오는 `curl`은 시간 초과(28)가 되고, 시작 때 `fdExhaustedLog`를 남깁니다.
+- `/proc/PID/limits`·`/proc/PID/fd`(root만)·`/proc/PID/status`·`/proc/sys/fs/file-nr`는 읽을 때 계산합니다(`state/procfs.ts`). `cat`·`grep`·`wc`·`ls`가 그대로 읽습니다.
+- unit 파일(`Service.unitPath`)과 drop-in(`/etc/systemd/system/NAME.service.d/*.conf`)을 가상 파일로 두고, fault 끝에 `daemonReload(state)`를 불러 "지금 systemd가 읽은 설정"을 기록하세요. 이후 파일만 고치면 `daemon-reload` 전까지 적용되지 않고 실제 경고가 나옵니다.
+- `ulimit`는 로그인 셸 한도(/etc/security/limits.conf)를 보여 줍니다. 서비스 한도와 다르다는 것이 실습 포인트입니다.
+- 서비스에 `http.responses`를 주면 그 포트로 온 요청에 그 서비스가 답합니다(주지 않으면 예전처럼 nginx 웹 루트).
+- 리다이렉션(`>`)은 sudo가 아니라 셸 사용자 권한으로 열립니다. root 파일은 `echo … | sudo tee 파일`로 씁니다.
+
+### Kubernetes 프리셋
+
+`host: "kubernetes-admin"`과 `withCommands("kubectl")`을 사용합니다. 상태 타입은 `src/engine/state/kubernetes/types.ts`, 계산은 `reconcile.ts`입니다. Deployment를 새로 만들 때는 `state/kubernetes/history.ts`의 `addDeployment`(revision 1 기록 포함), 템플릿을 바꾸는 fault는 `changeTemplate(deployment, "변경 사유", template => …)`를 쓰고 `reconcileKubernetes(cluster, 시각)`을 호출합니다. `changeTemplate`이 revision과 `rollout history`를 함께 남기므로 `rollout undo`가 자동으로 대체 풀이가 됩니다. 서비스 엔드포인트는 selector와 Ready 파드에서 계산합니다.
+
+컨테이너가 어떻게 끝나는지도 상태에서 계산합니다. 한 번의 실행 결과는 Docker와 함께 쓰는 `state/containers/runtime.ts`(`runOutcome`·`runLog`)가 정하고, K8s는 `kubernetes/runtime.ts`의 `outcome`이 이미지 받기 실패를 더합니다. 출력 문장을 시나리오에 적지 마세요.
+
+| 상태 | 쓰는 곳 | 결과 |
+|---|---|---|
+| `images[이미지]` 없음 | — | ImagePullBackOff |
+| 이미지 `requiredEnv`에 있는데 컨테이너 `env`에 없음 | `images[…].requiredEnv`, `containers[].env` | CrashLoopBackOff, Last State Error·종료 코드 1, 로그 마지막 줄 `FATAL config: required environment variable X is not set` |
+| 이미지 `memoryMi` > 컨테이너 `resources.limits.memoryMi` | `images[…].memoryMi`, `containers[].resources` | CrashLoopBackOff, Last State OOMKilled·137, 로그는 `log.boot`에서 오류 없이 끊김 |
+| `readinessProbe` 포트가 이미지 `ports`에 없음 | `containers[].readinessProbe`, `images[…].ports` | Running·0/1, 이벤트 `Readiness probe failed: … connect: connection refused`, 엔드포인트에서 빠짐 |
+| `readinessProbe` 경로가 이미지 `paths`에 없음 | `containers[].readinessProbe`, `images[…].paths` | Running·0/1, 이벤트 `HTTP probe failed with statuscode: 404`, 엔드포인트에서 빠짐 |
+| 그 밖 | `images[…].log.boot`·`log.ready` | Running, 로그는 boot+ready |
+
+재시작 횟수는 반복 종료가 시작된 시각과 시뮬레이션 시각으로 계산합니다(10초부터 두 배, 최대 300초 간격).
+이미지에 `accessLog: true`를 주면 `kubectl logs`에 kubelet의 readiness 요청 줄(`"GET /health HTTP/1.1" 404 … "kube-probe/1.30"`)이 probe 판정 결과로 계산되어 붙습니다.
+
+Service는 Deployment가 아니라 라벨 셀렉터로 Ready 파드를 고릅니다(`serviceEndpoints`). 셀렉터 불일치 장애는 Service의 `selector`나 파드 라벨만 어긋나게 두면 됩니다.
+Deployment 셀렉터는 만든 뒤 바꿀 수 없으므로(`selectorOf`), patch로 템플릿 라벨을 바꿀 때 셀렉터를 벗어나면 실제처럼 거절됩니다. 라벨 체계를 바꾸려면 새 이름의 Deployment를 만드세요(`addDeployment`).
+`kubectl patch`는 replicas·템플릿 라벨·컨테이너 image·readinessProbe와 Service selector·ports만 반영하고, 그 밖의 필드는 `field not declared in schema`로 거절합니다. `--type=json`과 `kubectl edit`·`apply -f`는 지원하지 않습니다.
+
+현재는 default 네임스페이스, Recreate 전략, 가상 이미지 목록, 즉시 상태 계산만 지원합니다. 실제 재시도 대기·RollingUpdate·ConfigMap/Secret 참조·인증·delete·`kubectl top`은 아직 없습니다. 후속 시나리오에 필요한 동작을 먼저 공통 엔진에 추가하세요.
+
+### Docker 프리셋
+
+`host: "docker-host"`와 `withCommands("docker", "curl", "ss", "ps")`를 사용합니다. 상태 타입은 `src/engine/state/docker/types.ts`입니다.
+fault에서는 docker 명령과 같은 함수(`state/docker/lifecycle.ts`)로 컨테이너를 만들고 띄웁니다. 오류 문장도 엔진이 계산하므로, 배포 로그 같은 파일에 넣을 때는 그 결과를 그대로 씁니다.
+
+```ts
+addImage(state, { repository: "shop-api", tag: "2.1.0", createdAt, cmd: ["node", "server.js"],
+  layers: [{ name: "node:20-bookworm-slim", sizeMB: 75.2 }, { name: "shop-api:2.1.0:app", sizeMB: 106 }], // 이름이 같은 레이어는 공유
+  profile: { ports: [8080], paths: ["/healthz"], requiredEnv: ["DATABASE_URL"],
+    responses: { "/version": '{"version":"2.1.0"}' }, headers: { "Content-Type": "application/json" },
+    log: { boot: ["starting"], ready: ["listening on :8080"] } } });
+const created = createContainer(state, { name: "shop-api", image: "shop-api:2.1.0", env, ports, restart, createdAt });
+if (created.ok) startContainer(state, created.container, startedAt); // at: 과거에 띄운 컨테이너
+```
+
+- 공개 포트(`ports`)는 실제 Docker 기본값처럼 `docker-proxy` 프로세스가 호스트 포트를 잡습니다. 그래서 `ss -tlnp`·`ps aux`·`curl localhost:포트`·다른 서비스의 포트 충돌 판정이 따로 손대지 않아도 맞습니다. `curl` 응답은 이미지의 `responses`·`headers`에서 나옵니다(없는 경로는 404).
+- 포트가 이미 잡혀 있으면 다른 컨테이너일 때 `port is already allocated`, 일반 프로세스일 때 `address already in use`로 시작이 실패하고, 새로 만든 컨테이너는 `Created`로 남습니다.
+- 재시작 정책(`no`·`always`·`unless-stopped`·`on-failure:N`)으로 반복 종료하는 컨테이너는 100ms부터 두 배(상한 1분) 간격으로 재시작 횟수와 Restarting/Exited를 시각에서 계산합니다. `docker logs`는 실행마다 로그를 이어 붙입니다.
+- `systemctl stop docker`는 컨테이너를 모두 멈추고, 다시 시작하면 `always`·(손으로 멈추지 않은) `unless-stopped`만 되살립니다.
+- 디스크 사용량의 기준은 `/var/lib/docker` 아래 가상 파일입니다(`state/docker/storage.ts`). 이미지 레이어는 `overlay2/<id>/diff/.layer`, 컨테이너 쓰기 레이어·로그는 `overlay2/<컨테이너 id>`·`containers/<id>`, 빌드 캐시는 `buildkit/cache`(`addBuildCache`). 그래서 `df`·`du`·`rm`과 `docker system df`가 같은 값을 봅니다. `docker images`의 SIZE는 공유 레이어를 이미지마다 다시 세고, `system df`는 한 번만 셉니다.
+- Docker 데이터용 디스크를 따로 두려면 `state.disks`에 `mount: "/var/lib/docker"`를 더하면 됩니다(디스크 모델은 여러 마운트를 지원).
+- 디스크가 가득 차면 컨테이너 생성이 `no space left on device`로 실패하고, 레이어 파일이 지워진 이미지로는 시작이 `error creating overlay mount`로 실패합니다.
+- prune은 실제 규칙을 따릅니다: 멈춘 컨테이너도 이미지를 붙잡고, `image prune`은 dangling만(-a는 쓰지 않는 전부), `builder prune`은 dangling 캐시만(-a는 전부). `-f`가 없으면 확인 질문만 띄우고 지우지 않습니다.
+- 환경 변수는 컨테이너를 만든 뒤 바꿀 수 없습니다. `-e KEY`(값 없음)는 가상 셸에 export된 값이 없으므로 넣지 않습니다.
+- 지원하지 않는 것: 이미지 받기·빌드, 네트워크·볼륨(`volume prune` 포함), compose, exec, `--rm`, 실시간 로그(`-f`는 지금까지의 로그만), 컨테이너 안 프로세스의 `ps` 표시, `system df -v`.
+
+새 시나리오는 `tests/scenario-exploration.cases.ts`에도 조회·무관한 조치·대체 풀이를 추가해야 합니다. `solutionPath`를 복사해 채우지 말고 실제 사용자가 시도할 다른 경로를 작성하세요.
 
 ---
 

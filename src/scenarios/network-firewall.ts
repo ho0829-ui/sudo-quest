@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, firewallAllows, serviceIsActive } from "../engine/judge";
 import { logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -111,4 +111,9 @@ export const networkFirewall: Scenario = {
     realWorldNote:
       "'연결 거부(Connection refused)'와 '응답 없음(timeout)'은 다른 신호입니다. 거부는 서버까지 갔는데 그 포트에 아무도 없다는 뜻이고, 타임아웃은 패킷이 중간에서 조용히 버려졌다는 뜻입니다. 방화벽 문제는 대부분 타임아웃으로 나타납니다.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "Ubuntu Server 문서 — Firewall(ufw)", url: "https://ubuntu.com/server/docs/how-to/security/firewalls/" },
+    { kind: "survey", title: "Uptime Institute, Annual Outage Analysis 2024 (네트워크·연결성이 IT 서비스 장애 1위)", url: "https://uptimeinstitute.com/resources/research-and-reports/annual-outage-analysis-2024" },
+  ],
 };

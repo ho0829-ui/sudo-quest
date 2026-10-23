@@ -1,0 +1,9 @@
+.terminal-loader { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; color: var(--muted, #a1adbf); font-size: 12px; vertical-align: middle; }
+.terminal-loader svg { width: 58px; height: 42px; flex: none; overflow: visible; }
+.terminal-loader.compact { min-height: 24px; gap: 6px; font-size: inherit; }.terminal-loader.compact svg { width: 36px; height: 26px; }
+.terminal-loader circle { animation: cli-particles 1.9s ease-in-out infinite; animation-delay: var(--delay); transform-box: fill-box; transform-origin: center; }
+.cli-frame { fill: var(--accent, #00d4ff); }.cli-ink { fill: #b29aff; }.cli-cursor { fill: #b29aff; animation: cli-caret .8s steps(1) infinite; }
+@keyframes cli-particles { 0%, 70%, 100% { opacity: 1; transform: translate(0, 0) scale(1); } 38% { opacity: .18; transform: translate(var(--drift), -3px) scale(.35); } }
+@keyframes cli-caret { 50% { opacity: 0; } }
+.motion-paused .terminal-loader circle, .motion-paused .cli-cursor { animation: none; }
+@media (prefers-reduced-motion: reduce) { .terminal-loader circle, .cli-cursor { animation: none; } }

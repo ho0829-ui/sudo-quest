@@ -3,10 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>장애 대응 트러블슈팅 게임</title>
+    <meta name="theme-color" content="#07090e" />
+    <meta name="description" content="SUDO QUEST — 가상 서버에서 장애 원인을 찾고 직접 복구하며 배우는 인프라 실습 공간" />
+    <title>SUDO QUEST — 인프라 장애 대응 퀘스트</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 첫 JavaScript 조각을 받는 동안만 보인다. React가 마운트되면 교체한다. -->
+      <style>
+        .boot-loading { position: fixed; inset: 0; display: flex; gap: 12px; align-items: center; justify-content: center; background: #07090e; color: #a1adbf; font: 12px monospace; }
+        .boot-loading svg { width: 54px; height: 42px; animation: boot-dots 1.5s ease-in-out infinite; }
+        @keyframes boot-dots { 50% { opacity: .35; transform: translateY(-2px); } }
+        @media (prefers-reduced-motion: reduce) { .boot-loading svg { animation: none; } }
+      </style>
+      <div class="boot-loading" role="status"><svg viewBox="0 0 64 48" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 7H58V41H6ZM6 17H58" stroke-dasharray=".1 4" />
+        <path d="m16 24 6 5-6 5m15 0h13" stroke="#b29aff" stroke-dasharray=".1 4" />
+      </svg><span>SUDO QUEST · 연결 중…</span></div>
+      <noscript><style>.boot-loading { display: none; }</style>이 실습을 실행하려면 브라우저의 JavaScript를 켜 주세요.</noscript>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

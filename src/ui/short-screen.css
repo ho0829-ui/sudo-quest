@@ -1,0 +1,40 @@
+/*
+ * 낮은 데스크톱 화면(1280×720 노트북 등) 맞춤. 넓지만 높이가 820px 이하일 때만 적용한다.
+ * 목표: 첫 화면 안에 홈의 시작 버튼, 실습 터미널의 입력줄이 보이게 한다.
+ * 나중에 불러오는 화면(게시판·실습)의 CSS보다 우선하도록 .control-center를 앞에 붙인다.
+ */
+@media (min-width: 1051px) and (max-height: 820px) {
+  /* 홈: 문구 칸을 넓혀 제목이 다섯 줄로 접히지 않게 하고, 문구를 위쪽에 붙여 시작 버튼을 올린다. */
+  .control-center .page-heading { margin-bottom: 18px; }
+  .control-center .scenario-screen .lab-hero { grid-template-columns: minmax(300px, .62fr) 2fr; align-items: start; }
+  .control-center .scenario-screen .hero-copy { padding: 26px 28px; }
+  .control-center .scenario-screen .hero-copy h2 { font-size: 26px; line-height: 1.35; margin: 14px 0 10px; }
+  .control-center .scenario-screen .hero-copy > p { margin-bottom: 16px; }
+  .control-center .scenario-screen .hero-note { margin-top: 12px; }
+  /* 캠퍼스 지도는 화면 높이에 맞춰 줄인다(SVG는 비율을 지킨 채 가운데로 작아진다). */
+  .control-center .scenario-screen .iso-map { max-height: max(300px, calc(100vh - 410px)); }
+  .control-center .scenario-screen .iso-hud { min-height: 0; }
+
+  /* 실습: HUD를 낮게(방 그림 축소, 통계 네 칸을 한 줄로), 터미널 높이는 화면에 맞춘다. */
+  .control-center .session-breadcrumb { margin-bottom: 12px; }
+  .control-center .mission-hud { grid-template-columns: 92px minmax(0, 1fr) auto; gap: 14px; margin-bottom: 12px; padding-block: 6px; }
+  .control-center .mission-room { width: 92px; }
+  .control-center .mission-main h2 { margin: 3px 0 7px; font-size: 18px; }
+  .control-center .mission-stats { grid-template-columns: repeat(4, minmax(72px, auto)); }
+  .control-center .mission-stats div { padding: 5px 10px; }
+  .control-center .terminal { height: max(300px, calc(100vh - 350px)); min-height: 0; }
+
+  /* 게시판: 커피잔 그림·소개·태그는 빼고 제목만. 카페 장면은 낮게(더 줄이고 싶으면 "카페 접기"). */
+  .control-center .board-coffee, .control-center .board-hero p, .control-center .board-hero-tags { display: none; }
+  .control-center .board-hero { padding: 18px 28px; margin-bottom: 12px; }
+  .control-center .board-hero h1 { margin: 6px 0 0; font-size: 24px; }
+  .control-center .cafe-scene { margin-bottom: 18px; }
+  .control-center .cafe-map { max-height: max(260px, calc(100vh - 430px)); }
+  .control-center .cafe-caption { min-height: 0; padding-block: 8px; }
+  .control-center .board-section-heading { margin-bottom: 12px; }
+
+  /* 자료실: 방 그림은 빼고 소개를 낮게, 조건 검색 칸도 얇게. */
+  .control-center .archive-hero { grid-template-columns: 1fr; padding: 14px 20px; margin-bottom: 12px; }
+  .control-center .archive-room { display: none; }
+  .control-center .condition-search { padding: 12px 16px; margin: 0 0 16px; }
+}

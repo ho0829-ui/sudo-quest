@@ -5,7 +5,7 @@
  * faults·rootCause·solutionPath·state·postmortem·학습 목표·아직 안 연 힌트는 절대 넣지 않는다.
  * (학습 목표에는 "df와 du로…"처럼 풀이가 들어 있어서 뺀다.)
  */
-import { DEFAULT_COMMANDS } from "../engine/commands";
+import { commandOperations, DEFAULT_COMMANDS } from "../engine/commands";
 import type { Session } from "../engine/session/session";
 import type { Citation, Message } from "./knowledge";
 
@@ -28,6 +28,8 @@ export interface CoachRequest {
   observations: Observation[];
   omitted_observations: number;
   available_commands: string[];
+  /** 하위 명령이 있는 명령의 지원 목록(예: aws). 엔진 공통 목록이라 실습 정답과 무관하다. */
+  command_operations: Record<string, string[]>;
   item_id: string | null;
   history: Message[];
 }
@@ -54,6 +56,7 @@ export function clip(text: string, limit: number): { text: string; truncated: bo
 export function buildCoachRequest(
   session: Session, sessionId: string, question: string, itemId: string | null, history: Message[],
 ): CoachRequest {
+  const available = session.scenario.commands ?? DEFAULT_COMMANDS;
   const typed = session.lines.filter(line => line.input.trim() !== "");
   const recent = typed.slice(-MAX_OBSERVATIONS);
   const observations = recent.map(line => {
@@ -69,7 +72,8 @@ export function buildCoachRequest(
     revealed_hints: session.scenario.hints.slice(0, session.hintsUsed),
     observations,
     omitted_observations: typed.length - recent.length,
-    available_commands: session.scenario.commands ?? DEFAULT_COMMANDS,
+    available_commands: available,
+    command_operations: commandOperations(available),
     item_id: itemId,
     history: history.slice(-6),
   };

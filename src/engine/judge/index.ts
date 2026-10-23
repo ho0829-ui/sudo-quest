@@ -8,7 +8,7 @@
  * 시나리오 파일에서 직접 (state) => boolean 을 써도 되므로,
  * 엔진을 고치지 않고도 특수한 판정을 만들 수 있다.
  */
-import { hasHealthyTarget, roleHasPolicy } from "../state/aws";
+import { hasHealthyTarget, inCidr, roleHasPolicy } from "../state/aws";
 import { validateNginxConf } from "../state/config/nginx";
 import { diskUsage, listeningSockets, memoryUsage } from "../state/derived";
 import { findNode, normalizePath } from "../state/fs";
@@ -123,8 +123,9 @@ export function securityGroupAllows(groupId: string, port: number): Check {
   return (state) => {
     const group = state.aws?.securityGroups.find((g) => g.groupId === groupId);
     if (!group) return false;
-    return group.ingress.some(
-      (rule) => rule.protocol === "-1" || (rule.fromPort <= port && port <= rule.toPort),
-    );
+    const source = state.network.interfaces.find(iface => iface.name !== "lo")?.addr;
+    return !!source && group.ingress.some(rule =>
+      (rule.protocol === "-1" || (rule.protocol === "tcp" && rule.fromPort <= port && port <= rule.toPort))
+      && inCidr(source, rule.cidr));
   };
 }

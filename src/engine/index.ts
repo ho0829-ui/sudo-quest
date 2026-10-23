@@ -2,5 +2,6 @@
 export { runCommand, type RunResult } from "./run";
 export { buildInitialState } from "./scenario/build";
 export { DEFAULT_COMMANDS, getCommand } from "./commands";
-export type { Scenario, Category, Difficulty } from "./scenario/types";
+export type { Scenario, Category, Difficulty, Evidence, EvidenceKind } from "./scenario/types";
+export { CATEGORY_IDS, isCategory } from "./scenario/categories";
 export type { SystemState } from "./state/types";

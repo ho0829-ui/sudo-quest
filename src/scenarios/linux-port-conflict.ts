@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, httpResponds, serviceIsActive } from "../engine/judge";
 import { crashService, logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -129,4 +129,8 @@ export const linuxPortConflict: Scenario = {
     realWorldNote:
       "이 장애의 진짜 교훈은 '잠복'입니다. 원인이 된 행동(어제의 테스트)과 증상이 나타난 시점(오늘의 재시작)이 떨어져 있어서, 최근 변경만 훑어보면 못 찾습니다. 재시작했을 때만 드러나는 문제가 있다는 걸 기억해 두세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "bind(2) — EADDRINUSE: 주소가 이미 사용 중", url: "https://man7.org/linux/man-pages/man2/bind.2.html" },
+  ],
 };

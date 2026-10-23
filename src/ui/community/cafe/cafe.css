@@ -1,0 +1,32 @@
+/* 커뮤니티 카페 장면. 손님 이동은 transform transition, 그 밖 움직임은 캠퍼스와 같은 CSS 애니메이션이라 모션 설정을 따른다. */
+.cafe-scene { margin: -8px 0 28px; border: 1px solid var(--cafe-line); border-radius: 16px; background: radial-gradient(ellipse at 50% 30%, #3a251c55, transparent 70%), #0e0f14; overflow: hidden; }
+.cafe-map { display: block; width: 100%; height: auto; max-height: 720px; }
+.cafe-map text { font-family: var(--sans); }
+.cafe-neon { font: 800 9px var(--mono); letter-spacing: 1.4px; }
+.cafe-visitor, .cafe-tag { will-change: transform; }
+/* 모션이 꺼지면 걷던 사람도 다음 자리로 바로 옮긴다(미끄러지듯 움직이지 않게). */
+.cafe-map.is-still .cafe-visitor, .cafe-map.is-still .cafe-tag { transition: none !important; }
+.cafe-tag { cursor: pointer; outline: none; }
+.cafe-bubble { fill: #fff4e6; stroke-width: 1; transition: stroke-width .15s; }
+.cafe-bubble-text { font-size: 6.5px; font-weight: 700; fill: #3a2219; }
+.cafe-new { font: 800 5px var(--mono); fill: #e0663a; letter-spacing: .3px; }
+.cafe-tag:hover .cafe-bubble, .cafe-tag:focus-visible .cafe-bubble, .cafe-tag.is-active .cafe-bubble { stroke-width: 2.2; }
+.cafe-tag:focus-visible .cafe-bubble { stroke-dasharray: 3 2; }
+.cafe-sign { fill: #1f2b24; stroke: #d9b48a; stroke-width: 1.2; }
+.cafe-sign-text { font-size: 7px; font-weight: 700; fill: #f4f1ea; }
+.cafe-scene a:focus-visible .cafe-sign { stroke: var(--cafe); stroke-width: 2; }
+
+/* 장면 아래 안내: 고른 손님의 글 제목 전체·글쓴이·댓글. 높이를 고정해 호버 때 목록이 흔들리지 않게 한다. */
+.cafe-caption { min-height: 64px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 12px 18px; border-top: 1px solid var(--cafe-line); background: #111319; }
+.cafe-caption p { margin: 0; font-size: 12.5px; color: #a9a9b5; line-height: 1.6; }
+.cafe-caption strong { font-size: 14px; flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; }
+.cafe-caption-meta { font-size: 11.5px; color: #a9a9b5; }
+.cafe-caption-open { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--cafe); white-space: nowrap; }
+@media (max-width: 520px) { .cafe-scene { margin-top: -14px; border-radius: 12px; } .cafe-caption { padding: 10px 12px; } .cafe-caption-open { margin-left: 0; } }
+.cafe-visitor.is-outside, .cafe-tag.is-outside { opacity: 0; pointer-events: none; }
+.cafe-board-title { font: 800 6px var(--sans); fill: #1d2433; }
+.cafe-glass-text { font: 700 5px var(--mono); fill: #bfe6fa; letter-spacing: 1px; opacity: .8; }
+/* 카페 접기 버튼. 접으면 장면 없이 안내 띠만 남는다(접은 상태는 이 브라우저에 기억). */
+.cafe-fold { margin-left: auto; padding: 5px 11px; border-radius: 20px; font-size: 12px; color: #d8b8a5; border: 1px solid var(--cafe-line); background: transparent; white-space: nowrap; }
+.cafe-fold:hover { color: var(--cafe); border-color: #b77d5d; }
+.cafe-scene.is-folded .cafe-caption { border-top: 0; min-height: 0; }

@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import { all, memoryUsageBelow, serviceIsActive } from "../engine/judge";
 import { crashService, logLine } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -148,4 +148,9 @@ export const linuxOom: Scenario = {
     realWorldNote:
       "OOM 장애의 함정은 '죽은 프로세스가 범인이 아니다'라는 점입니다. 로그만 보면 shop-api가 문제인 것 같지만 실제 원인은 다른 프로세스입니다. 애플리케이션이 예외 없이 사라졌다면 항상 `dmesg | grep -i oom` 을 먼저 확인하세요.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "Linux 커널 문서(Mel Gorman) — Out Of Memory Management", url: "https://www.kernel.org/doc/gorman/html/understand/understand016.html" },
+    { kind: "official-doc", title: "proc_pid_oom_score_adj(5) — OOM killer의 프로세스 선택", url: "https://man7.org/linux/man-pages/man5/proc_pid_oom_score_adj.5.html" },
+  ],
 };

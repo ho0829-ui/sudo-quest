@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="690" viewBox="0 0 1600 690" role="img" aria-label="RAG 데이터 준비·색인 파이프라인">
+<title>RAG 데이터 준비·색인 파이프라인</title>
+<desc>질문 전에 실행 · 질문 중 선택 문서는 필요한 경우에만 추가</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a101a"/><stop offset="1" stop-color="#111c2c"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#26384b" stroke-opacity=".35" stroke-width="1"/></pattern>
+<marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7fa4bb" stroke-width="2"/></marker>
+</defs>
+<rect width="1600" height="690" rx="28" fill="url(#bg)"/>
+<rect width="1600" height="690" rx="28" fill="url(#grid)"/>
+<path d="M56 120 H1544" stroke="#314657" stroke-width="2"/>
+<circle cx="68" cy="58" r="6" fill="#ff758b"/><circle cx="90" cy="58" r="6" fill="#ffc56c"/><circle cx="112" cy="58" r="6" fill="#67e8a1"/>
+<text x="145" y="65" fill="#8ba9bd" font-size="20" font-weight="700" letter-spacing="3" font-family="ui-monospace,Menlo,monospace">SUDO QUEST / ARCHITECTURE</text>
+<text x="58" y="107" fill="#f1f7ff" font-size="38" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">RAG 데이터 준비·색인 파이프라인</text>
+<text x="1544" y="105" text-anchor="end" fill="#88a2b5" font-size="18" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">질문 전에 실행 · 질문 중 선택 문서는 필요한 경우에만 추가</text>
+<rect x="45" y="170" width="280" height="235" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M67 172 H303" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="75" cy="204" r="5" fill="#52dfff"/>
+<text x="93" y="211" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">01 / CATALOG</text>
+<text x="73" y="261" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">지식 항목</text>
+<text x="73" y="300" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">항목 메타데이터</text>
+<text x="73" y="331" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">고유 ID · 출처 정보</text>
+<path d="M72 386 H298" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="360" y="170" width="280" height="235" rx="20" fill="#131f2e" stroke="#ffbd77" stroke-opacity=".72" stroke-width="2"/>
+<path d="M382 172 H618" stroke="#ffbd77" stroke-width="4" stroke-linecap="round"/>
+<circle cx="390" cy="204" r="5" fill="#ffbd77"/>
+<text x="408" y="211" fill="#ffbd77" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">02 / SOURCE</text>
+<text x="388" y="261" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">공식 문서</text>
+<text x="388" y="300" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">허용 URL · 이용 조건</text>
+<text x="388" y="331" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">원문 절 추출 · 캐시</text>
+<path d="M387 386 H613" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="675" y="170" width="280" height="235" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M697 172 H933" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="705" cy="204" r="5" fill="#b99bff"/>
+<text x="723" y="211" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">03 / CHUNK</text>
+<text x="703" y="261" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">문서 조각</text>
+<text x="703" y="300" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">기본 1000자 / 겹침 200자</text>
+<text x="703" y="331" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">항목·문서·본문 해시 ID</text>
+<path d="M702 386 H928" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="990" y="170" width="280" height="235" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1012 172 H1248" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1020" cy="204" r="5" fill="#6df4a0"/>
+<text x="1038" y="211" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">04 / VECTOR</text>
+<text x="1018" y="261" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">임베딩</text>
+<text x="1018" y="300" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">본문 해시별 벡터 캐시</text>
+<text x="1018" y="331" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">없는 텍스트만 외부 호출</text>
+<path d="M1017 386 H1243" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1305" y="170" width="280" height="235" rx="20" fill="#131f2e" stroke="#ff82c8" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1327 172 H1563" stroke="#ff82c8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1335" cy="204" r="5" fill="#ff82c8"/>
+<text x="1353" y="211" fill="#ff82c8" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">05 / CHROMA</text>
+<text x="1333" y="261" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">두 컬렉션</text>
+<text x="1333" y="300" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">knowledge_items</text>
+<text x="1333" y="331" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">reference_chunks</text>
+<path d="M1332 386 H1558" stroke="#2b3c4e" stroke-width="1"/>
+<path d="M325 286 L355 286" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M640 286 L670 286" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M955 286 L985 286" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1270 286 L1300 286" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="45" y="460" width="1510" height="155" rx="20" fill="#142337" stroke="#355977" stroke-width="2"/>
+<text x="80" y="505" fill="#52dfff" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">INDEX GUARD / manifest</text>
+<text x="80" y="548" fill="#6df4a0" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">공급자 · 모델 · 청크 설정 · 차원이 달라지면 기존 색인을 재사용하지 않음</text>
+<text x="80" y="584" fill="#a9bdcd" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">재실행 시 기본 ID가 모두 있으면 HTTP·임베딩 0회로 종료 / 질문 중 추가된 청크는 유지</text>
+</svg>

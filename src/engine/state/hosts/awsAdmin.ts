@@ -35,6 +35,7 @@ export function awsAdmin(): SystemState {
     awsDir.group = "ubuntu";
   }
 
+  writeFile(root, "/etc/hosts", { content: "127.0.0.1 localhost\n127.0.1.1 ops-bastion\n::1 ip6-localhost ip6-loopback\n" });
   writeFile(root, "/etc/resolv.conf", {
     content: "nameserver 10.0.0.2\nsearch ap-northeast-2.compute.internal\n",
   });
@@ -138,6 +139,7 @@ export function awsAdmin(): SystemState {
           targetIds: ["i-09f8e7d6c5b4a3210"],
         },
       ],
+      availableManagedPolicies: ["CloudWatchAgentServerPolicy", "AmazonSSMManagedInstanceCore", "AmazonS3FullAccess", "AmazonS3ReadOnlyAccess"],
       roles: [
         {
           name: "shop-web-role",

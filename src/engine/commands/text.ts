@@ -6,6 +6,7 @@
  * 지원 범위는 치환(s/찾을것/바꿀것/[g]) 하나뿐이다.
  */
 import { hasFlag, positionals } from "../parser/parse";
+import { unknownBooleanOption } from "./booleanOptions";
 import { canWrite, isDir, lookup, writeFile } from "../state/fs";
 import { fail, ok, type Command, type CommandContext } from "./types";
 
@@ -15,11 +16,11 @@ interface Substitution {
   global: boolean;
 }
 
-/** "s/old/new/g" 를 뜯는다. 구분자는 / 만 지원한다. */
+/** "s/old/new/g" 를 뜯는다. 경로를 바꿀 때 흔히 쓰는 s#old#new# 처럼 다른 구분자도 받는다(실제 sed와 같다). */
 function parseScript(script: string): Substitution | null {
   if (!script.startsWith("s")) return null;
   const delimiter = script[1];
-  if (delimiter !== "/") return null;
+  if (!delimiter || /[A-Za-z0-9\\\s]/.test(delimiter)) return null;
 
   const parts: string[] = [];
   let current = "";
@@ -39,7 +40,7 @@ function parseScript(script: string): Substitution | null {
   }
   parts.push(current);
 
-  if (parts.length < 2) return null;
+  if (parts.length !== 3 || !["", "g"].includes(parts[2])) return null;
   return { pattern: parts[0], replacement: parts[1], global: (parts[2] ?? "").includes("g") };
 }
 
@@ -50,17 +51,28 @@ function escapeRegex(text: string): string {
 export const sed: Command = {
   name: "sed",
   summary: "파일 내용을 치환한다 (-i 파일에 바로 반영)",
-  usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>",
-  run({ state, tokens, user }: CommandContext) {
+  usage: "sed [-i] 's/찾을것/바꿀것/[g]' <파일>  (구분자는 / 대신 # | 등도 가능)",
+  run({ state, tokens, user, stdin }: CommandContext) {
+    const unknown = unknownBooleanOption(tokens, "i", ["in-place"]);
+    if (unknown) return fail(`sed: unrecognized option '${unknown}'`);
     const inPlace = hasFlag(tokens, "i", "in-place");
     const args = positionals(tokens);
     const [script, path] = args;
 
-    if (!script || !path) return fail(`sed: 사용법: ${sed.usage}`, 1);
+    if (!script) {
+      return fail("Usage: sed [OPTION]... {script-only-if-no-other-script} [input-file]...", 1);
+    }
 
     const substitution = parseScript(script);
     if (!substitution) {
       return fail(`sed: -e expression #1, char 1: unknown command: '${script[0]}'`, 1);
+    }
+
+    // 파일 없이 쓰면 파이프로 들어온 내용을 바꿔 출력한다(-i는 바꿀 파일이 있어야 한다).
+    if (!path) {
+      if (inPlace) return fail("sed: no input files", 1);
+      const piped = (stdin ?? "").replace(new RegExp(escapeRegex(substitution.pattern), substitution.global ? "g" : ""), substitution.replacement);
+      return ok(piped);
     }
 
     const { abs, node } = lookup(state, path);

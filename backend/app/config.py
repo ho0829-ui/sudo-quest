@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -15,9 +16,13 @@ class Settings(BaseModel):
     embedding_base_url: str = ""
     embedding_model: str = ""
     embedding_api_key: SecretStr = SecretStr("")
+    # 임베딩 API 형식. openai = /embeddings, gemini = Gemini API batchEmbedContents(x-goog-api-key 헤더).
+    embedding_api: Literal["openai", "gemini"] = "openai"
     api_timeout_seconds: float = Field(default=30, gt=0, le=120)
     llm_max_output_tokens: int = Field(default=256, ge=16, le=8192)
     chroma_path: Path = BACKEND_ROOT / "data/chroma"
+    community_db_path: Path = BACKEND_ROOT / "data/community.sqlite3"
+    community_admin_key: SecretStr = SecretStr("")
     chunk_size: int = Field(default=1000, gt=0)
     chunk_overlap: int = Field(default=200, ge=0)
     external_top_k: int = Field(default=4, ge=1, le=20)
@@ -27,6 +32,9 @@ class Settings(BaseModel):
 
     @model_validator(mode="after")
     def validate_config(self):
+        key = self.community_admin_key.get_secret_value()
+        if key and len(key) < 32:
+            raise ValueError("COMMUNITY_ADMIN_KEY must contain at least 32 characters")
         if self.chunk_overlap >= self.chunk_size:
             raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
         for url in (self.llm_base_url, self.embedding_base_url):
@@ -58,4 +66,6 @@ def load_settings() -> Settings:
     settings = Settings(**values)
     if not settings.chroma_path.is_absolute():
         settings.chroma_path = BACKEND_ROOT / settings.chroma_path
+    if not settings.community_db_path.is_absolute():
+        settings.community_db_path = BACKEND_ROOT / settings.community_db_path
     return settings

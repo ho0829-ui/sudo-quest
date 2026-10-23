@@ -1,0 +1,28 @@
+/* 터미널 아래 명령어 안내(펼침). 터미널 창 안쪽 맨 아래에 붙어 같은 테두리를 쓴다. */
+.command-guide { border-top: 1px solid #18222c; background: #0b1015; font-size: 12px; color: #b9c7cc; }
+.command-guide > summary { cursor: pointer; padding: 9px 14px; font-size: 11.5px; font-weight: 650; color: #8fb3bd; list-style: none; display: flex; align-items: center; gap: 8px; }
+.command-guide > summary::-webkit-details-marker { display: none; }
+.command-guide > summary::before { content: '▸'; color: var(--room, #00d4ff); transition: transform .15s; }
+.command-guide[open] > summary::before { transform: rotate(90deg); }
+.command-guide > summary:hover { color: #d6e6ea; background: #ffffff06; }
+.command-guide.has-unknown > summary { color: #ffd08a; background: #ffd08a0d; }
+.command-guide code { font: 600 11.5px var(--mono); color: #e6f4f8; background: #ffffff0d; padding: 1px 5px; border-radius: 4px; }
+.guide-body { padding: 4px 14px 14px; max-height: 340px; overflow-y: auto; display: grid; gap: 14px; }
+.guide-body h4 { margin: 6px 0 8px; font-size: 11px; letter-spacing: .5px; color: color-mix(in srgb, var(--room, #00d4ff) 70%, #ffffff); }
+.guide-focus { padding: 10px 12px; border: 1px solid #ffd08a55; border-radius: 8px; background: #ffd08a0b; }
+.guide-commands, .guide-list, .guide-alts { list-style: none; margin: 0; padding: 0; }
+.guide-commands { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px 14px; }
+.guide-commands li { display: grid; gap: 2px; padding: 6px 0; border-bottom: 1px dashed #1c2731; }
+.guide-commands li > span { color: #9fb2b8; line-height: 1.5; }
+.guide-ops { font-size: 11px; color: #7f969d !important; overflow-wrap: anywhere; }
+.guide-list { display: grid; gap: 8px; }
+.guide-entry { padding: 8px 10px; border-radius: 8px; background: #ffffff05; border: 1px solid #1c2731; }
+.guide-entry.is-active { border-color: #ffd08a55; background: transparent; padding: 0; border: 0; }
+.guide-entry-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.guide-entry-head span { color: #b9c7cc; line-height: 1.5; }
+.guide-alts { margin-top: 6px; display: grid; gap: 4px; padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--room, #00d4ff) 45%, transparent); }
+.guide-alts li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; }
+.guide-alts li span { color: #9fb2b8; }
+.guide-alts li span::before { content: '→ '; color: #6f8890; }
+.guide-note { margin: 6px 0 0; color: #8fa3aa; line-height: 1.6; font-size: 11.5px; }
+@media (max-width: 520px) { .guide-commands { grid-template-columns: 1fr; } .guide-body { max-height: 300px; } }

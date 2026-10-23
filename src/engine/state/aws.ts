@@ -64,7 +64,7 @@ export interface InstanceReply {
 }
 
 /** "10.0.1.5"가 "10.0.1.0/24" 안에 있는가 */
-function inCidr(ip: string, cidr: string): boolean {
+export function inCidr(ip: string, cidr: string): boolean {
   const [base, bits = "32"] = cidr.split("/");
   const toNumber = (addr: string) => addr.split(".").reduce((n, part) => n * 256 + Number(part), 0);
   const size = 2 ** (32 - Number(bits));

@@ -1,4 +1,4 @@
-import { withCommands } from "../engine/commands";
+import { withCommands } from "../engine/commands/names";
 import type { Check } from "../engine/judge";
 import { logLine, putFile } from "../engine/state/faults";
 import type { Fault } from "../engine/state/faults";
@@ -158,4 +158,8 @@ export const dbMaxConnections: Scenario = {
     realWorldNote:
       "'특정 시간대에만 발생하고 저절로 낫는' 장애는 거의 항상 한계에 부딪히는 공유 자원입니다. DB 연결 수, 스레드 풀, 파일 디스크립터, 외부 API 호출 한도가 단골입니다. 재현이 안 된다고 넘기지 말고, 그 시간대의 지표를 보세요. 그리고 스케일 아웃은 공짜가 아닙니다 — 앞단을 늘리면 뒷단의 한계가 더 빨리 옵니다.",
   },
+  // 이 장애가 실제로 일어나는 일이라는 근거. 원인을 드러내므로 클리어 리포트에서만 보여 준다.
+  evidence: [
+    { kind: "official-doc", title: "MySQL 8.0 Reference Manual — B.3.2.5 Too many connections", url: "https://dev.mysql.com/doc/refman/8.0/en/too-many-connections.html" },
+  ],
 };
