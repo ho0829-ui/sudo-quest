@@ -94,6 +94,21 @@ class FoundationTests(unittest.TestCase):
             self.assertIn("APIConnectionError", logs.output[0])
             self.assertNotIn("test-secret", "".join(logs.output))
 
+    def test_private_network_preflight_only_when_enabled_and_origin_allowed(self):
+        pages = "https://ho0829-ui.github.io"
+        headers = {"Origin": pages, "Access-Control-Request-Method": "GET", "Access-Control-Request-Private-Network": "true"}
+        with tempfile.TemporaryDirectory() as folder:
+            off = Settings(chroma_path=Path(folder), cors_origins=[pages])
+            with TestClient(create_app(off)) as client:
+                self.assertEqual(client.options("/api/health", headers=headers).status_code, 400)
+            on = off.model_copy(update={"cors_allow_private_network": True})
+            with TestClient(create_app(on)) as client:
+                reply = client.options("/api/health", headers=headers)
+                self.assertEqual(reply.status_code, 200)
+                self.assertEqual(reply.headers.get("access-control-allow-private-network"), "true")
+                other = client.options("/api/health", headers={**headers, "Origin": "https://evil.example"})
+                self.assertNotEqual(other.headers.get("access-control-allow-origin"), "https://evil.example")
+
     def test_missing_configuration_never_calls_provider(self):
         with patch("app.providers.OpenAI") as constructor:
             with self.assertRaisesRegex(ProviderError, "missing_configuration"):

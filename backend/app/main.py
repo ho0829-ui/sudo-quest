@@ -34,6 +34,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware, allow_origins=settings.cors_origins,
         allow_methods=["GET", "POST", "DELETE"], allow_headers=["Content-Type", "Authorization"],
+        allow_private_network=settings.cors_allow_private_network,
     )
     app.include_router(community_router(settings))
 

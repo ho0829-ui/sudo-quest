@@ -41,7 +41,9 @@
 - [ ] 제출 전 LLM_MODEL을 gpt-6.1-sol로 되돌릴지 결정, 필요하면 평가 v2를 sol로 재실행.
 - [x] 5단계: README 재구성·시연 GIF 3개·화면 사진 8장·캡처 도구(2026-10-23). 이후 포트폴리오 README 84줄·제출용 README 44줄로 발전.
 - [x] `feature/sudo-quest` push 뒤 GitHub에서 두 README의 GIF·표·링크 표시 확인. 현재 README에는 Mermaid 없음.
-- [ ] 배포 후 README 맨 위에 플레이 링크 추가.
+- [x] 배포(GitHub Pages + Mac/Tailscale Funnel)와 README 플레이 링크(2026-10-23).
+- [ ] 키 만료 뒤 새 키를 받으면 `backend/.env` 교체 후 serve-public 재시작.
+- [ ] 필요하면 serve-public 자동 시작(launchd) — 사용자 결정.
 - [ ] 배포 후 GitHub 저장소 About 설명·웹사이트 링크 추가.
 - [ ] 6단계: 19번 로그인·배포 — 계획 먼저(결정 8가지).
 - [ ] Funnel로 공개하기 전에 AI 생성 엔드포인트(`/api/chat`·`/api/coach`·`/api/items/search`)의 접근 정책·호출 횟수/비용 상한 마련. 현재 동시 2건 제한만 있으며 반복 호출은 제한하지 않음.
