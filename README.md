@@ -29,7 +29,7 @@ npm run dev
 - **학습 리포트:** 명령과 출력을 되짚고, 원인·조치·재발 방지를 기록합니다. 점수는 시간이나 명령 횟수가 아닌 힌트와 오답에 영향을 받습니다.
 - **근거 기반 코치:** FastAPI RAG가 공식 문서를 검색하고 인용 번호를 검증합니다. 게시판은 SQLite에 저장됩니다.
 
-구조는 `src/ui → src/scenarios → src/engine`으로 흐릅니다. 순수 TypeScript 엔진은 React 없이 테스트할 수 있습니다. [엔진 설계](docs/ENGINE_DESIGN.md) · [시나리오 추가 가이드](docs/SCENARIO_GUIDE.md) · [RAG 설계 결정](docs/infra-coach/adr/README.md)
+구조는 `src/ui → src/scenarios → src/engine`으로 흐릅니다. 순수 TypeScript 엔진은 React 없이 테스트할 수 있습니다. [전체·가상 CLI·RAG 파이프라인 그림](docs/submission/PIPELINES.md) · [엔진 설계](docs/ENGINE_DESIGN.md) · [시나리오 추가 가이드](docs/SCENARIO_GUIDE.md) · [RAG 설계 결정](docs/infra-coach/adr/README.md)
 
 ## 검증과 한계
 

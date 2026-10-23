@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="RAG 질문·답변 파이프라인">
+<title>RAG 질문·답변 파이프라인</title>
+<desc>지식 질문은 선별·수집 / 게임 코치는 플레이어가 본 사실만 사용</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a101a"/><stop offset="1" stop-color="#111c2c"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#26384b" stroke-opacity=".35" stroke-width="1"/></pattern>
+<marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7fa4bb" stroke-width="2"/></marker>
+</defs>
+<rect width="1600" height="900" rx="28" fill="url(#bg)"/>
+<rect width="1600" height="900" rx="28" fill="url(#grid)"/>
+<path d="M56 120 H1544" stroke="#314657" stroke-width="2"/>
+<circle cx="68" cy="58" r="6" fill="#ff758b"/><circle cx="90" cy="58" r="6" fill="#ffc56c"/><circle cx="112" cy="58" r="6" fill="#67e8a1"/>
+<text x="145" y="65" fill="#8ba9bd" font-size="20" font-weight="700" letter-spacing="3" font-family="ui-monospace,Menlo,monospace">SUDO QUEST / ARCHITECTURE</text>
+<text x="58" y="107" fill="#f1f7ff" font-size="38" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">RAG 질문·답변 파이프라인</text>
+<text x="1544" y="105" text-anchor="end" fill="#88a2b5" font-size="18" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">지식 질문은 선별·수집 / 게임 코치는 플레이어가 본 사실만 사용</text>
+<rect x="60" y="160" width="340" height="210" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 162 H378" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="194" r="5" fill="#52dfff"/>
+<text x="108" y="201" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">01 / REQUEST</text>
+<text x="88" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">질문 + 항목 선택</text>
+<text x="88" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">POST /api/chat → 202</text>
+<text x="88" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">작업 상태를 화면에서 폴링</text>
+<path d="M87 351 H373" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="450" y="160" width="340" height="210" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M472 162 H768" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="480" cy="194" r="5" fill="#b99bff"/>
+<text x="498" y="201" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">02 / SEARCH</text>
+<text x="478" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">검색어 추출</text>
+<text x="478" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">프롬프트 1 → JSON 검색어</text>
+<text x="478" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">형식 실패 시 대체 검색어</text>
+<path d="M477 351 H763" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="840" y="160" width="340" height="210" rx="20" fill="#131f2e" stroke="#ffbd77" stroke-opacity=".72" stroke-width="2"/>
+<path d="M862 162 H1158" stroke="#ffbd77" stroke-width="4" stroke-linecap="round"/>
+<circle cx="870" cy="194" r="5" fill="#ffbd77"/>
+<text x="888" y="201" fill="#ffbd77" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">03 / SELECT</text>
+<text x="868" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">후보 문서 선별</text>
+<text x="868" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">허용 절 목록에서 후보 생성</text>
+<text x="868" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">프롬프트 2 · 후보 ID 검사</text>
+<path d="M867 351 H1153" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1230" y="160" width="340" height="210" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1252 162 H1548" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1260" cy="194" r="5" fill="#6df4a0"/>
+<text x="1278" y="201" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">04 / COLLECT</text>
+<text x="1258" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">필요한 문서 수집</text>
+<text x="1258" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">항목 자체 문서 항상 포함</text>
+<text x="1258" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">미색인 절만 청킹·임베딩</text>
+<path d="M1257 351 H1543" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="60" y="470" width="340" height="210" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 472 H378" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="504" r="5" fill="#52dfff"/>
+<text x="108" y="511" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">08 / UI</text>
+<text x="88" y="561" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">근거 있는 답변</text>
+<text x="88" y="600" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">인용한 문서만 카드로 표시</text>
+<text x="88" y="631" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">근거 부족 시 보류</text>
+<path d="M87 661 H373" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="450" y="470" width="340" height="210" rx="20" fill="#131f2e" stroke="#ff82c8" stroke-opacity=".72" stroke-width="2"/>
+<path d="M472 472 H768" stroke="#ff82c8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="480" cy="504" r="5" fill="#ff82c8"/>
+<text x="498" y="511" fill="#ff82c8" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">07 / CHECK</text>
+<text x="478" y="561" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">인용 번호 검증</text>
+<text x="478" y="600" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">본문 번호 ↔ 목록 대조</text>
+<text x="478" y="631" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">실패 시 1회 재생성</text>
+<path d="M477 661 H763" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="840" y="470" width="340" height="210" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M862 472 H1158" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="870" cy="504" r="5" fill="#b99bff"/>
+<text x="888" y="511" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">06 / GENERATE</text>
+<text x="868" y="561" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">답변 생성</text>
+<text x="868" y="600" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">프롬프트 3 · 번호 붙은 근거</text>
+<text x="868" y="631" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">근거 2건 미만이면 생성 생략</text>
+<path d="M867 661 H1153" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1230" y="470" width="340" height="210" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1252 472 H1548" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1260" cy="504" r="5" fill="#6df4a0"/>
+<text x="1278" y="511" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">05 / RETRIEVE</text>
+<text x="1258" y="561" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">범위 제한 검색</text>
+<text x="1258" y="600" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">항목 메타데이터 1건 고정</text>
+<text x="1258" y="631" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">선택 문서 Top-k 4 · 중복 제거</text>
+<path d="M1257 661 H1543" stroke="#2b3c4e" stroke-width="1"/>
+<path d="M400 265 L440 265" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M450 575 L410 575" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M790 265 L830 265" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M840 575 L800 575" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1180 265 L1220 265" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1230 575 L1190 575" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1400 370 L1400 455" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="60" y="730" width="1480" height="105" rx="18" fill="#211b34" stroke="#a788e4" stroke-width="2"/>
+<text x="88" y="774" fill="#b99bff" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">COACH / 별도 경로: 공개 티켓·연 힌트·최근 명령/출력 → 항목 검색 → retrieve → generate</text>
+<text x="88" y="810" fill="#c4b8e9" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">프롬프트 2·질문 중 문서 수집 없음 / [실습 기록 N]과 [근거 N]을 각각 검증 / 정답·전체 state 전송 없음</text>
+</svg>

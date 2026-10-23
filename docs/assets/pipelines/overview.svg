@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-label="전체 서비스 파이프라인">
+<title>전체 서비스 파이프라인</title>
+<desc>게임은 브라우저에서 독립 실행 · 코치와 카페는 선택적 서버 연결</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a101a"/><stop offset="1" stop-color="#111c2c"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#26384b" stroke-opacity=".35" stroke-width="1"/></pattern>
+<marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7fa4bb" stroke-width="2"/></marker>
+</defs>
+<rect width="1600" height="760" rx="28" fill="url(#bg)"/>
+<rect width="1600" height="760" rx="28" fill="url(#grid)"/>
+<path d="M56 120 H1544" stroke="#314657" stroke-width="2"/>
+<circle cx="68" cy="58" r="6" fill="#ff758b"/><circle cx="90" cy="58" r="6" fill="#ffc56c"/><circle cx="112" cy="58" r="6" fill="#67e8a1"/>
+<text x="145" y="65" fill="#8ba9bd" font-size="20" font-weight="700" letter-spacing="3" font-family="ui-monospace,Menlo,monospace">SUDO QUEST / ARCHITECTURE</text>
+<text x="58" y="107" fill="#f1f7ff" font-size="38" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">전체 서비스 파이프라인</text>
+<text x="1544" y="105" text-anchor="end" fill="#88a2b5" font-size="18" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">게임은 브라우저에서 독립 실행 · 코치와 카페는 선택적 서버 연결</text>
+<rect x="60" y="160" width="420" height="210" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 162 H458" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="194" r="5" fill="#52dfff"/>
+<text x="108" y="201" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">01 / CLIENT</text>
+<text x="88" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">SUDO QUEST 화면</text>
+<text x="88" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">티켓 · NPC · 가상 터미널</text>
+<text x="88" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">지식 탐색 · 카페 · 학습 기록</text>
+<path d="M87 351 H453" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="590" y="160" width="420" height="210" rx="20" fill="#131f2e" stroke="#6df4a0" stroke-opacity=".72" stroke-width="2"/>
+<path d="M612 162 H988" stroke="#6df4a0" stroke-width="4" stroke-linecap="round"/>
+<circle cx="620" cy="194" r="5" fill="#6df4a0"/>
+<text x="638" y="201" fill="#6df4a0" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">02 / SANDBOX</text>
+<text x="618" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">가상 명령 엔진</text>
+<text x="618" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">파서 → 가상 상태 조회·변경</text>
+<text x="618" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">원인 선택 + 복구 조건 판정</text>
+<path d="M617 351 H983" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1120" y="160" width="420" height="210" rx="20" fill="#131f2e" stroke="#b99bff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1142 162 H1518" stroke="#b99bff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1150" cy="194" r="5" fill="#b99bff"/>
+<text x="1168" y="201" fill="#b99bff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">03 / LEARNING</text>
+<text x="1148" y="251" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">리포트와 진행 기록</text>
+<text x="1148" y="290" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">조사 출력 · 회고 · 점수</text>
+<text x="1148" y="321" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">브라우저 로컬 저장</text>
+<path d="M1147 351 H1513" stroke="#2b3c4e" stroke-width="1"/>
+<path d="M480 264 L575 264" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1010 264 L1105 264" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M58 410 H1542" stroke="#385165" stroke-width="2" stroke-dasharray="9 8"/>
+<text x="62" y="437" fill="#ffbd77" font-size="18" font-weight="700" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">선택적 API 경계 / 숨겨진 정답·전체 가상 상태는 전송하지 않음</text>
+<rect x="60" y="467" width="420" height="210" rx="20" fill="#131f2e" stroke="#52dfff" stroke-opacity=".72" stroke-width="2"/>
+<path d="M82 469 H458" stroke="#52dfff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="90" cy="501" r="5" fill="#52dfff"/>
+<text x="108" y="508" fill="#52dfff" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">04 / PUBLIC INPUT</text>
+<text x="88" y="558" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">공개 관찰만 선별</text>
+<text x="88" y="597" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">질문 · 티켓 · 연 힌트</text>
+<text x="88" y="628" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">실행한 명령과 출력</text>
+<path d="M87 658 H453" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="590" y="467" width="420" height="210" rx="20" fill="#131f2e" stroke="#ffbd77" stroke-opacity=".72" stroke-width="2"/>
+<path d="M612 469 H988" stroke="#ffbd77" stroke-width="4" stroke-linecap="round"/>
+<circle cx="620" cy="501" r="5" fill="#ffbd77"/>
+<text x="638" y="508" fill="#ffbd77" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">05 / API</text>
+<text x="618" y="558" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">FastAPI 작업 처리</text>
+<text x="618" y="597" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">202 응답 + 상태 폴링</text>
+<text x="618" y="628" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">코치 · 지식 검색 · 게시판</text>
+<path d="M617 658 H983" stroke="#2b3c4e" stroke-width="1"/>
+<rect x="1120" y="467" width="420" height="210" rx="20" fill="#131f2e" stroke="#ff82c8" stroke-opacity=".72" stroke-width="2"/>
+<path d="M1142 469 H1518" stroke="#ff82c8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="1150" cy="501" r="5" fill="#ff82c8"/>
+<text x="1168" y="508" fill="#ff82c8" font-size="17" font-weight="700" letter-spacing="2" font-family="ui-monospace,Menlo,monospace">06 / DATA</text>
+<text x="1148" y="558" fill="#f3f8ff" font-size="26" font-weight="800" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">근거와 커뮤니티</text>
+<text x="1148" y="597" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">Chroma: 항목 + 문서 청크</text>
+<text x="1148" y="628" fill="#a9bdcd" font-size="20" font-family="Pretendard,Noto Sans KR,Apple SD Gothic Neo,sans-serif">SQLite: 게시글 · 댓글</text>
+<path d="M1147 658 H1513" stroke="#2b3c4e" stroke-width="1"/>
+<path d="M270 370 L270 452" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="8 7"/>
+<path d="M480 570 L575 570" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1010 570 L1105 570" fill="none" stroke="#7fa4bb" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>
