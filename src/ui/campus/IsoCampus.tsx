@@ -39,9 +39,10 @@ interface IsoCampusProps {
   /** 모든 운영실을 해결했을 때: 피날레 열기(처음 한 번은 저절로)·엔딩 크레딧 열기 */
   onFinale?: () => void;
   onCredits?: () => void;
+  suppressAutoFinale?: boolean;
 }
 
-export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords, onExplore, onOpenScenario, onCommunity, onFinale, onCredits }: IsoCampusProps) {
+export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords, onExplore, onOpenScenario, onCommunity, onFinale, onCredits, suppressAutoFinale = false }: IsoCampusProps) {
   const [active, setActive] = useState<RoomKind | null>(null);
   // 마우스가 없는 화면(터치)에서는 호버가 없으므로 첫 탭은 방 정보 보기, 같은 방을 다시 누르면 입장한다.
   const touch = useMemo(() => window.matchMedia("(hover: none)").matches, []);
@@ -50,7 +51,7 @@ export function IsoCampus({ scenarios, progress, onEnterCategory, onOpenRecords,
   const total = { label: "TOTAL", ...roomStatus("control", scenarios, progress) };
   const party = useCampusParty(scenarios, progress);
   // 마지막 운영실까지 해결하고 처음 홈에 오면 피날레를 한 번 연다(본 기록은 useCampusParty가 남긴다).
-  useEffect(() => { if (party.kickoff.allClear) onFinale?.(); }, []);
+  useEffect(() => { if (!suppressAutoFinale && party.kickoff.allClear) onFinale?.(); }, []);
   const mapRooms = ROOMS.map(room => ({ accent: THEMES[room.kind].accent, alarm: roomStatus(room.kind, scenarios, progress).alarm }));
 
   function enter(kind: RoomKind) {

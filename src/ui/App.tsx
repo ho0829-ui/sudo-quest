@@ -51,6 +51,8 @@ export function App() {
   // 새로고침 전 실습이 있으면 엔진을 불러와 입력을 다시 실행한다. 끝나기 전에는 저장·주소 보정을 멈춘다.
   const [restoring, setRestoring] = useState(() => readSavedSession() !== null);
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
+  // 숨은 버튼의 올클리어는 현재 탭에서만 보이는 미리보기다. 저장된 학습 기록은 그대로 둔다.
+  const [previewProgress, setPreviewProgress] = useState<Progress | null>(null);
   const [ending, setEnding] = useState<'finale' | 'credits' | null>(null);
   const [tutorialDone, setTutorialDone] = useState(loadTutorialDone);
   // 건너뛰면 말풍선만 사라지고 연습 실습은 그대로 이어서 할 수 있다. 홈에서 다시 시작하면 다시 켠다.
@@ -59,6 +61,7 @@ export function App() {
   const workspace: Workspace = route.kind === 'community' ? 'community' : route.kind === 'knowledge' ? 'knowledge' : route.kind === 'records' ? 'records' : 'game';
   const scenario = route.kind === 'mission' ? scenarioByNumber(route.no) ?? null : null;
   const tutorial = !!scenario && isTutorial(scenario);
+  const shownProgress = previewProgress ?? progress;
   const ownSession = session && scenario && session.scenario === scenario ? session : null;
   const stage = route.kind === 'mission' ? route.stage : null;
 
@@ -116,9 +119,29 @@ export function App() {
   }, [ownSession, stage]);
 
   const missionNo = missionNumber;
-  const clearedScenarios = scenarios.filter(s => progress[s.id]?.cleared);
-  const xp = clearedScenarios.reduce((sum, s) => sum + progress[s.id].bestScore, 0);
+  const clearedScenarios = scenarios.filter(s => shownProgress[s.id]?.cleared);
+  const xp = clearedScenarios.reduce((sum, s) => sum + shownProgress[s.id].bestScore, 0);
   const endingProps = { onFinale: () => setEnding('finale'), onCredits: () => setEnding('credits') };
+  function toggleTestAllClear() {
+    if (previewProgress) {
+      setPreviewProgress(null);
+      setEnding(null);
+      return;
+    }
+    const now = Date.now();
+    setPreviewProgress(Object.fromEntries(scenarios.map(s => [s.id, progress[s.id] ?? {
+      cleared: true, bestScore: 1000, clearedAt: now,
+    }])));
+    setEnding('finale');
+  }
+  function resetProgress() {
+    // 미리보기 중의 '기록 삭제'는 실제 저장본 대신 미리보기만 종료한다.
+    if (previewProgress) {
+      setPreviewProgress(null);
+      return;
+    }
+    setProgress(clearProgress());
+  }
   function navigate(next: Workspace) {
     go(next === 'community' ? { kind: 'community' } : next === 'knowledge' ? { kind: 'knowledge' } : next === 'records' ? { kind: 'records' } : { kind: 'home' });
   }
@@ -150,7 +173,8 @@ export function App() {
   return <div className={`control-center ${motion ? '' : 'motion-paused'}`}>
     <a className="skip-link" href="#main-content" onClick={e => { e.preventDefault(); document.getElementById('main-content')?.focus(); }}>본문으로 건너뛰기</a>
     <CampusDefs />
-    <Rail workspace={workspace} scenarios={scenarios} progress={progress} onNavigate={navigate} onHome={goHome} />
+    <Rail workspace={workspace} scenarios={scenarios} progress={shownProgress} onNavigate={navigate} onHome={goHome}
+      onTestAllClear={route.kind === 'home' ? toggleTestAllClear : undefined} testAllClear={!!previewProgress} />
     <div className="workspace-body">
       <header className="topbar"><div className="crumbs"><button className="home-crumb" onClick={goHome} aria-label="홈으로"><Icon name="home" size={14} /><span>홈</span></button><span className="breadcrumb-slash">/</span><strong>{workspace === 'community' ? '커뮤니티 카페' : workspace === 'knowledge' ? '지식 탐색' : workspace === 'records' ? '학습 기록' : '가상 장애 실습'}</strong></div><div className="topbar-actions"><BackendStatus /><span className="sandbox-label"><Icon name="shield" size={14} /> SANDBOX MODE</span><button className="motion-button" onClick={() => setMotion(value => !value)} aria-label={motion ? '화면 애니메이션 일시정지' : '화면 애니메이션 재생'} aria-pressed={!motion}><Icon name={motion ? 'pause' : 'play'} size={15} /><span>{motion ? '모션 켜짐' : '모션 꺼짐'}</span></button></div></header>
       <main className="app" id="main-content" tabIndex={-1}>
@@ -160,12 +184,12 @@ export function App() {
           preset={route.mission ? missionDraft(route.mission, scenarios[route.mission - 1].title) : undefined}
           onOpen={postId => go({ kind: 'community', postId })} onWrite={() => go({ kind: 'community', write: true })}
           onCreated={postId => go({ kind: 'community', postId }, true)}
-          motion={motion} party={partyState(scenarios, progress).allClear} /></Suspense>}
+          motion={motion} party={partyState(scenarios, shownProgress).allClear} /></Suspense>}
         {knowledgeVisited && <div hidden={workspace !== 'knowledge'}><KnowledgeScreen /></div>}
-        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={progress} onSelect={startScenario} onResetProgress={() => setProgress(clearProgress())} recordsOnly onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
+        {workspace === 'records' && <ScenarioList key="records" scenarios={scenarios} progress={shownProgress} onSelect={startScenario} onResetProgress={resetProgress} recordsOnly previewAllClear={!!previewProgress} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
         <div hidden={workspace !== 'game'}>
           {scenario && <div className="session-breadcrumb"><button className="text-button small" onClick={backToList}>← 시나리오 목록</button><span className="small muted">{scenario.title}</span></div>}
-          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={progress} onSelect={startScenario} onTutorial={startTutorial} tutorialDone={tutorialDone} onResetProgress={() => setProgress(clearProgress())} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} {...endingProps} />}
+          {route.kind === 'home' && <ScenarioList scenarios={scenarios} progress={shownProgress} onSelect={startScenario} onTutorial={startTutorial} tutorialDone={tutorialDone} onResetProgress={resetProgress} onExplore={() => navigate('knowledge')} onOpenRecords={() => navigate('records')} onCommunity={() => navigate('community')} previewAllClear={!!previewProgress} {...endingProps} />}
           {stage === 'briefing' && scenario && <TicketScreen key={scenario.id} scenario={scenario} motion={motion} resumable={!!ownSession && !isCleared(ownSession)} onStart={() => beginInvestigation()} onBack={backToList} />}
           {restoring && stage !== 'briefing' && <TerminalLoader label="진행 중이던 실습을 이어서 불러오는 중…" />}
           {stage === 'play' && ownSession && <Suspense fallback={<TerminalLoader label="실습 터미널을 준비하는 중…" />}><PlayScreen session={ownSession}
@@ -173,7 +197,7 @@ export function App() {
             onRevealHint={() => setSession(current => current ? revealHint(current) : current)}
             onSubmitCause={choiceId => { const result = submitCause(ownSession, choiceId); setSession(result.session); return { correct: result.correct, whyWrong: result.whyWrong }; }} onGiveUp={backToList} /></Suspense>}
           {stage === 'report' && ownSession && <ReportScreen session={ownSession} onBackToList={backToList} onRetry={() => beginInvestigation(true)}
-            party={tutorial ? null : partyNotice(scenarios, progress, ownSession.scenario.category)}
+            party={tutorial ? null : partyNotice(scenarios, shownProgress, ownSession.scenario.category)}
             onShare={tutorial ? undefined : () => go({ kind: 'community', write: true, mission: missionNo(ownSession.scenario) })}
             next={tutorial ? { label: '1번 실습 시작하기', run: () => { finishTutorial(); setSession(null); startScenario(scenarios[0]); } } : undefined} />}
         </div>

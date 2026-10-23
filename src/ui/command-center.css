@@ -9,6 +9,10 @@ button.primary:hover { background: var(--accent-strong); }
 [hidden] { display: none !important; }
 .app-rail { width: 218px; position: fixed; inset: 0 auto 0 0; background: #0b1015; border-right: 1px solid var(--border); padding: 30px 17px 0; display: flex; flex-direction: column; z-index: 5; }
 .brand { display: flex; gap: 10px; align-items: center; text-align: left; padding: 0 4px; border: 0; background: none; font-size: 21px; font-weight: 750; letter-spacing: -.7px; }
+.brand-area { display: flex; align-items: center; width: 100%; min-width: 0; }
+.brand-area .brand { flex: 1; min-width: 0; }
+.secret-allclear { flex: none; width: 12px; height: 24px; margin-left: 2px; padding: 0; border: 0; background: transparent; opacity: 0; }
+.secret-allclear:focus-visible { opacity: 1; outline: 2px solid #ffd447; outline-offset: 2px; background: #ffd44755; }
 .brand-mark { display: grid; place-items: center; width: 34px; height: 37px; border: 1px solid #5fbbd36b; border-radius: 9px; background: #7dcee314; color: var(--accent); }
 .brand-accent { color: var(--accent); }
 .brand small { display: block; margin-top: 1px; font: 8px var(--mono); letter-spacing: 1.55px; color: #6a8992; }
@@ -101,6 +105,8 @@ button.primary:hover { background: var(--accent-strong); }
 .crumbs { display: flex; align-items: center; }
 .home-crumb { display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; background: transparent; color: #9ab3b9; padding: 5px 9px; margin-left: -9px; font-size: 11px; border-radius: 6px; }
 .home-crumb:hover:not(:disabled) { color: var(--accent); border-color: #7dcee340; background: #7dcee30d; }
+@media (max-width: 1050px) { .brand-area .brand { padding: 0; }.secret-allclear { width: 8px; margin-left: 0; } }
+@media (max-width: 760px) { .brand-area { width: auto; flex: none; } }
 
 /* 화면 오류 안내(ErrorBoundary). 흰 화면 대신 같은 관제실 톤으로 구역 고장을 알린다. */
 .crash-panel { margin: 24px auto; max-width: 640px; padding: 22px 24px; border: 1px solid #ff335566; border-radius: 12px; background: linear-gradient(180deg, #1a0d14, var(--panel)); box-shadow: 0 0 28px #ff335522; }

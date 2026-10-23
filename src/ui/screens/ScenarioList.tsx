@@ -23,10 +23,12 @@ interface ScenarioListProps {
   /** 튜토리얼 연습 실습 열기(홈에서만). 끝냈으면 버튼 이름이 "다시 보기"로 바뀐다. */
   onTutorial?: () => void;
   tutorialDone?: boolean;
+  /** 테스트용 임시 클리어 상태에서는 재입장할 때 피날레를 자동으로 다시 열지 않는다. */
+  previewAllClear?: boolean;
 }
 const LEVELS = ['', '입문', '중급', '고급'];
 
-export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity, onFinale, onCredits, onTutorial, tutorialDone }: ScenarioListProps) {
+export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, recordsOnly = false, onExplore, onOpenRecords, onCommunity, onFinale, onCredits, onTutorial, tutorialDone, previewAllClear = false }: ScenarioListProps) {
   const headingId = useId();
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [query, setQuery] = useState('');
@@ -65,7 +67,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
           {onTutorial && <button className="text-button tutorial-button" onClick={onTutorial}>{tutorialDone ? '튜토리얼 다시 보기' : '처음이라면 · 5분 튜토리얼'} <Icon name="arrow" size={15} /></button>}
           <button className="text-button" onClick={onExplore}>지식 탐색 <Icon name="arrow" size={15} /></button></div>
         <div className="hero-note"><Icon name="shield" size={14} /> 실제 시스템에 영향 없는 가상 환경</div>
-      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} onFinale={onFinale} onCredits={onCredits} />
+      </div><IsoCampus scenarios={scenarios} progress={progress} onEnterCategory={enterRoom} onOpenRecords={onOpenRecords} onExplore={onExplore} onOpenScenario={onSelect} onCommunity={onCommunity} onFinale={onFinale} onCredits={onCredits} suppressAutoFinale={previewAllClear} />
     </section>}
     {recordsOnly && scenarios.length > 0 && cleared.length === scenarios.length && onFinale && <section className="allclear-banner" aria-label="모든 장애 해결">
       <div><strong>🎆 ALL CLEAR — 모든 장애를 해결했어요!</strong><p className="muted small">축하 화면과 엔딩 크레딧을 언제든 다시 볼 수 있어요.</p></div>
@@ -105,7 +107,7 @@ export function ScenarioList({ scenarios, progress, onSelect, onResetProgress, r
       {!visible.length && !upcoming.length && <div className="empty-state"><Icon name={recordsOnly ? 'chart' : 'search'} size={32} /><h3>{recordsOnly && !cleared.length ? '첫 번째 해결 기록을 기다리고 있어요' : '조건에 맞는 시나리오가 없습니다'}</h3><p className="muted">{recordsOnly && !cleared.length ? '가상 장애 실습을 완료하면 이곳에 기록이 쌓입니다.' : '검색어나 분류, 난이도를 변경해 보세요.'}</p><button onClick={() => { setQuery(''); setCategory('all'); setDifficulty('all'); if (recordsOnly && !cleared.length) onExplore(); }}>{recordsOnly && !cleared.length ? '지식 탐색으로 준비하기' : '필터 초기화'}</button></div>}
     </section>
     <footer className="lab-footer"><span><Icon name="shield" size={14} /> 모든 명령은 브라우저 안의 가상 환경에서 실행됩니다.</span>
-      {cleared.length > 0 && <div>{confirmReset ? <><span>모든 학습 기록을 지울까요? </span><button className="small" onClick={() => { onResetProgress(); setConfirmReset(false); }}>기록 삭제</button> <button className="small" onClick={() => setConfirmReset(false)}>취소</button></> : <button className="text-button small" onClick={() => setConfirmReset(true)}>진행 기록 초기화</button>}</div>}
+      {cleared.length > 0 && !previewAllClear && <div>{confirmReset ? <><span>모든 학습 기록을 지울까요? </span><button className="small" onClick={() => { onResetProgress(); setConfirmReset(false); }}>기록 삭제</button> <button className="small" onClick={() => setConfirmReset(false)}>취소</button></> : <button className="text-button small" onClick={() => setConfirmReset(true)}>진행 기록 초기화</button>}</div>}
       <span className="footer-version">INFRACOACH / LAB v0.1</span>
     </footer>
   </div>;

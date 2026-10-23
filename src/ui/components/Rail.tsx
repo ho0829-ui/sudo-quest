@@ -16,6 +16,8 @@ interface RailProps {
   progress: Progress;
   onNavigate: (next: Workspace) => void;
   onHome: () => void;
+  onTestAllClear?: () => void;
+  testAllClear?: boolean;
 }
 
 const MENU: { id: Workspace; label: string; tag: string; icon: IconName }[] = [
@@ -28,7 +30,7 @@ const MENU: { id: Workspace; label: string; tag: string; icon: IconName }[] = [
 /**
  * 게임 HUD 같은 왼쪽 레일. 운영자 등급·구역 현황은 모두 실제 진행 기록으로 계산한다.
  */
-export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: RailProps) {
+export function Rail({ workspace, scenarios, progress, onNavigate, onHome, onTestAllClear, testAllClear = false }: RailProps) {
   const cleared = scenarios.filter(s => progress[s.id]?.cleared);
   const rank = operatorRank(cleared.length, scenarios.length);
   const xp = cleared.reduce((sum, s) => sum + progress[s.id].bestScore, 0);
@@ -44,7 +46,10 @@ export function Rail({ workspace, scenarios, progress, onNavigate, onHome }: Rai
   };
 
   return <aside className="app-rail">
-    <button className="brand" onClick={onHome} aria-label="SUDO QUEST 홈"><span className="brand-mark"><BrandMark /></span><span className="brand-word">SUDO<span className="brand-accent">QUEST</span><small>INCIDENT RPG</small></span></button>
+    <div className="brand-area">
+      <button className="brand" onClick={onHome} aria-label="SUDO QUEST 홈"><span className="brand-mark"><BrandMark /></span><span className="brand-word">SUDO<span className="brand-accent">QUEST</span><small>INCIDENT RPG</small></span></button>
+      {onTestAllClear && <button type="button" className="secret-allclear" aria-label={testAllClear ? '테스트 올클리어 해제' : '테스트 올클리어 보기'} aria-pressed={testAllClear} onClick={onTestAllClear} />}
+    </div>
 
     <section className="rail-operator" aria-label={`운영자 등급 Lv.${rank.level} ${rank.title}`}>
       <div className="op-avatar"><span>Lv</span>{rank.level}</div>
