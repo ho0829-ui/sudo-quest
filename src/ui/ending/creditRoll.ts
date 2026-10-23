@@ -45,6 +45,8 @@ export const CHAPTERS: Chapter[] = [
   { title: "튜토리얼 · 첫 근무", credit: "Claude · 아이디어 Choi",
     lines: ["아침 점검 뒤 아무도 nginx를 다시 켜지 않았다 — 신입의 첫 장애는 언제나 이렇게 시작한다", "명령을 직접 쳐야 넘어가는 말풍선 여덟 개. 건너뛰기는 Esc", "연습 실습이라 점수도 기록도 남지 않는다. 마음껏 틀려 보세요",
       "힌트 아래 용어 풀이 — EAI_AGAIN이 뭔지 몰라도 이제 괜찮다"] },
+  { title: "배포 · 운영자의 Mac", credit: "Claude · 결정 Choi",
+    lines: ["게임은 GitHub Pages에, 코치와 카페는 잘 끄지 않는 Mac 한 대에 — 터널 하나로 이어 붙였다", "Mac이 쉬는 날엔 배지가 \"서버 쉬는 중\"이라고 솔직하게 말한다"] },
   { title: "README · 시연 GIF", credit: "Claude · 감독 Choi",
     lines: ["헤드리스 Chrome이 대신 df -h를 쳐 주었다 — 한 번 틀린 원인 제출까지 연기했다", "README 첫 화면에 30초짜리 실습 한 판, 스포일러는 접어 두었다"] },
   { title: "1280×720 맞춤", credit: "Claude · 측정 요청 Choi",

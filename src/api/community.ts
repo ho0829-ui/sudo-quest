@@ -1,3 +1,5 @@
+import { apiUrl } from './base';
+
 export const BOARD_CATEGORIES = { question: '질문', tip: '운영 팁', review: '장애 회고', free: '자유 이야기' } as const;
 export type BoardCategory = keyof typeof BOARD_CATEGORIES;
 export interface PostSummary {
@@ -70,7 +72,7 @@ async function send(path: string, { method = 'GET', body, headers, signal }: Sen
   if (signal?.aborted) abort();
   const timeout = setTimeout(abort, 10000);
   try {
-    const response = await fetch(`/api/community${path}`, { signal: controller.signal, method: body ? 'POST' : method,
+    const response = await fetch(apiUrl(`/api/community${path}`), { signal: controller.signal, method: body ? 'POST' : method,
       ...(body ? { headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) } : headers ? { headers } : {}) });
     if (!response.ok) throw new CommunityError(response.status, await errorCode(response));
     return response;

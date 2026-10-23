@@ -1,3 +1,5 @@
+import { apiUrl } from './base';
+
 export interface Health {
   status: 'ok';
   service: string;
@@ -28,7 +30,7 @@ export function isHealth(value: unknown): value is Health {
 }
 
 export async function getHealth(signal?: AbortSignal): Promise<Health> {
-  const response = await fetch('/api/health', { signal });
+  const response = await fetch(apiUrl('/api/health'), { signal });
   if (!response.ok) throw new Error('backend_unavailable');
   const data: unknown = await response.json();
   if (!isHealth(data)) throw new Error('invalid_health_response');

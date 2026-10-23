@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { REMOTE_API } from "../../api/base";
 import { getHealth, type Health } from "../../api/health";
 import "./backend-status.css";
 
@@ -10,7 +11,7 @@ function missingNames(health: Health): string[] {
 type Tone = "checking" | "ok" | "warn" | "off";
 
 function badge(health: Health | null, error: boolean): { tone: Tone; label: string } {
-  if (error) return { tone: "off", label: "오프라인" };
+  if (error) return { tone: "off", label: REMOTE_API ? "서버 쉬는 중" : "오프라인" };
   if (!health) return { tone: "checking", label: "확인 중…" };
   if (missingNames(health).length > 0 || health.rag_status !== "pilot_ready") return { tone: "warn", label: "설정 필요" };
   return { tone: "ok", label: "RAG 준비됨" };
@@ -56,7 +57,9 @@ export function BackendStatus() {
       <summary aria-live="polite"><span className="coach-status-dot" aria-hidden="true" /><strong>AI 코치</strong><span className="coach-status-label">{label}</span></summary>
       <div className="coach-status-panel">
         <p>
-          {error ? "코치 서버에 연결하지 못했어요. 가상 실습은 바로 이용할 수 있어요."
+          {error ? (REMOTE_API
+              ? "AI 코치·지식 탐색·카페 서버는 운영자의 Mac에서 켜져 있을 때만 동작해요. 지금은 쉬는 중이에요. 실습·튜토리얼·캠퍼스는 그대로 즐길 수 있어요."
+              : "코치 서버에 연결하지 못했어요. 가상 실습은 바로 이용할 수 있어요.")
             : !health ? "서버 상태를 확인하는 중이에요."
             : `서버 연결됨 · 생성 ${health.providers.generation.configured ? "설정됨" : "설정 필요"}`
               + ` · 임베딩 ${health.providers.embedding.configured ? "설정됨" : "설정 필요"}`

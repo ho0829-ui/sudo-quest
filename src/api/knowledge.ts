@@ -1,4 +1,5 @@
 import { isItems, isJobStart, isRecord } from "./validate";
+import { apiUrl } from "./base";
 
 export interface Item {
   item_id: string;
@@ -46,7 +47,7 @@ const INVALID = "서버 응답 형식이 올바르지 않습니다. 백엔드 �
 
 /** 요청하고, 응답 모양이 맞을 때만 돌려준다. JSON이 아니거나 모양이 다르면 화면에 보일 오류 문장으로 바꾼다. */
 async function request<T>(path: string, valid: (v: unknown) => v is T, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, { ...options, signal: AbortSignal.timeout(10000) });
+  const response = await fetch(apiUrl(path), { ...options, signal: AbortSignal.timeout(10000) });
   if (!response.ok) throw new Error(response.status === 429
     ? "다른 요청을 처리 중입니다. 잠시 후 다시 시도해주세요." : "서버 요청에 실패했습니다. 연결 상태를 확인해주세요.");
   let data: unknown;
